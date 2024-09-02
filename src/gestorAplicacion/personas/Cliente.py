@@ -7,9 +7,10 @@ class Cliente(Persona):
     def __init__(self, cedula, nombre, correo, telefono, puntos_fidelidad):
         super().__init__(cedula, nombre, correo, telefono)
         self._puntos_fidelidad = puntos_fidelidad
-        self.prestamos = []
-        self.compras = []
-        
+        self._prestamos = []
+        self._compras = []
+        Cliente.clientes.append(self)
+
 
 
     # Getters y setters
