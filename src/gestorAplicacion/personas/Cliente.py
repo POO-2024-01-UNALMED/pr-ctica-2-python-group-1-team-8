@@ -9,6 +9,8 @@ class Cliente(Persona):
         self._puntos_fidelidad = puntos_fidelidad
         self.prestamos = []
         self.compras = []
+        
+
 
     # Getters y setters
     def get_puntos_fidelidad(self):
