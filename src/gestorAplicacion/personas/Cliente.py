@@ -6,9 +6,9 @@ class Cliente(Persona):
     #Constructor
     def __init__(self, cedula, nombre, correo, telefono, puntos_fidelidad):
         super().__init__(cedula, nombre, correo, telefono)
-        self._puntos_fidelidad = puntos_fidelidad
-        self._prestamos = []
-        self._compras = []
+        self.__puntos_fidelidad = puntos_fidelidad
+        self.__prestamos = []
+        self.__compras = []
         Cliente.clientes.append(self)
 
 

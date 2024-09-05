@@ -2,16 +2,16 @@ from src.gestorAplicacion.productos import Juego
 
 class Tienda:
     # Constructor
-    def __init__(self, nombre=None, fondos=0):
-        self.nombre = nombre
-        self.fondos = fondos
-        self.caja = []
-        self.subastas = []
-        self.inventario = []
-        self.inventarioPrestamo = []
-        self.inventarioUsado = []
-        self.reabastecimientos = []
-        self.empleados = []
+    def __init__(self, nombre, fondos=0):
+        self.__nombre = nombre
+        self.__fondos = fondos
+        self.__caja = []
+        self.__subastas = []
+        self.__inventario = []
+        self.__inventarioPrestamo = []
+        self.__inventarioUsado = []
+        self.__reabastecimientos = []
+        self.__empleados = []
         Tienda.locales.append(self)
 
     locales = []
@@ -20,11 +20,11 @@ class Tienda:
     # Agregar producto al inventario correspondiente
     def agregarProducto(self, producto):
         if producto.isPrestable():
-            self.inventarioPrestamo.append(producto)
+            self.__inventarioPrestamo.append(producto)
         elif producto.getCondicion() < 5:
-            self.inventarioUsado.append(producto)
+            self.__inventarioUsado.append(producto)
         else:
-            self.inventario.append(producto)
+            self.__inventario.append(producto)
 
     # Reduce en uno la cantidad de un producto en un inventario dado segun codigo
     @staticmethod
@@ -35,7 +35,7 @@ class Tienda:
 
     # Establece la prioridad de los productos en el inventario
     def actualizarPrioridad(self):
-        for i in self.inventario:
+        for i in self.__inventario:
             if i.getPrioridad() is None:
                 if i.getCantidadInicial() - i.getCantidad() > i.getCantidadInicial() * 0.8:
                     i.setPrioridad("Prioridad muy alta")
@@ -47,21 +47,21 @@ class Tienda:
                     i.setPrioridad("Prioridad baja")
 
     def agregarEmpleado(self, empleado):
-        self.empleados.append(empleado)
+        self.__empleados.append(empleado)
 
     def agregarTransaccion(self, transaccion):
-        self.caja.append(transaccion)
+        self.__caja.append(transaccion)
         self.agregarFondos(transaccion.getValorFinal())
 
     def agregarFondos(self, fondos):
-        self.fondos += fondos
+        self.__fondos += fondos
 
     def agregarSubasta(self, subasta):
-        self.subastas.append(subasta)
+        self.__subastas.append(subasta)
 
     def reabastecer_producto(self, producto_recibido):
-        for producto_local in self.inventario:
-            if producto_local.nombre.lower() == producto_recibido.nombre.lower():
+        for producto_local in self.__inventario:
+            if producto_local._nombre.lower() == producto_recibido._nombre.lower():
                 # Para juegos, comparar también por consola
                 if isinstance(producto_local, Juego) and isinstance(producto_recibido, Juego):
                     juego_local = producto_local
@@ -71,7 +71,7 @@ class Tienda:
                     if juego_local.plataforma.lower() == juego_recibido.plataforma.lower():
                         producto_local.cantidad += producto_recibido.cantidad
                     else:  # si no, agregar el producto recibido al inventario
-                        self.inventario.append(producto_recibido)
+                        self.__inventario.append(producto_recibido)
 
                     return
                 else:  # Para otro tipo de productos solo valerse de la comparación por nombre
@@ -79,60 +79,60 @@ class Tienda:
                     return
 
         # En caso de que el producto no se encuentre, agregarlo al inventario
-        self.inventario.append(producto_recibido)
+        self.__inventario.append(producto_recibido)
 
-        def retirar_producto(self, producto, cantidad):
-            for p in self.inventario:
-                if p == producto:
-                    p.cantidad -= cantidad
-                    p.cantidad_inicial -= cantidad
+    def retirar_producto(self, producto, cantidad):
+        for p in self.__inventario:
+            if p == producto:
+                p.cantidad -= cantidad
+                p.cantidad_inicial -= cantidad
 
-        def agregar_orden(self, orden):
-            if orden is not None:
-                self.reabastecimientos.append(orden)
+    def agregar_orden(self, orden):
+        if orden is not None:
+            self.__reabastecimientos.append(orden)
 
 # Getters y setters
     def get_nombre(self):
-            return self.nombre
+            return self.__nombre
 
     def set_nombre(self, nombre):
-            self.nombre = nombre
+            self.__nombre = nombre
 
     def get_fondos(self):
-            return self.fondos
+            return self.__fondos
 
     def set_fondos(self, fondos):
-            self.fondos = fondos
+            self.__fondos = fondos
 
     def get_caja(self):
-            return self.caja
+            return self.__caja
 
     def set_caja(self, caja):
-            self.caja = caja
+            self.__caja = caja
 
     def get_inventario(self):
-            return self.inventario
+            return self.__inventario
 
     def set_inventario(self, inventario):
-            self.inventario = inventario
+            self.__inventario = inventario
 
     def get_inventario_prestamo(self):
-            return self.inventarioPrestamo
+            return self.__inventarioPrestamo
 
     def set_inventario_prestamo(self, inventarioPrestamo):
-            self.inventarioPrestamo = inventarioPrestamo
+            self.__inventarioPrestamo = inventarioPrestamo
 
     def get_inventario_usado(self):
-            return self.inventarioUsado
+            return self.__inventarioUsado
 
     def set_inventario_usado(self, inventarioUsado):
-            self.inventarioUsado = inventarioUsado
+            self.__inventarioUsado = inventarioUsado
 
     def get_reabastecimientos(self):
-            return self.reabastecimientos
+            return self.__reabastecimientos
 
     def set_reabastecimientos(self, reabastecimientos):
-            self.reabastecimientos = reabastecimientos
+            self.__reabastecimientos = reabastecimientos
 
     def get_locales():
             return Tienda.locales
@@ -141,13 +141,13 @@ class Tienda:
             Tienda.locales = locales
 
     def get_empleados(self):
-            return self.empleados
+            return self.__empleados
 
     def set_empleados(self, empleados):
-            self.empleados = empleados
+            self.__empleados = empleados
 
     def get_subastas(self):
-            return self.subastas
+            return self.__subastas
 
     def set_subastas(self, subastas):
-            self.subastas = subastas
+            self.__subastas = subastas

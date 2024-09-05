@@ -3,15 +3,15 @@ from src.gestorAplicacion.personas.Persona import Persona
 class Empleado(Persona):
     def __init__(self, cedula, nombre, correo, telefono, salario, salario_porcentual, acumulado_mensual, dias_laborales, tienda):
         super().__init__(cedula, nombre, correo, telefono)
-        self._salario = salario
-        self._salario_porcentual = salario_porcentual
-        self._acumulado_mensual = acumulado_mensual
-        self._dias_laborales = dias_laborales
-        self._tienda = tienda
-        self._metas = []
-        self._metas_alcanzadas = []
-        self._metas_caducadas = []
-        self._transacciones = []
+        self.__salario = salario
+        self.__salario_porcentual = salario_porcentual
+        self.__acumulado_mensual = acumulado_mensual
+        self.__dias_laborales = dias_laborales
+        self.__tienda = tienda
+        self.__metas = []
+        self.__metas_alcanzadas = []
+        self.__metas_caducadas = []
+        self.__transacciones = []
 
     # Metodos
     def ingresar_meta(self, meta):

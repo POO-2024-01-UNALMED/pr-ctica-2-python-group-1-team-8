@@ -1,10 +1,10 @@
 class Fecha:
     def __init__(self, dia, mes, year):
-        self.dia = dia
-        self.mes = mes
-        self.year = year
+        self.__dia = dia
+        self.__mes = mes
+        self.__year = year
 
-        self.total_dias = Fecha.fecha_a_dias(dia, mes, year)
+        self.__total_dias = Fecha.fecha_a_dias(dia, mes, year)
 
     # TODO Crear constructor con totalDias
 
@@ -96,9 +96,9 @@ class Fecha:
                             dia = total_dias
                             total_dias = 0
 
-        self.dia = dia
-        self.mes = mes
-        self.year = year
+        self.__dia = dia
+        self.__mes = mes
+        self.__year = year
 
     # Metodo que verifica si un año dado es bisiesto
     @staticmethod
@@ -107,23 +107,23 @@ class Fecha:
 
     # Metodo toString
     def __str__(self):
-        return f"{self.dia}/{self.mes}/{self.year}"
+        return f"{self.__dia}/{self.__mes}/{self.__year}"
 
     # Getters y setters
     def get_total_dias(self):
-        return self.total_dias
+        return self.__total_dias
     def get_dia(self):
-        return self.dia
+        return self.__dia
     def get_mes(self):
-        return self.mes
+        return self.__mes
     def get_year(self):
-        return self.year
+        return self.__year
 
     def set_total_dias(self, total_dias):
-        self.total_dias = total_dias
+        self.__total_dias = total_dias
     def set_dia(self, dia):
-        self.dia = dia
+        self.__dia = dia
     def set_mes(self, mes):
-        self.mes = mes
+        self.__mes = mes
     def set_year(self, year):
-        self.year = year
+        self.__year = year
