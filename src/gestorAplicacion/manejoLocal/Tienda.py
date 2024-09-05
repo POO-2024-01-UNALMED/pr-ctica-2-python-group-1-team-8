@@ -91,63 +91,63 @@ class Tienda:
             if orden is not None:
                 self.reabastecimientos.append(orden)
 
-        # Getters y setters
-        def get_nombre(self):
+# Getters y setters
+    def get_nombre(self):
             return self.nombre
 
-        def set_nombre(self, nombre):
+    def set_nombre(self, nombre):
             self.nombre = nombre
 
-        def get_fondos(self):
+    def get_fondos(self):
             return self.fondos
 
-        def set_fondos(self, fondos):
+    def set_fondos(self, fondos):
             self.fondos = fondos
 
-        def get_caja(self):
+    def get_caja(self):
             return self.caja
 
-        def set_caja(self, caja):
+    def set_caja(self, caja):
             self.caja = caja
 
-        def get_inventario(self):
+    def get_inventario(self):
             return self.inventario
 
-        def set_inventario(self, inventario):
+    def set_inventario(self, inventario):
             self.inventario = inventario
 
-        def get_inventario_prestamo(self):
+    def get_inventario_prestamo(self):
             return self.inventarioPrestamo
 
-        def set_inventario_prestamo(self, inventarioPrestamo):
+    def set_inventario_prestamo(self, inventarioPrestamo):
             self.inventarioPrestamo = inventarioPrestamo
 
-        def get_inventario_usado(self):
+    def get_inventario_usado(self):
             return self.inventarioUsado
 
-        def set_inventario_usado(self, inventarioUsado):
+    def set_inventario_usado(self, inventarioUsado):
             self.inventarioUsado = inventarioUsado
 
-        def get_reabastecimientos(self):
+    def get_reabastecimientos(self):
             return self.reabastecimientos
 
-        def set_reabastecimientos(self, reabastecimientos):
+    def set_reabastecimientos(self, reabastecimientos):
             self.reabastecimientos = reabastecimientos
 
-        def get_locales():
+    def get_locales():
             return Tienda.locales
 
-        def set_locales(locales):
+    def set_locales(locales):
             Tienda.locales = locales
 
-        def get_empleados(self):
+    def get_empleados(self):
             return self.empleados
 
-        def set_empleados(self, empleados):
+    def set_empleados(self, empleados):
             self.empleados = empleados
 
-        def get_subastas(self):
+    def get_subastas(self):
             return self.subastas
 
-        def set_subastas(self, subastas):
+    def set_subastas(self, subastas):
             self.subastas = subastas

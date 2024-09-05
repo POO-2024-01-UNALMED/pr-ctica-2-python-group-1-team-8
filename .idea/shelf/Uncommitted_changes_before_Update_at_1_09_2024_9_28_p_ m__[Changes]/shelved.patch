@@ -1,0 +1,172 @@
+Index: src/gestorAplicacion/productos/Producto.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from abc import ABC, abstractmethod\r\n\r\nclass Producto(ABC):\r\n    ultimoId = 1\r\n\r\n    # Constructores\r\n    # Constructor con todos los atributos menos Id\r\n    def __init__(self, nombre, precio, cantidad, cantidadInicial, prestable, condicion, fechaLanzamiento, descuento, puntosRequeridos):\r\n        self.id = Producto.ultimoId\r\n        Producto.ultimoId += 1\r\n        self.nombre = nombre\r\n        self.precio = precio\r\n        self.cantidad = cantidad\r\n        self.cantidadInicial = cantidadInicial\r\n        self.prestable = prestable\r\n        self.condicion = condicion\r\n        self.fechaLanzamiento = fechaLanzamiento\r\n        self.descuento = descuento\r\n        self.puntosRequeridos = puntosRequeridos\r\n\r\n\r\n    # ~~~~~ Metodos ~~~~~\r\n\r\n    # Metodo para calcular las ventas en base a la cantidad inicial y la actual\r\n    # (recordemos que la cantidad inicial se reinicia cada mes)\r\n    def calcular_ventas(self):\r\n        return self.cantidadInicial - self.cantidad\r\n\r\n    # TODO metodos para ordenar productos\r\n\r\n    # TODO metodo para clonar producto\r\n\r\n    # Metodo toString...?\r\n\r\n    @abstractmethod\r\n    def metodo_abstracto(self):\r\n        pass
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/gestorAplicacion/productos/Producto.py b/src/gestorAplicacion/productos/Producto.py
+--- a/src/gestorAplicacion/productos/Producto.py	(revision 91f5bbab4ea7446dee84c59ff453be62c64d4637)
++++ b/src/gestorAplicacion/productos/Producto.py	(date 1725243877889)
+@@ -8,15 +8,15 @@
+     def __init__(self, nombre, precio, cantidad, cantidadInicial, prestable, condicion, fechaLanzamiento, descuento, puntosRequeridos):
+         self.id = Producto.ultimoId
+         Producto.ultimoId += 1
+-        self.nombre = nombre
+-        self.precio = precio
+-        self.cantidad = cantidad
+-        self.cantidadInicial = cantidadInicial
+-        self.prestable = prestable
+-        self.condicion = condicion
+-        self.fechaLanzamiento = fechaLanzamiento
+-        self.descuento = descuento
+-        self.puntosRequeridos = puntosRequeridos
++        self.__nombre = nombre
++        self.__precio = precio
++        self.__cantidad = cantidad
++        self.__cantidadInicial = cantidadInicial
++        self.__prestable = prestable
++        self.__condicion = condicion
++        self.__fechaLanzamiento = fechaLanzamiento
++        self.__descuento = descuento
++        self.__puntosRequeridos = puntosRequeridos
+ 
+ 
+     # ~~~~~ Metodos ~~~~~
+@@ -31,7 +31,49 @@
+     # TODO metodo para clonar producto
+ 
+     # Metodo toString...?
++    def __str__(self):
++        return f"ID: {self.id}, Nombre: {self.__nombre}, Precio: {self.__precio}, Cantidad: {self.__cantidad}, Condicion: {self.__condicion}, Fecha de Lanzamiento: {self.__fechaLanzamiento}"
+ 
+     @abstractmethod
+     def metodo_abstracto(self):
+-        pass
+\ No newline at end of file
++        pass
++
++
++    # ~~~~~ Getters y Setters ~~~~~
++    def get_id(self):
++        return self.id
++    def get_nombre(self):
++        return self.__nombre
++    def set_nombre(self, nombre):
++        self.__nombre = nombre
++    def get_precio(self):
++        return self.__precio
++    def set_precio(self, precio):
++        self.__precio = precio
++    def get_cantidad(self):
++        return self.__cantidad
++    def set_cantidad(self, cantidad):
++        self.__cantidad = cantidad
++    def get_cantidadInicial(self):
++        return self.__cantidadInicial
++    def set_cantidadInicial(self, cantidadInicial):
++        self.__cantidadInicial = cantidadInicial
++    def get_prestable(self):
++        return self.__prestable
++    def set_prestable(self, prestable):
++        self.__prestable = prestable
++    def get_condicion(self):
++        return self.__condicion
++    def set_condicion(self, condicion):
++        self.__condicion = condicion
++    def get_fechaLanzamiento(self):
++        return self.__fechaLanzamiento
++
++    def get_descuento(self):
++        return self.__descuento
++    def set_descuento(self, descuento):
++        self.__descuento = descuento
++    def get_puntosRequeridos(self):
++        return self.__puntosRequeridos
++    def set_puntosRequeridos(self, puntosRequeridos):
++        self.__puntosRequeridos = puntosRequeridos
+Index: src/gestorAplicacion/productos/Juego.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/gestorAplicacion/productos/Juego.py b/src/gestorAplicacion/productos/Juego.py
+new file mode 100644
+--- /dev/null	(date 1725244000997)
++++ b/src/gestorAplicacion/productos/Juego.py	(date 1725244000997)
+@@ -0,0 +1,19 @@
++import Producto
++class Juego(Producto):
++    def __init__(self, nombre, precio, cantidad, cantidadInicial, prestable, condicion, fechaLanzamiento, descuento, puntosRequeridos, genero,plataforma):
++        super().__init__(nombre, precio, cantidad, cantidadInicial, prestable, condicion, fechaLanzamiento, descuento, puntosRequeridos)
++        self.__plataforma = plataforma
++        self.__genero = genero
++
++    def __str__(self):
++        return f"Nombre: {self.nombre}, Precio: {self.precio}, Cantidad: {self.cantidad}, Plataforma: {self.plataforma}"
++
++    # ~~~~~ Getters y Setters ~~~~~
++    def get_plataforma(self):
++        return self.__plataforma
++    def set_plataforma(self, plataforma):
++        self.__plataforma = plataforma
++    def get_genero(self):
++        return self.__genero
++    def set_genero(self, genero):
++        self.__genero = genero
+\ No newline at end of file
+Index: src/gestorAplicacion/productos/Consola.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/gestorAplicacion/productos/Consola.py b/src/gestorAplicacion/productos/Consola.py
+new file mode 100644
+--- /dev/null	(date 1725244000980)
++++ b/src/gestorAplicacion/productos/Consola.py	(date 1725244000980)
+@@ -0,0 +1,14 @@
++import Producto
++
++class Consola(Producto):
++    def __init__(self, nombre, precio, cantidad,cantidadInicial, prestable, condicion, fechaLanzamiento, descuento, puntosRequeridos, marca):
++        super().__init__(nombre, precio, cantidad,cantidadInicial, prestable, condicion, fechaLanzamiento, descuento, puntosRequeridos)
++        self.__marca = marca
++
++    def __str__(self):
++        return f"Nombre: {self.nombre}\nPrecio: {self.precio}\nCantidad: {self.cantidad}\nMarca: {self.marca}"
++
++    def get_marca(self):
++        return self.marca
++    def set_marca(self, marca):
++        self.__marca = marca
+\ No newline at end of file
+Index: src/gestorAplicacion/productos/Accesorio.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/gestorAplicacion/productos/Accesorio.py b/src/gestorAplicacion/productos/Accesorio.py
+new file mode 100644
+--- /dev/null	(date 1725244000988)
++++ b/src/gestorAplicacion/productos/Accesorio.py	(date 1725244000988)
+@@ -0,0 +1,20 @@
++import Producto
++
++class Accesorio(Producto):
++    def __init__(self, nombre, precio, cantidad, cantidadInicial, prestable, condicion, fechaLanzamiento, descuento, puntosRequeridos, marca)                      :
++        super().__init__(nombre, precio, cantidad, cantidadInicial, prestable, condicion, fechaLanzamiento, descuento, puntosRequeridos)
++        self.__marca = marca
++        self.__consola = consola
++
++    def __str__(self):
++        return f"Nombre: {self.nombre} Precio: {self.precio} Descripcion: {self.descripcion} Marca: {self.marca} Color: {self.color} Talla: {self.talla} Material: {self.material}"
++
++    # ~~~~~ Getters y Setters ~~~~~
++    def get_marca(self):
++        return self.__marca
++    def set_marca(self, marca):
++        self.__marca = marca
++    def get_consola(self):
++        return self.__consola
++    def set_consola(self, consola):
++        self.__consola = consola

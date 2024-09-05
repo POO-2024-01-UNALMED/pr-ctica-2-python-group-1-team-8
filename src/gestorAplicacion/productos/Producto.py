@@ -26,7 +26,15 @@ class Producto(ABC):
     def calcular_ventas(self):
         return self.cantidadInicial - self.cantidad
 
-    # TODO metodos para ordenar productos
+    # TODO metodos para ordenar productos por defecto
+    @classmethod
+    def ordenar(cls,parametro:str,lista):
+        if parametro.lower() == "nombre":
+            sorted(lista,key=lambda x:x.__nombre)
+        elif parametro.lower() == "precio":
+            sorted(lista,key=lambda x:x.__precio)
+        elif parametro.lower() == "ventas":
+            sorted(lista,key=lambda x:x.calcular_ventas())
 
     # TODO metodo para clonar producto
 
