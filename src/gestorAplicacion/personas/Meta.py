@@ -5,51 +5,51 @@ class Meta:
     ultimo_id = 1
 
     def __init__(self, empleado, dia_limite, mes_limite, year_limite, valor_alcanzar, valor_bonificacion):
-        self.__codigo = Meta.ultimo_id
+        self._codigo = Meta.ultimo_id
         Meta.ultimo_id += 1
-        self.__empleado = empleado
-        self.__fecha = Fecha(dia_limite, mes_limite, year_limite)
-        self.__valor_alcanzar = valor_alcanzar
-        self.__valor_bonificacion = valor_bonificacion
+        self._empleado = empleado
+        self._fecha = Fecha(dia_limite, mes_limite, year_limite)
+        self._valor_alcanzar = valor_alcanzar
+        self._valor_bonificacion = valor_bonificacion
         empleado.ingresar_meta(self)
-        self.__estado = "En proceso"
-        self.__acumulado = 0
+        self._estado = "En proceso"
+        self._acumulado = 0
 
     #Metodos
     def incrementar_acumulado(self, valor):
-        if self.__estado == "En proceso":
-            self.__empleado.acumulado += valor
+        if self._estado == "En proceso":
+            self._empleado.acumulado += valor
 
     # Getters y setters
     def get_codigo(self):
-        return self.__codigo
+        return self._codigo
     def get_empleado(self):
-        return self.__empleado
+        return self._empleado
     def get_fecha(self):
-        return self.__fecha
+        return self._fecha
     def get_valor_alcanzar(self):
-        return self.__valor_alcanzar
+        return self._valor_alcanzar
     def get_valor_bonificacion(self):
-        return self.__valor_bonificacion
+        return self._valor_bonificacion
     def get_estado(self):
-        return self.__estado
+        return self._estado
     def get_acumulado(self):
-        return self.__acumulado
+        return self._acumulado
 
     def set_codigo(self, codigo):
-        self.__codigo = codigo
+        self._codigo = codigo
     def set_empleado(self, empleado):
-        self.__empleado = empleado
+        self._empleado = empleado
     def set_fecha(self, fecha):
-        self.__fecha = fecha
+        self._fecha = fecha
     def set_valor_alcanzar(self, valor_alcanzar):
-        self.__valor_alcanzar = valor_alcanzar
+        self._valor_alcanzar = valor_alcanzar
     def set_valor_bonificacion(self, valor_bonificacion):
-        self.__valor_bonificacion = valor_bonificacion
+        self._valor_bonificacion = valor_bonificacion
     def set_estado(self, estado):
-        self.__estado = estado
+        self._estado = estado
     def set_acumulado(self, acumulado):
-        self.__acumulado = acumulado
+        self._acumulado = acumulado
 
     #Metodo toString
     def __str__(self):

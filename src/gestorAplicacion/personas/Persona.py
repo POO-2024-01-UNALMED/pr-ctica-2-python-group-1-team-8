@@ -2,10 +2,10 @@ from abc import ABC, abstractmethod
 
 class Persona(ABC):
     def __init__(self, cedula, nombre, correo, telefono):
-        self.__cedula = cedula
-        self.__nombre = nombre
-        self.__correo = correo
-        self.__telefono = telefono
+        self._cedula = cedula
+        self._nombre = nombre
+        self._correo = correo
+        self._telefono = telefono
 
     #Getters y setters
     def get_cedula(self):
