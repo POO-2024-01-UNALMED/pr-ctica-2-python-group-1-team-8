@@ -66,21 +66,21 @@ class GUI:
             p = self.__class__.num_imagen_integrante
 
             self.imagen1 = tk.PhotoImage(file=paths[p][0])
-            self.imagen1 = self.imagen1.subsample(7)
+            self.imagen1 = self.imagen1.subsample(4)
             tk.Label(self.subframe1, image=self.imagen1).grid(row=0, column=0, sticky='nwse',
                                                               padx=2, pady=2)
             self.imagen2 = tk.PhotoImage(file=paths[p][1])
-            self.imagen2 = self.imagen2.subsample(7)
+            self.imagen2 = self.imagen2.subsample(4)
             tk.Label(self.subframe1, image=self.imagen2).grid(row=0, column=1, sticky='nwse',
                                                               padx=2, pady=2)
             self.imagen3 = tk.PhotoImage(file=paths[p][2])
-            self.imagen3 = self.imagen3.subsample(7)
-            self.imagen_label3 = tk.Label(self.subframe1, image=self.imagen3).grid(row=1, column=0, sticky='nwse',
-                                                                                   padx=2, pady=2)
+            self.imagen3 = self.imagen3.subsample(4)
+            tk.Label(self.subframe1, image=self.imagen3).grid(row=1, column=0, sticky='nwse',
+                                                              padx=2, pady=2)
             self.imagen4 = tk.PhotoImage(file=paths[p][3])
-            self.imagen4 = self.imagen4.subsample(7)
-            self.imagen_label4 = tk.Label(self.subframe1, image=self.imagen4).grid(row=1, column=1, sticky='nwse',
-                                                                                   padx=2, pady=2)
+            self.imagen4 = self.imagen4.subsample(4)
+            tk.Label(self.subframe1, image=self.imagen4).grid(row=1, column=1, sticky='nwse',
+                                                              padx=2, pady=2)
 
             self.__class__.num_imagen_integrante += 1
             if self.__class__.num_imagen_integrante > 2:
