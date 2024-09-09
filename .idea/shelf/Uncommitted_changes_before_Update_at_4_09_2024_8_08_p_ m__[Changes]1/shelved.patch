@@ -1,0 +1,33 @@
+Index: src/uiMain/funcionalidad3.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from src.gestorAplicacion.productos.Producto import Producto\r\nfrom src.gestorAplicacion.productos.Accesorio import Accesorio\r\nfrom src.gestorAplicacion.productos.Juego import Juego\r\nfrom src.gestorAplicacion.productos.Consola import Consola\r\nfrom src.gestorAplicacion.manejoLocal.Reabastecimiento import Reabastecimiento\r\nfrom src.gestorAplicacion.manejoLocal.Fecha import Fecha\r\nfrom src.gestorAplicacion.manejoLocal.Tienda import Tienda\r\nfrom src.gestorAplicacion.informacionVenta.Transaccion import Transaccion\r\n\r\nfrom re import match\r\n\r\n#Metodo para revisar el inventario\r\ndef revisarInventario():\r\n    while True:\r\n        # TODO:Separador\r\n        opcion = opcionMultiple(\"Revisar los productos del local\\nModificar la informacion de algun producto\\nCalcular la prioridad de los productos\\nCrear productos\\nSalir\")\r\n        match opcion:\r\n            case 1:\r\n                revisarProductos(),\r\n            case 2:\r\n                modificarProducto(),\r\n            case 3:\r\n                calcularPrioridad(),\r\n            case 4:\r\n                crearProducto(),\r\n            case 5:\r\n                return\r\n\r\n\r\n\r\n\r\n\r\n#Metodo para elegir una de multiples opciones\r\ndef opcionMultiple(texto:str,):\r\n    frases = texto.split(\"\\n\")\r\n    while True:\r\n        print(\"Seleccione una opcion:\")\r\n        for i in range(len(frases)):\r\n            print(f\"{i+1}. {frases[i]}\\n\")\r\n        opcion1 = input(\"Ingrese su opcion: \")\r\n        if opcion1.isdigit():\r\n            opcion1 = int(opcion1)\r\n            if 0 < opcion1 <= len(frases):\r\n                break\r\n        else:\r\n            print(\"Ingrese un numero valido\\n\")\r\n            input(\"Presione enter para continuar\")\r\n            continue\r\n    return int(opcion1)\r\n\r\n#Metodo para revisar los productos del local\r\ndef revisarProductos():\r\n    opcion = opcionMultiple(\"\\nRevisar por tipo de producto\\nRevisar todos los productos en la tienda\\nRegresar\")\r\n    match opcion:\r\n        case 1:\r\n            revisarTipoProducto(),\r\n        case 2:\r\n            revisarTodosProductos(),\r\n        case 3:\r\n            return\r\n\r\n#Metodo para revisar los productos por tipo\r\ndef revisarTipoProducto():\r\n    opcion = opcionMultiple(\"Accesorio\\nConsola\\nJuego\\nRegresar\")\r\n    lista = []\r\n    #TODO: Borrar local cuando se pase al main\r\n    local = Tienda(\"puebla\",50000)\r\n    match opcion:\r\n        case 1:#Revisar por tipo Accesorio\r\n            for i in local.get_inventario():\r\n                if isinstance(i,Accesorio):\r\n                    lista.append(i)\r\n        case 2:#Revisar por tipo Consola\r\n            for i in local.get_inventario():\r\n                if isinstance(i,Consola):\r\n                    lista.append(i)\r\n        case 3:#Revisar por tipo Juego\r\n            for i in local.get_inventario():\r\n                if isinstance(i,Juego):\r\n                    lista.append(i)\r\n        case 4:\r\n            return\r\n    for i in lista:\r\n        print(i)\r\n#Metodo para revisar todos los productos en la tienda\r\ndef revisarTodosProductos():\r\n    lista = []\r\n\r\n#Metodo para modificar la informacion de un producto\r\ndef modificarProducto():\r\n    pass\r\n\r\n#Metodo para calcular la prioridad de los productos\r\ndef calcularPrioridad():\r\n    pass\r\n\r\n#Metodo para crear un producto\r\ndef crearProducto():\r\n    pass\r\n\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/uiMain/funcionalidad3.py b/src/uiMain/funcionalidad3.py
+--- a/src/uiMain/funcionalidad3.py	(revision d9ffd7168c47c95ef44ea9313a40e27d08caa924)
++++ b/src/uiMain/funcionalidad3.py	(date 1725497086582)
+@@ -70,18 +70,22 @@
+             for i in local.get_inventario():
+                 if isinstance(i,Accesorio):
+                     lista.append(i)
++
+         case 2:#Revisar por tipo Consola
+             for i in local.get_inventario():
+                 if isinstance(i,Consola):
+                     lista.append(i)
++
+         case 3:#Revisar por tipo Juego
+             for i in local.get_inventario():
+                 if isinstance(i,Juego):
+                     lista.append(i)
++
+         case 4:
+             return
+     for i in lista:
+         print(i)
++
+ #Metodo para revisar todos los productos en la tienda
+ def revisarTodosProductos():
+     lista = []
