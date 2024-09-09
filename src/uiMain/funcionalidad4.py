@@ -195,12 +195,28 @@ def verRendimiento(empleado, fecha_actual):
                 global total_ventas_semana_actual
                 for t in empleado.get_transacciones():
                     if fecha_actual.get_totalDias - 7 <= t.get_fecha().get_totalDias():
-                        total_ventas_semana_actual++
+                        total_ventas_semana_actual += 1
+                print(f"El total de ventas semanales del empleado {empleado.get_nombre()} son {total_ventas_semana_actual}")
                 break
             case 2:
+                global total_ventas_mes_actual
                 for t in empleado.get_transacciones():
-                    if t.get_fecha().get_year() == fecha_actual.get_year() and t.get_fecha().get_mes() == fecha_actual.get_mes():
-                        totalVentasMesActual += t.get_total()
+                    if fecha_actual.get_totalDias - 31 <= t.get_fecha().get_totalDias():
+                        total_ventas_mes_actual += 1
+                print(f"El total de ventas mensuales del empleado {empleado.get_nombre()} son {total_ventas_mes_actual}")
                 break
             case 3:
-                return rendimientoAnual(empleado, fecha_actual)
+                global total_ventas_year_actual
+                for t in empleado.get_transacciones():
+                    if fecha_actual.get_totalDias - 365 <= t.get_fecha().get_totalDias():
+                        total_ventas_year_actual += 1
+                print(f"El total de ventas anuales del empleado {empleado.get_nombre()} son {total_ventas_year_actual}")
+                break
+            case _:
+                print("Ingrese una opcion valida. Presione enter para volver a intentar")
+                input()
+                break
+
+        while True
+            try:
+                print("¿Qué desea haer?")
