@@ -3,7 +3,7 @@ from src.gestorAplicacion.productos.Accesorio import Accesorio
 from src.gestorAplicacion.productos.Juego import Juego
 from src.gestorAplicacion.productos.Consola import Consola
 #from src.gestorAplicacion.manejoLocal.Reabastecimiento import Reabastecimiento
-#from src.gestorAplicacion.manejoLocal.Fecha import Fecha
+from src.gestorAplicacion.manejoLocal.Fecha import Fecha
 from src.gestorAplicacion.manejoLocal.Tienda import Tienda
 #from src.gestorAplicacion.informacionVenta.Transaccion import Transaccion
 
@@ -276,7 +276,35 @@ def revisarPrioridad(local:Tienda):
                 case 6:
                     return
 def analisis(local:Tienda):
+    while True:
+        rangoVentas = []
+        print("Ingrese la fecha inicial:\n")
+        fechaInicial = pedirFecha()
+        print("Ingrese la fecha final:\n")
+        fechaFinal = pedirFecha()
+        if fechaInicial.get_total_dias() > fechaFinal.get_total_dias():
+            print("La fecha inicial no puede ser mayor que la fecha final")
+            return
+        for i in local.get_caja():
+            if fechaInicial.get_total_dias() <= i.getFecha().get_total_dias() <= fechaFinal.get_total_dias():
+                rangoVentas.append(i)
+        if len(rangoVentas) == 0:
+            print("No hay ventas en ese rango de fechas")
+            return
+        opcion = opcionMultiple("Ver ventas individuales\nOrdenes en este rango \nTendencias en este rango\nProceder al reabastecimiento\nRegresar")
+        match opcion:
+            case 1:
+                pass
+            case 2:
+                pass
+            case 3:
+                rebastecimiento(local)
+            case 4:
+                return
+
+def rebastecimiento(local:Tienda):
     pass
+
 def elegirOrden():
     opcion = opcionMultiple("Ordenar por nombre\nOrdenar por precio\nOrdenar por ventas\nRegresar")
     match opcion:
@@ -288,3 +316,14 @@ def elegirOrden():
             return "ventas"
         case 4:
             return
+def pedirFecha():
+    while True:
+        # TODO: Agregar restricciones de fecha
+        try:
+            ano = input("Ingrese el año: ")
+            mes = input("Ingrese el mes: ")
+            dia = input("Ingrese el dia: ")
+        except ValueError:
+            print("Fecha no valida")
+            continue
+        return Fecha(ano,mes,dia)
