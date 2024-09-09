@@ -15,6 +15,16 @@ class Subasta:
         self._tipo = tipo
 
     #TODO: Implementar metodos
+    def extender_subasta(self, fecha_actual):
+        pass
+
+    def agregar_oferta(self, oferta, cliente) throws Exception:
+        if oferta > self._oferta_mayor:
+            self._ofertas.append(oferta)
+            self._ofertantes.append(cliente)
+            self._oferta_mayor = oferta
+        else:
+            print("La oferta ingresada es menor a la oferta mayor")
 
     #Getters y setters
     def get_id(self):

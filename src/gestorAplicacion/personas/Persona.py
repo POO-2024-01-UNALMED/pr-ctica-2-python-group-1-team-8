@@ -9,22 +9,22 @@ class Persona(ABC):
 
     #Getters y setters
     def get_cedula(self):
-        return self.cedula
+        return self._cedula
     def get_nombre(self):
-        return self.nombre
+        return self._nombre
     def get_correo(self):
-        return self.correo
+        return self._correo
     def get_telefono(self):
-        return self.telefono
+        return self._telefono
 
     def set_cedula(self, cedula):
-        self.cedula = cedula
+        self._cedula = cedula
     def set_nombre(self, nombre):
-        self.nombre = nombre
+        self._nombre = nombre
     def set_correo(self, correo):
-        self.correo = correo
+        self._correo = correo
     def set_telefono(self, telefono):
-        self.telefono = telefono
+        self._telefono = telefono
 
     @abstractmethod
     def metodo_abstracto(self):

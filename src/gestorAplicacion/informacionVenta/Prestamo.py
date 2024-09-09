@@ -1,5 +1,6 @@
 class Prestamo:
     ultimo_id = 0
+
     def __init__(self, fecha_inicio, fecha_fin, cliente, productos, valor_total, estado):
         self._id = Prestamo.ultimo_id
         Prestamo.ultimo_id += 1
