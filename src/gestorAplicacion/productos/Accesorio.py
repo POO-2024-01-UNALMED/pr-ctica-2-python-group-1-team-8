@@ -7,14 +7,14 @@ class Accesorio(Producto):
         self._consola = consola
 
     def __str__(self):
-        return f"Nombre: {self.nombre} Precio: {self.precio} Descripcion: {self.descripcion} Marca: {self.marca} Color: {self.color} Talla: {self.talla} Material: {self.material}"
+        return f"Nombre: {self.nombre} | Precio: {self.precio} | Marca: {self.marca} | Consola: {self.consola}"
 
     # ~~~~~ Getters y Setters ~~~~~
-    def get_marca(self):
+    def getMarca(self):
         return self._marca
-    def set_marca(self, marca):
+    def setMarca(self, marca):
         self._marca = marca
-    def get_consola(self):
+    def getConsola(self):
         return self._consola
-    def set_consola(self, consola):
+    def setConsola(self, consola):
         self._consola = consola

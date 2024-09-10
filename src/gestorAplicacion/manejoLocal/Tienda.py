@@ -1,3 +1,4 @@
+from src.gestorAplicacion.informacionVenta.Transaccion import Transaccion
 from src.gestorAplicacion.productos import Juego
 
 class Tienda:
@@ -5,7 +6,7 @@ class Tienda:
     def __init__(self, nombre, fondos=0):
         self._nombre = nombre
         self._fondos = fondos
-        self._caja = []
+        self._caja:list[Transaccion] = []
         self._subastas = []
         self._inventario = []
         self._inventarioPrestamo = []
@@ -134,7 +135,7 @@ class Tienda:
     def set_reabastecimientos(self, reabastecimientos):
             self._reabastecimientos = reabastecimientos
 
-    def get_locales():
+    def get_locales(self):
             return Tienda.locales
 
     def set_locales(locales):
