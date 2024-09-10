@@ -55,7 +55,6 @@ class GUI:
         # Imagenes del local
 
         # Botones TODO BORRAR
-        # self.boton = tk.Button(self.frame, text="Boton 1", bg='black', fg='white', font=('Arial', 15, 'bold')).grid(row=0, column=0, sticky='nsew', padx=8, pady=8)
         self.boton2 = tk.Button(self.frame, text="Boton 2", bg='black', fg='white', font=('Arial', 15, 'bold')).grid(row=1, column=0, sticky='nsew', padx=8, pady=8)
 
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
