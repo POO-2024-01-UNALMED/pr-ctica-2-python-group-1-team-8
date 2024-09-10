@@ -1,9 +1,17 @@
 import tkinter as tk
+import sys
+import os
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'libs', 'Pillow'))
+
+from PIL import Image, ImageTk
 
 class GUI:
     # Atributos de clase
     # estos atributos son con el fin de permitir la funcion de metodos en la clase
     num_imagen_integrante = 0
+    saludo = 'Hola, bienvenido a Villajuegos. Aqui podras encontrar los mejores juegos para ti y tus amigos.'
+    descripcion = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cr'
 
 
     def __init__(self):
@@ -17,12 +25,7 @@ class GUI:
         # Columnas
         self.root.columnconfigure((0,1), weight=1, uniform='a')
         # Filas
-        self.root.rowconfigure(0, weight=1, uniform='b')
         self.root.rowconfigure(1, weight=10, uniform='b')
-
-        # ROOT
-        self.label = tk.Label(self.root, text="hola", bg='white', fg='black', font=('Arial', 15, 'bold'))
-        self.label.grid(row=0, column=0)
 
         # FRAME 1
         self.frame = tk.Frame(self.root, bg='white', bd=3, relief='solid')
@@ -33,9 +36,26 @@ class GUI:
         self.frame.rowconfigure(1, weight=7, uniform='bb')
         # ~~~~~~~
         # Elementos
+        # Saludo
+        self.texto_saludo = tk.Text(self.frame, fg='black', font=('Arial', 15, 'bold'), wrap='word', cursor='hand2')
+        self.texto_saludo.insert(tk.END, self.__class__.saludo)
+        self.texto_saludo.grid(row=0, column=0, sticky='nsew', padx=8, pady=8)
+        self.texto_saludo.config(state=tk.DISABLED)
+
+        def alternar_saludo():
+            self.texto_saludo.config(state=tk.NORMAL)
+            if self.texto_saludo.get(1.0, tk.END).strip() == self.__class__.saludo:
+                self.texto_saludo.delete(1.0, tk.END)
+                self.texto_saludo.insert(tk.END, self.__class__.descripcion)
+            else:
+                self.texto_saludo.delete(1.0, tk.END)
+                self.texto_saludo.insert(tk.END, self.__class__.saludo)
+            self.texto_saludo.config(state=tk.DISABLED)
+
+        # Imagenes del local
 
         # Botones TODO BORRAR
-        self.boton = tk.Button(self.frame, text="Boton 1", bg='black', fg='white', font=('Arial', 15, 'bold')).grid(row=0, column=0, sticky='nsew', padx=8, pady=8)
+        # self.boton = tk.Button(self.frame, text="Boton 1", bg='black', fg='white', font=('Arial', 15, 'bold')).grid(row=0, column=0, sticky='nsew', padx=8, pady=8)
         self.boton2 = tk.Button(self.frame, text="Boton 2", bg='black', fg='white', font=('Arial', 15, 'bold')).grid(row=1, column=0, sticky='nsew', padx=8, pady=8)
 
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -100,4 +120,13 @@ class GUI:
             self.text.bind("<Button-1>", lambda event: cambiar_integrante())
         cambiar_integrante() # Llamada inicial a la funcion
 
+        # Menubar
+        menubar = tk.Menu(self.root)
+        iniciomenu = tk.Menu(menubar, tearoff=0)
+        iniciomenu.add_command(label="Descripcion", command=alternar_saludo)
+        iniciomenu.add_separator()
+        iniciomenu.add_command(label="Salir", command=self.root.destroy)
+        menubar.add_cascade(label="Inicio", menu=iniciomenu)
+
+        self.root.config(menu=menubar)
         self.root.mainloop()
