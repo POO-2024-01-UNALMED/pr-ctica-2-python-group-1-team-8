@@ -294,6 +294,7 @@ def analisis(local:Tienda):
         opcion = opcionMultiple("Ver ventas individuales\nOrdenes en este rango \nTendencias en este rango\nProceder al reabastecimiento\nRegresar")
         match opcion:
             case 1:
+                # TODO:  hacer las opciones
                 pass
             case 2:
                 pass
@@ -303,8 +304,14 @@ def analisis(local:Tienda):
                 return
 
 def rebastecimiento(local:Tienda):
-    pass
-
+    opcion = opcionMultiple("Rebastecer manualmente\nEn base a la prioridad\nSalir")
+    match opcion:
+        case 1:
+            reabastecerManualmente(local)
+        case 2:
+            reabastecerPrioridad()
+        case 3:
+            return
 def elegirOrden():
     opcion = opcionMultiple("Ordenar por nombre\nOrdenar por precio\nOrdenar por ventas\nRegresar")
     match opcion:
@@ -327,3 +334,31 @@ def pedirFecha():
             print("Fecha no valida")
             continue
         return Fecha(ano,mes,dia)
+
+def reabastecerManualmente(local:Tienda):
+    opcion = opcionMultiple("Genero\nPlataforma\nRango de precio\nRegresar")
+    match opcion:
+        case 1:
+            local.agregar_orden(re)
+        case 2:
+            pass
+        case 3:
+            pass
+        case 4:
+            pass
+def reabastecerPrioridad():
+    pass
+def reabastecerManualAux(local:Tienda,p:list[Juego],fechaActual:Fecha):
+    while True:
+        plataformas = []
+        for i in p:
+            if len(plataformas) == 0:
+                plataformas.append(i.getPlataforma())
+            elif i.getPlataforma() not in plataformas:
+                plataformas.append(i.getPlataforma())
+        for palabra in plataformas:
+            print(f"•{palabra}")
+        opcion = input("Ingrese la plataforma: ")
+        if opcion.casefold() not in plataformas:
+            print("Plataforma no existe")
+            continue
