@@ -52,16 +52,27 @@ class GUI:
         self.texto_saludo.grid(row=0, column=0, sticky='nsew', padx=8, pady=8)
         self.texto_saludo.config(state=tk.DISABLED)
 
+        # Subframe 1
+        self.subframe1 = tk.Frame(self.frame, bg='white')
+        self.subframe1.grid(row=1, column=0, sticky='nsew', padx=8, pady=8)
+        self.subframe1.columnconfigure(0, weight=1, uniform='aaaa')
+        self.subframe1.rowconfigure(0, weight=7, uniform='bbbb')
+        self.subframe1.rowconfigure(1, weight=1, uniform='bbbb')
+
         # Imagenes del local
 
-        self.canvas = tk.Canvas(self.frame, bg='white')
-        self.canvas.grid(row=1, column=0, sticky='nsew', padx=8, pady=8)
+        self.canvas = tk.Canvas(self.subframe1, bg='white')
+        self.canvas.grid(row=0, column=0, sticky='nsew', padx=8, pady=8)
 
         self.imagen = ImageTk.PhotoImage(Image.open(self.__class__.paths_local[0]))
         self.imagen_id = self.canvas.create_image(0, 0, anchor=tk.NW, image=self.imagen)
 
         self.canvas.bind("<Leave>", lambda event: self.cambiar_foto_tienda())
 
+        # Boton para siguiente ventana
+        # TODO añadir comando
+        self.boton_secundaria = tk.Button(self.subframe1, text='Abrir programa', font=('Arial', 12, 'bold'), bg='white', fg='black', cursor='hand2')
+        self.boton_secundaria.grid(row=1, column=0, sticky='nsew', padx=8, pady=4)
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # FRAME 2
         self.frame2 = tk.Frame(self.root, bg='white', bd=3, relief='solid')
@@ -110,12 +121,11 @@ class GUI:
         self.root.mainloop()
 
     def resizer(self, event):
-        #global imagen_og, imagen_resizeada, imagen_nueva
         # CANVAS 1 (izquierda)
         width = self.canvas.winfo_width()
         height = self.canvas.winfo_height()
 
-        self.imagen_og = Image.open('imagenes/tienda/tienda1.jpg')
+        self.imagen_og = Image.open(self.__class__.paths_local[self.__class__.num_imagen_local])
         self.imagen_resizeada = self.imagen_og.resize((width, height))
         self.imagen_nueva = ImageTk.PhotoImage(self.imagen_resizeada)
 
@@ -187,7 +197,6 @@ class GUI:
         self.text.config(state=tk.DISABLED)
 
     def cambiar_foto_tienda(self):
-        self.canvas.delete('all')
         self.__class__.num_imagen_local += 1
 
         if self.__class__.num_imagen_local > 4:
@@ -196,8 +205,8 @@ class GUI:
         width = self.canvas.winfo_width()
         height = self.canvas.winfo_height()
 
-        self.imagen = ImageTk.PhotoImage(Image.open(self.__class__.paths_local[self.__class__.num_imagen_local]).resize((width, height)))
-        self.canvas.create_image(0, 0, anchor=tk.NW, image=self.imagen)
+        self.canvas.itemconfig(self.imagen_id, image=ImageTk.PhotoImage(Image.open(self.__class__.paths_local[self.__class__.num_imagen_local])))
+        self.resizer(None)
 
     def alternar_saludo(self):
         self.texto_saludo.config(state=tk.NORMAL)
