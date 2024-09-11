@@ -135,7 +135,8 @@ class Tienda:
     def set_reabastecimientos(self, reabastecimientos):
             self._reabastecimientos = reabastecimientos
 
-    def get_locales(self):
+    @classmethod
+    def get_locales(cls):
             return Tienda.locales
 
     def set_locales(locales):

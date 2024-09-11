@@ -125,14 +125,14 @@ def modificarProducto(local:Tienda):
             match opcion:
                 case 1:
                     nombre = input("Ingrese el nuevo nombre: ")
-                    producto.set_nombre(nombre)
+                    producto.setNombre(nombre)
                     return
                 case 2:
                     while True:
                         precio = input("Ingrese el nuevo precio: ")
                         try:
                             precio = eval(precio)
-                            producto.set_precio(precio)
+                            producto.setPrecio(precio)
                             return
                         except ValueError:
                             print("Valor ingresado no valido")
@@ -142,24 +142,24 @@ def modificarProducto(local:Tienda):
                     if opcion is None:
                         return
                     if opcion == 1:
-                        producto.set_prestable(True)
+                        producto.setPrestable(True)
                         return
                     else:
-                        producto.set_prestable(False)
+                        producto.setPrestable(False)
                         return
         elif isinstance(producto,Juego):
             opcion = opcionMultiple("Nombre\nPrecio\nPrestable\nCondicion\nDescuento\nPuntos Requeridos\nGenero\nPlataforma\nSalir")
             match opcion:
                 case 1:
                     nombre = input("Ingrese el nuevo nombre: ")
-                    producto.set_nombre(nombre)
+                    producto.setNombre(nombre)
                     return
                 case 2:
                     while True:
                         precio = input("Ingrese el nuevo precio: ")
                         try:
                             precio = eval(precio)
-                            producto.set_precio(precio)
+                            producto.setPrecio(precio)
                             return
                         except ValueError:
                             print("Valor ingresado no valido")
@@ -169,23 +169,23 @@ def modificarProducto(local:Tienda):
                     if opcion is None:
                         return
                     if opcion == 1:
-                        producto.set_prestable(True)
+                        producto.setPrestable(True)
                         return
                     else:
-                        producto.set_prestable(False)
+                        producto.setPrestable(False)
         elif isinstance(producto,Consola):
             opcion = opcionMultiple("Nombre\nPrecio\nPrestable\nCondicion\nDescuento\nPuntos Requeridos\nMarca\nSalir")
             match opcion:
                 case 1:
                     nombre = input("Ingrese el nuevo nombre: ")
-                    producto.set_nombre(nombre)
+                    producto.setNombre(nombre)
                     return
                 case 2:
                     while True:
                         precio = input("Ingrese el nuevo precio: ")
                         try:
                             precio = eval(precio)
-                            producto.set_precio(precio)
+                            producto.setPrecio(precio)
                             return
                         except ValueError:
                             print("Valor ingresado no valido")
@@ -195,10 +195,10 @@ def modificarProducto(local:Tienda):
                     if opcion is None:
                         return
                     if opcion == 1:
-                        producto.set_prestable(True)
+                        producto.setPrestable(True)
                         return
                     else:
-                        producto.set_prestable(False)
+                        producto.setPrestable(False)
                 case 4:
                     pass
                 case 5:
@@ -339,7 +339,7 @@ def reabastecerManualmente(local:Tienda):
     opcion = opcionMultiple("Genero\nPlataforma\nRango de precio\nRegresar")
     match opcion:
         case 1:
-            local.agregar_orden(re)
+            local.agregar_orden(reabastecerManualAux(local,))
         case 2:
             pass
         case 3:
@@ -358,7 +358,26 @@ def reabastecerManualAux(local:Tienda,p:list[Juego],fechaActual:Fecha):
                 plataformas.append(i.getPlataforma())
         for palabra in plataformas:
             print(f"•{palabra}")
-        opcion = input("Ingrese la plataforma: ")
-        if opcion.casefold() not in plataformas:
+        plataforma = input("Ingrese la plataforma: ")
+        if plataforma.capitalize() not in plataformas:
             print("Plataforma no existe")
             continue
+        for i in p:
+            if i.getPlataforma() == plataforma:
+                print(f" COD: {i.getId}| Nombre: { i.getNombre()} | Plataforma: {i.getPlataforma()}")
+        while True:
+            opcion = input("Ingrese el codigo del producto que desea reabastecer(Ingrese 0 para salir)")
+            if opcion == 0:
+                return
+            for i in p:
+                if i.getId() == opcion:
+                    for t in Tienda.get_locales():
+                        cant = i.getCantidad() - i.getCantidadInicial()*0.4
+                        if cant < 0:
+                            cant = 0
+                else:
+                    print("Codigo no existe")
+                    continue
+            else:
+                print("Codigo no existe")
+                continue

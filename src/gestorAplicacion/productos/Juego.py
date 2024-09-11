@@ -1,4 +1,7 @@
-import Producto
+from Producto import Producto
+
+
+
 class Juego(Producto):
     def __init__(self, nombre, precio, cantidad, cantidadInicial, prestable, condicion, fechaLanzamiento, descuento, puntosRequeridos, genero,plataforma):
         super().__init__(nombre, precio, cantidad, cantidadInicial, prestable, condicion, fechaLanzamiento, descuento, puntosRequeridos)
@@ -17,3 +20,6 @@ class Juego(Producto):
         return self._genero
     def setGenero(self, genero):
         self._genero = genero
+
+    def metodo_abstracto(self):
+        pass
