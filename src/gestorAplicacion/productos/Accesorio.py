@@ -1,4 +1,4 @@
-import Producto
+from Producto import Producto
 
 class Accesorio(Producto):
     def __init__(self, nombre, precio, cantidad, cantidadInicial, prestable, condicion, fechaLanzamiento, descuento, puntosRequeridos, marca, consola):
@@ -7,7 +7,7 @@ class Accesorio(Producto):
         self._consola = consola
 
     def __str__(self):
-        return f"Nombre: {self.nombre} | Precio: {self.precio} | Marca: {self.marca} | Consola: {self.consola}"
+        return f"Nombre: {self._nombre} | Precio: {self._precio} | Marca: {self._marca} | Consola: {self._consola}"
 
     # ~~~~~ Getters y Setters ~~~~~
     def getMarca(self):
@@ -18,3 +18,6 @@ class Accesorio(Producto):
         return self._consola
     def setConsola(self, consola):
         self._consola = consola
+
+    def metodo_abstracto(self):
+        pass

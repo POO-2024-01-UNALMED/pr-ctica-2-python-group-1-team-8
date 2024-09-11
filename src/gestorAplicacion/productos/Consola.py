@@ -1,4 +1,4 @@
-import Producto
+from Producto import Producto
 
 class Consola(Producto):
     def __init__(self, nombre, precio, cantidad,cantidadInicial, prestable, condicion, fechaLanzamiento, descuento, puntosRequeridos, marca):
@@ -9,6 +9,9 @@ class Consola(Producto):
         return f"Nombre: {self._nombre}\nPrecio: {self._precio}\nCantidad: {self._cantidad}\nMarca: {self._marca}"
 
     def getMarca(self):
-        return self.marca
+        return self._marca
     def setMarca(self, marca):
         self._marca = marca
+
+    def metodo_abstracto(self):
+        pass
