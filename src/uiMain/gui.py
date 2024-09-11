@@ -1,8 +1,4 @@
 import tkinter as tk
-import sys
-import os
-
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'libs', 'Pillow'))
 
 from PIL import Image, ImageTk
 
@@ -12,6 +8,16 @@ class GUI:
     num_imagen_integrante = 0
     saludo = 'Hola, bienvenido a Villajuegos. Aqui podras encontrar los mejores juegos para ti y tus amigos.'
     descripcion = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cr'
+
+    # Imagenes de integrantes
+    paths1 = ['imagenes/integrantes/villa/images1.png', 'imagenes/integrantes/villa/images2.png',
+              'imagenes/integrantes/villa/images3.png', 'imagenes/integrantes/villa/images4.png']
+    paths2 = ['imagenes/integrantes/seba/images1.png', 'imagenes/integrantes/seba/images2.png',
+              'imagenes/integrantes/seba/images3.png', 'imagenes/integrantes/seba/images4.png']
+    paths3 = ['imagenes/integrantes/andres/images1.png', 'imagenes/integrantes/andres/images2.png',
+              'imagenes/integrantes/andres/images3.png', 'imagenes/integrantes/andres/images4.png']
+
+    paths = [paths1, paths2, paths3]
 
 
     def __init__(self):
@@ -62,13 +68,28 @@ class GUI:
         self.frame2.rowconfigure(1, weight=7, uniform='bb')
         # ~~~~~~
         # Elementos
-        # Subframe de imagenes
-        self.subframe1 = tk.Frame(self.frame2, bg='white')
-        self.subframe1.grid(row=1, column=0, sticky='nsew', padx=8, pady=8)
-        self.subframe1.columnconfigure((0,1), weight=1, uniform='aaa')
-        self.subframe1.rowconfigure((0,1), weight=1, uniform='bbb')
+        # Subframe 2
+        self.subframe2 = tk.Frame(self.frame2, bg='white')
+        self.subframe2.grid(row=1, column=0, sticky='nsew', padx=8, pady=8)
+        self.subframe2.columnconfigure((0,1), weight=1, uniform='aaa')
+        self.subframe2.rowconfigure((0,1), weight=1, uniform='bbb')
+
+        # Canvas de imagenes
+        self.canvas2_1 = tk.Canvas(self.subframe2, bg='white')
+        self.canvas2_1.grid(row=0, column=0, sticky='nsew', padx=8, pady=8)
+        self.canvas2_2 = tk.Canvas(self.subframe2, bg='white')
+        self.canvas2_2.grid(row=0, column=1, sticky='nsew', padx=8, pady=8)
+        self.canvas2_3 = tk.Canvas(self.subframe2, bg='white')
+        self.canvas2_3.grid(row=1, column=0, sticky='nsew', padx=8, pady=8)
+        self.canvas2_4 = tk.Canvas(self.subframe2, bg='white')
+        self.canvas2_4.grid(row=1, column=1, sticky='nsew', padx=8, pady=8)
 
         # Mostrar integrantes y hoja de vida y cambiar con click en esta
+        # Hojas de vida
+        self.text = tk.Text(self.frame2, fg='black', font=('Arial', 9, 'bold'), wrap='word', cursor='hand2')
+        self.text.grid(row=0, column=0, sticky='nsew', padx=8, pady=8)
+        self.text.bind("<Button-1>", lambda event: self.cambiar_integrante())
+
         self.cambiar_integrante() # Llamada inicial a la funcion
 
         # Menubar
@@ -96,37 +117,55 @@ class GUI:
 
         self.canvas.itemconfig(self.imagen_id, image=self.imagen_nueva)
 
-        # CANVAS 2 (derecha)
+        # CANVAS DE SUBFRAME2 (derecha, abajo)
+        width2 = self.canvas2_1.winfo_width()
+        height2 = self.canvas2_1.winfo_height()
 
-        width2 = self.subframe1.winfo_width()
-        height2 = self.subframe1.winfo_height()
+        path_actual = self.__class__.paths[self.__class__.num_imagen_integrante - 1]
+        self.imagen1_og = Image.open(path_actual[0])
+        self.imagen1_resizeada = self.imagen1_og.resize((width2, height2))
+        self.imagen1_nueva = ImageTk.PhotoImage(self.imagen1_resizeada)
+        self.canvas2_1.itemconfig(self.imagen1_id, image=self.imagen1_nueva)
 
+        self.imagen2_og = Image.open(path_actual[1])
+        self.imagen2_resizeada = self.imagen2_og.resize((width2, height2))
+        self.imagen2_nueva = ImageTk.PhotoImage(self.imagen2_resizeada)
+        self.canvas2_2.itemconfig(self.imagen2_id, image=self.imagen2_nueva)
+
+        self.imagen3_og = Image.open(path_actual[2])
+        self.imagen3_resizeada = self.imagen3_og.resize((width2, height2))
+        self.imagen3_nueva = ImageTk.PhotoImage(self.imagen3_resizeada)
+        self.canvas2_3.itemconfig(self.imagen3_id, image=self.imagen3_nueva)
+
+        self.imagen4_og = Image.open(path_actual[3])
+        self.imagen4_resizeada = self.imagen4_og.resize((width2, height2))
+        self.imagen4_nueva = ImageTk.PhotoImage(self.imagen4_resizeada)
+        self.canvas2_4.itemconfig(self.imagen4_id, image=self.imagen4_nueva)
 
     def cambiar_integrante(self):
-        # Imagenes
-        paths1 = ['imagenes/integrantes/villa/images1.png', 'imagenes/integrantes/villa/images2.png',
-                  'imagenes/integrantes/villa/images3.png', 'imagenes/integrantes/villa/images4.png']
-        paths2 = ['imagenes/integrantes/seba/images1.png', 'imagenes/integrantes/seba/images2.png',
-                  'imagenes/integrantes/seba/images3.png', 'imagenes/integrantes/seba/images4.png']
-        paths3 = ['imagenes/integrantes/andres/images1.png', 'imagenes/integrantes/andres/images2.png',
-                  'imagenes/integrantes/andres/images3.png', 'imagenes/integrantes/andres/images4.png']
-
-        paths = [paths1, paths2, paths3]
-
         p = self.__class__.num_imagen_integrante
 
-        self.imagen1 = tk.PhotoImage(file=paths[p][0])
-        tk.Label(self.subframe1, image=self.imagen1).grid(row=0, column=0, sticky='nwse',
-                                                          padx=2, pady=2)
-        self.image2 = tk.PhotoImage(file=paths[p][1])
-        tk.Label(self.subframe1, image=self.image2).grid(row=0, column=1, sticky='nwse',
-                                                          padx=2, pady=2)
-        self.image3 = tk.PhotoImage(file=paths[p][2])
-        tk.Label(self.subframe1, image=self.image3).grid(row=1, column=0, sticky='nwse',
-                                                          padx=2, pady=2)
-        self.image4 = tk.PhotoImage(file=paths[p][3])
-        tk.Label(self.subframe1, image=self.image4).grid(row=1, column=1, sticky='nwse',
-                                                          padx=2, pady=2)
+        # Limpiar canvas
+        self.canvas2_1.delete('all')
+        self.canvas2_2.delete('all')
+        self.canvas2_3.delete('all')
+        self.canvas2_4.delete('all')
+
+        # Imagenes de integrantes
+        height = self.canvas2_1.winfo_height()
+        width = self.canvas2_1.winfo_width()
+
+        self.imagen1 = ImageTk.PhotoImage(Image.open(self.__class__.paths[p][0]).resize((width, height)))
+        self.imagen1_id = self.canvas2_1.create_image(0, 0, anchor=tk.NW, image=self.imagen1)
+
+        self.imagen2 = ImageTk.PhotoImage(Image.open(self.__class__.paths[p][1]).resize((width, height)))
+        self.imagen2_id = self.canvas2_2.create_image(0, 0, anchor=tk.NW, image=self.imagen2)
+
+        self.imagen3 = ImageTk.PhotoImage(Image.open(self.__class__.paths[p][2]).resize((width, height)))
+        self.imagen3_id = self.canvas2_3.create_image(0, 0, anchor=tk.NW, image=self.imagen3)
+
+        self.imagen4 = ImageTk.PhotoImage(Image.open(self.__class__.paths[p][3]).resize((width, height)))
+        self.imagen4_id = self.canvas2_4.create_image(0, 0, anchor=tk.NW, image=self.imagen4)
 
         self.__class__.num_imagen_integrante += 1
         if self.__class__.num_imagen_integrante > 2:
@@ -138,11 +177,10 @@ class GUI:
         hv_andres = """aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"""
         hojas_vida = [hv_villa, hv_seba, hv_andres]
 
-        self.text = tk.Text(self.frame2, fg='black', font=('Arial', 9, 'bold'), wrap='word', cursor='hand2')
-        self.text.grid(row=0, column=0, sticky='nsew', padx=8, pady=8)
+        self.text.config(state=tk.NORMAL)
+        self.text.delete(1.0, tk.END)
         self.text.insert(tk.END, hojas_vida[p])
-        self.text.bind("<Button-1>", lambda event: self.cambiar_integrante())
-
+        self.text.config(state=tk.DISABLED)
 
     def alternar_saludo(self):
         self.texto_saludo.config(state=tk.NORMAL)
