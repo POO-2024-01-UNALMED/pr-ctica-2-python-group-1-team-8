@@ -1,5 +1,7 @@
 import tkinter as tk
+import tkinter.messagebox as messagebox
 from PIL import Image, ImageTk
+
 from colores import *  # Importar colores
 
 class VentanaPrincipal:
@@ -229,12 +231,23 @@ class VentanaSecundaria:
 
         self.root = tk.Tk()
         self.root.title("Villaware")
+        self.root.geometry("700x600")
+        self.root.configure(bg=FONDO)
+
+        # Columnas
+        self.root.columnconfigure((0), weight=1, uniform='a')
+        # Filas
+        self.root.rowconfigure(0, weight=1, uniform='b')
+
+        (FieldFrame("aaa", ["nombre", "precio", "cantidad"], "bbbb", ["afasf"], [False], self.root)
+                    .grid(row=0,column=0,sticky='nswe', padx=40,pady=40))
 
         # Menubar
         menubar = tk.Menu(self.root)
 
         archivomenu = tk.Menu(menubar, tearoff=0)
-        archivomenu.add_command(label="Aplicacion") #TODO comando aplicacion
+        descripcion_app = 'Villajuegos es un software completo para compañias de tiendas especializadas en el mundo de los videojuegos que permite tanto llevar a cabo ventas, prestamos y subastas como gestionar y analizar el inventario de cada local y sus empleados'
+        archivomenu.add_command(label="Aplicacion", command=lambda: messagebox.showinfo('Informacion', descripcion_app))
         archivomenu.add_command(label="Salir", command=lambda: VentanaPrincipal(self.root))
         menubar.add_cascade(label="Archivo", menu=archivomenu)
 
@@ -249,12 +262,44 @@ class VentanaSecundaria:
         menubar.add_cascade(label="Procesos y Consultas", menu=procesomenu)
 
         ayudamenu = tk.Menu(menubar, tearoff=0)
-        ayudamenu.add_command(label="Acerca de")
+        descripcion_integrantes = ('Programa de la autoria de:'
+                                   '\n- David Villa Alzate'
+                                   '\n- Sebastian Cepeda Jaimes'
+                                   '\n- Andres Santiago Garces Barrero')
+        ayudamenu.add_command(label="Acerca de", command=lambda: messagebox.showinfo('Acerca de', descripcion_integrantes))
         menubar.add_cascade(label="Ayuda", menu=ayudamenu)
 
         self.root.config(menu=menubar)
 
-        self.root.geometry("700x600")
-        self.root.configure(bg=FONDO)
-
         self.root.mainloop()
+
+class FieldFrame(tk.Frame):
+    def __init__(self, titulo_criterios, criterios, titulo_valores, valores, habilitados, ventana):
+        super().__init__(ventana, bg=FONDO, highlightbackground=DETALLES, highlightthickness=2)
+
+        numeros_criterios = []
+        for i in range(1, len(criterios) + 1): numeros_criterios.append(i)
+
+        # Configuracion de columnas y filas
+        self.columnconfigure(0, weight=5, uniform='a') # Columna para criterio
+        self.columnconfigure(1, weight=8, uniform='a') # Columna para valor
+        self.rowconfigure((0, len(criterios) + 1), weight=1,uniform='b') # Fila para titulo y botones
+        #self.rowconfigure(1, weight=len(criterios), uniform='b') # Fila para criterios-valores
+        self.rowconfigure(tuple(numeros_criterios), weight=1, uniform='b')
+
+        # Titulos
+        (tk.Label(self, text=titulo_criterios, font=('Arial', 15, 'bold'))  # Criterio
+         .grid(row=0, column=0, ipadx=15, pady=10))
+        (tk.Label(self, text=titulo_valores, font=('Arial', 15, 'bold'))  # Valor
+         .grid(row=0, column=1, ipadx=15, pady=10))
+
+        # Criterios y valores
+
+        for cri in criterios:
+            (tk.Label(self, text=cri)
+             .grid(row=criterios.index(cri) + 1, column=0))
+            #TODO arreglar esto
+
+        # Botones
+        (tk.Button(self, text='Aceptar', bg=RESALTO, bd=0)
+        .grid(row=2, column=0,))
