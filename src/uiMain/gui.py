@@ -5,17 +5,21 @@ from PIL import Image, ImageTk
 class GUI:
     # Atributos de clase
     # estos atributos son con el fin de permitir la funcion de metodos en la clase
+    num_imagen_local = 0
     num_imagen_integrante = 0
     saludo = 'Hola, bienvenido a Villajuegos. Aqui podras encontrar los mejores juegos para ti y tus amigos.'
     descripcion = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cr'
 
+    # Imagenes de local
+    paths_local = ['imagenes/tienda/tienda1.jpg', 'imagenes/tienda/tienda2.jpg', 'imagenes/tienda/tienda3.jpg', 'imagenes/tienda/tienda4.jpg', 'imagenes/tienda/tienda5.jpg']
+
     # Imagenes de integrantes
-    paths1 = ['imagenes/integrantes/villa/images1.png', 'imagenes/integrantes/villa/images2.png',
-              'imagenes/integrantes/villa/images3.png', 'imagenes/integrantes/villa/images4.png']
-    paths2 = ['imagenes/integrantes/seba/images1.png', 'imagenes/integrantes/seba/images2.png',
-              'imagenes/integrantes/seba/images3.png', 'imagenes/integrantes/seba/images4.png']
-    paths3 = ['imagenes/integrantes/andres/images1.png', 'imagenes/integrantes/andres/images2.png',
-              'imagenes/integrantes/andres/images3.png', 'imagenes/integrantes/andres/images4.png']
+    paths1 = ['imagenes/integrantes/villa/images1.jpg', 'imagenes/integrantes/villa/images2.jpg',
+              'imagenes/integrantes/villa/images3.jpg', 'imagenes/integrantes/villa/images4.jpg']
+    paths2 = ['imagenes/integrantes/seba/images1.jpg', 'imagenes/integrantes/seba/images2.jpg',
+              'imagenes/integrantes/seba/images3.jpg', 'imagenes/integrantes/seba/images4.jpg']
+    paths3 = ['imagenes/integrantes/andres/images1.jpg', 'imagenes/integrantes/andres/images2.jpg',
+              'imagenes/integrantes/andres/images3.jpg', 'imagenes/integrantes/andres/images4.jpg']
 
     paths = [paths1, paths2, paths3]
 
@@ -52,11 +56,11 @@ class GUI:
 
         self.canvas = tk.Canvas(self.frame, bg='white')
         self.canvas.grid(row=1, column=0, sticky='nsew', padx=8, pady=8)
-        self.imagen = ImageTk.PhotoImage(Image.open('imagenes/tienda/tienda1.png'))
+
+        self.imagen = ImageTk.PhotoImage(Image.open(self.__class__.paths_local[0]))
         self.imagen_id = self.canvas.create_image(0, 0, anchor=tk.NW, image=self.imagen)
 
-        # Botones TODO BORRAR
-        #self.boton2 = tk.Button(self.frame, text="Boton 2", bg='black', fg='white', font=('Arial', 15, 'bold')).grid(row=1, column=0, sticky='nsew', padx=8, pady=8)
+        self.canvas.bind("<Leave>", lambda event: self.cambiar_foto_tienda())
 
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # FRAME 2
@@ -111,7 +115,7 @@ class GUI:
         width = self.canvas.winfo_width()
         height = self.canvas.winfo_height()
 
-        self.imagen_og = Image.open('imagenes/tienda/tienda1.png')
+        self.imagen_og = Image.open('imagenes/tienda/tienda1.jpg')
         self.imagen_resizeada = self.imagen_og.resize((width, height))
         self.imagen_nueva = ImageTk.PhotoImage(self.imagen_resizeada)
 
@@ -181,6 +185,19 @@ class GUI:
         self.text.delete(1.0, tk.END)
         self.text.insert(tk.END, hojas_vida[p])
         self.text.config(state=tk.DISABLED)
+
+    def cambiar_foto_tienda(self):
+        self.canvas.delete('all')
+        self.__class__.num_imagen_local += 1
+
+        if self.__class__.num_imagen_local > 4:
+            self.__class__.num_imagen_local = 0
+
+        width = self.canvas.winfo_width()
+        height = self.canvas.winfo_height()
+
+        self.imagen = ImageTk.PhotoImage(Image.open(self.__class__.paths_local[self.__class__.num_imagen_local]).resize((width, height)))
+        self.canvas.create_image(0, 0, anchor=tk.NW, image=self.imagen)
 
     def alternar_saludo(self):
         self.texto_saludo.config(state=tk.NORMAL)
