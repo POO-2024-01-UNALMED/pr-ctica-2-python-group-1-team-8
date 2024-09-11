@@ -1,8 +1,8 @@
 import tkinter as tk
-
+from colores import * # Importar colores
 from PIL import Image, ImageTk
 
-class GUI:
+class ventana_principal:
     # Atributos de clase
     # estos atributos son con el fin de permitir la funcion de metodos en la clase
     num_imagen_local = 0
@@ -23,20 +23,12 @@ class GUI:
 
     paths = [paths1, paths2, paths3]
 
-    # COLORES
-    fondo = '#F7F6EB'
-    fondo2 = '#F0EFE4'
-
-    detalles = '#2c4542'
-    resalto = '#ff6f59'
-
-
     def __init__(self):
         self.root = tk.Tk()
         self.root.title("Villajuegos")
 
         self.root.geometry("700x700")
-        self.root.configure(bg=self.__class__.fondo)
+        self.root.configure(bg=FONDO)
 
         # Configuracion de las filas y columnas
         # Columnas
@@ -45,7 +37,7 @@ class GUI:
         self.root.rowconfigure(1, weight=10, uniform='b')
 
         # FRAME 1
-        self.frame = tk.Frame(self.root, bg=self.__class__.fondo, highlightbackground=self.__class__.detalles, highlightthickness=4)
+        self.frame = tk.Frame(self.root, bg=FONDO, highlightbackground=DETALLES, highlightthickness=4)
         self.frame.grid(row=1, column=0, sticky='nsew', padx=15, pady=20)
         # Columnas y filas de FRAME 1
         self.frame.columnconfigure(0, weight=1, uniform='aa')
@@ -54,13 +46,13 @@ class GUI:
         # ~~~~~~~
         # Elementos
         # Saludo
-        self.texto_saludo = tk.Text(self.frame, fg='black', bg=self.__class__.fondo2, font=('Arial', 15, 'bold'), wrap='word', cursor='hand2', highlightbackground=self.__class__.detalles, highlightthickness=2, bd=0)
+        self.texto_saludo = tk.Text(self.frame, fg='black', bg=FONDO_2, font=('Arial', 15, 'bold'), wrap='word', cursor='hand2', highlightbackground=DETALLES, highlightthickness=2, bd=0)
         self.texto_saludo.insert(tk.END, self.__class__.saludo)
         self.texto_saludo.grid(row=0, column=0, sticky='nsew', padx=8, pady=8)
         self.texto_saludo.config(state=tk.DISABLED)
 
         # Subframe 1
-        self.subframe1 = tk.Frame(self.frame, bg=self.__class__.fondo)
+        self.subframe1 = tk.Frame(self.frame, bg=FONDO)
         self.subframe1.grid(row=1, column=0, sticky='nsew')
         self.subframe1.columnconfigure(0, weight=1, uniform='aaaa')
         self.subframe1.rowconfigure(0, weight=7, uniform='bbbb')
@@ -68,7 +60,7 @@ class GUI:
 
         # Imagenes del local
 
-        self.canvas = tk.Canvas(self.subframe1, bg=self.__class__.fondo, highlightbackground=self.__class__.detalles, highlightthickness=2)
+        self.canvas = tk.Canvas(self.subframe1, bg=FONDO, highlightbackground=DETALLES, highlightthickness=2)
         self.canvas.grid(row=0, column=0, sticky='nsew', padx=8, pady=8)
 
         self.imagen = ImageTk.PhotoImage(Image.open(self.__class__.paths_local[0]))
@@ -78,11 +70,11 @@ class GUI:
 
         # Boton para siguiente ventana
         # TODO añadir comando
-        self.boton_secundaria = tk.Button(self.subframe1, text='Abrir programa', font=('Arial', 12, 'bold'), bg=self.__class__.resalto, fg='black', cursor='hand2', highlightbackground=self.__class__.detalles, highlightthickness=2, bd=0)
+        self.boton_secundaria = tk.Button(self.subframe1, text='Abrir programa', font=('Arial', 12, 'bold'), bg=RESALTO, fg='black', cursor='hand2', highlightbackground=DETALLES, highlightthickness=2, bd=0)
         self.boton_secundaria.grid(row=1, column=0, sticky='nsew', padx=8, pady=8)
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # FRAME 2
-        self.frame2 = tk.Frame(self.root, bg=self.__class__.fondo, highlightbackground=self.__class__.detalles, highlightthickness=4)
+        self.frame2 = tk.Frame(self.root, bg=FONDO, highlightbackground=DETALLES, highlightthickness=4)
         self.frame2.grid(row=1, column=1, sticky='nsew', padx=15, pady=20)
         # Columnas y filas de FRAME 2
         self.frame2.columnconfigure(0, weight=1, uniform='aa')
@@ -91,24 +83,24 @@ class GUI:
         # ~~~~~~
         # Elementos
         # Subframe 2
-        self.subframe2 = tk.Frame(self.frame2, bg=self.__class__.fondo)
+        self.subframe2 = tk.Frame(self.frame2, bg=FONDO)
         self.subframe2.grid(row=1, column=0, sticky='nsew')
         self.subframe2.columnconfigure((0,1), weight=1, uniform='aaa')
         self.subframe2.rowconfigure((0,1), weight=1, uniform='bbb')
 
         # Canvas de imagenes
-        self.canvas2_1 = tk.Canvas(self.subframe2, bg=self.__class__.fondo, highlightbackground=self.__class__.detalles, highlightthickness=2)
+        self.canvas2_1 = tk.Canvas(self.subframe2, bg=FONDO, highlightbackground=DETALLES, highlightthickness=2)
         self.canvas2_1.grid(row=0, column=0, sticky='nsew', padx=8, pady=8)
-        self.canvas2_2 = tk.Canvas(self.subframe2, bg=self.__class__.fondo, highlightbackground=self.__class__.detalles, highlightthickness=2)
+        self.canvas2_2 = tk.Canvas(self.subframe2, bg=FONDO, highlightbackground=DETALLES, highlightthickness=2)
         self.canvas2_2.grid(row=0, column=1, sticky='nsew', padx=8, pady=8)
-        self.canvas2_3 = tk.Canvas(self.subframe2, bg=self.__class__.fondo, highlightbackground=self.__class__.detalles, highlightthickness=2)
+        self.canvas2_3 = tk.Canvas(self.subframe2, bg=FONDO, highlightbackground=DETALLES, highlightthickness=2)
         self.canvas2_3.grid(row=1, column=0, sticky='nsew', padx=8, pady=8)
-        self.canvas2_4 = tk.Canvas(self.subframe2, bg=self.__class__.fondo, highlightbackground=self.__class__.detalles, highlightthickness=2)
+        self.canvas2_4 = tk.Canvas(self.subframe2, bg=FONDO, highlightbackground=DETALLES, highlightthickness=2)
         self.canvas2_4.grid(row=1, column=1, sticky='nsew', padx=8, pady=8)
 
         # Mostrar integrantes y hoja de vida y cambiar con click en esta
         # Hojas de vida
-        self.text = tk.Text(self.frame2, fg='black', bg=self.__class__.fondo2, font=('Arial', 9, 'bold'), wrap='word', cursor='hand2', highlightbackground=self.__class__.detalles, highlightthickness=2, bd=0)
+        self.text = tk.Text(self.frame2, fg='black', bg=FONDO_2, font=('Arial', 9, 'bold'), wrap='word', cursor='hand2', highlightbackground=DETALLES, highlightthickness=2, bd=0)
         self.text.grid(row=0, column=0, sticky='nsew', padx=8, pady=8)
         self.text.bind("<Button-1>", lambda event: self.cambiar_integrante())
 
