@@ -1,4 +1,4 @@
-from src.uiMain.ventana_principal import ventana_principal
+from src.uiMain.gui import VentanaPrincipal
 
 if __name__ == "__main__":
-    a = ventana_principal()
+    a = VentanaPrincipal()

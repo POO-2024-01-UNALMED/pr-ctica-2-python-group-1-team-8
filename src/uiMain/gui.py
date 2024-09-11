@@ -1,8 +1,8 @@
 import tkinter as tk
-from colores import * # Importar colores
 from PIL import Image, ImageTk
+from colores import *  # Importar colores
 
-class ventana_principal:
+class VentanaPrincipal:
     # Atributos de clase
     # estos atributos son con el fin de permitir la funcion de metodos en la clase
     num_imagen_local = 0
@@ -23,11 +23,17 @@ class ventana_principal:
 
     paths = [paths1, paths2, paths3]
 
-    def __init__(self):
+    def __init__(self, ventana_activa=None):
+        self.__class__.num_imagen_integrante = 0 # Reiniciar numero de integrante cada que
+                                                 # se crea una instancia de la ventana
+
+        # Si ya hay otra ventana abierta, cerrarla
+        if type(ventana_activa) == tk.Tk: ventana_activa.destroy()
+
         self.root = tk.Tk()
         self.root.title("Villajuegos")
 
-        self.root.geometry("700x700")
+        self.root.geometry("540x540")
         self.root.configure(bg=FONDO)
 
         # Configuracion de las filas y columnas
@@ -69,8 +75,8 @@ class ventana_principal:
         self.canvas.bind("<Leave>", lambda event: self.cambiar_foto_tienda())
 
         # Boton para siguiente ventana
-        # TODO añadir comando
-        self.boton_secundaria = tk.Button(self.subframe1, text='Abrir programa', font=('Arial', 12, 'bold'), bg=RESALTO, fg='black', cursor='hand2', highlightbackground=DETALLES, highlightthickness=2, bd=0)
+        self.boton_secundaria = tk.Button(self.subframe1, text='Abrir programa', font=('Arial', 12, 'bold'), bg=RESALTO, fg='black', cursor='hand2', highlightbackground=DETALLES, highlightthickness=2, bd=0,
+                                          command=lambda: VentanaSecundaria(self.root))
         self.boton_secundaria.grid(row=1, column=0, sticky='nsew', padx=8, pady=8)
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # FRAME 2
@@ -110,7 +116,6 @@ class ventana_principal:
         menubar = tk.Menu(self.root)
         iniciomenu = tk.Menu(menubar, tearoff=0)
         iniciomenu.add_command(label="Descripcion", command=lambda: self.alternar_saludo())
-        iniciomenu.add_separator()
         iniciomenu.add_command(label="Salir", command=self.root.destroy)
         menubar.add_cascade(label="Inicio", menu=iniciomenu)
 
@@ -216,3 +221,40 @@ class ventana_principal:
             self.texto_saludo.delete(1.0, tk.END)
             self.texto_saludo.insert(tk.END, self.__class__.saludo)
         self.texto_saludo.config(state=tk.DISABLED)
+
+class VentanaSecundaria:
+    def __init__(self, ventana_activa=None):
+        # Si ya hay otra ventana abierta, cerrarla
+        if type(ventana_activa) == tk.Tk: ventana_activa.destroy()
+
+        self.root = tk.Tk()
+        self.root.title("Villaware")
+
+        # Menubar
+        menubar = tk.Menu(self.root)
+
+        archivomenu = tk.Menu(menubar, tearoff=0)
+        archivomenu.add_command(label="Aplicacion") #TODO comando aplicacion
+        archivomenu.add_command(label="Salir", command=lambda: VentanaPrincipal(self.root))
+        menubar.add_cascade(label="Archivo", menu=archivomenu)
+
+        procesomenu = tk.Menu(menubar, tearoff=0)
+        procesomenu.add_command(label="Registrar compra")
+        procesomenu.add_command(label="Hacer prestamo")
+        procesomenu.add_command(label="Administrar inventario")
+        procesomenu.add_command(label="Gestionar empleados")
+        procesomenu.add_command(label="Subastar")
+        #procesomenu.add_command(label="Opciones de administrador)
+        # proceso para modificar objetos y empleados relacionados a un local
+        menubar.add_cascade(label="Procesos y Consultas", menu=procesomenu)
+
+        ayudamenu = tk.Menu(menubar, tearoff=0)
+        ayudamenu.add_command(label="Acerca de")
+        menubar.add_cascade(label="Ayuda", menu=ayudamenu)
+
+        self.root.config(menu=menubar)
+
+        self.root.geometry("700x600")
+        self.root.configure(bg=FONDO)
+
+        self.root.mainloop()
