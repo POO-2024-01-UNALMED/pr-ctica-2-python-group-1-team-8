@@ -1,8 +1,10 @@
 from src.gestorAplicacion.informacionVenta.Transaccion import Transaccion
-from src.gestorAplicacion.productos import Juego
+from src.gestorAplicacion.productos.Juego import Juego
 
 class Tienda:
     # Constructor
+    _locales = []
+
     def __init__(self, nombre, fondos=0):
         self._nombre = nombre
         self._fondos = fondos
@@ -13,9 +15,9 @@ class Tienda:
         self._inventarioUsado = []
         self._reabastecimientos = []
         self._empleados = []
-        Tienda.locales.append(self)
+        Tienda.agregarTienda(self)
 
-    locales = []
+
 
     # Metodos
     # Agregar producto al inventario correspondiente
@@ -26,6 +28,10 @@ class Tienda:
             self._inventarioUsado.append(producto)
         else:
             self._inventario.append(producto)
+    @classmethod
+    def agregarTienda(cls, tienda):
+        if isinstance(tienda, Tienda):
+            cls.locales.append(tienda)
 
     # Reduce en uno la cantidad de un producto en un inventario dado segun codigo
     @staticmethod
@@ -137,10 +143,10 @@ class Tienda:
 
     @classmethod
     def get_locales(cls):
-            return Tienda.locales
+            return Tienda._locales
 
     def set_locales(locales):
-            Tienda.locales = locales
+            Tienda._locales = locales
 
     def get_empleados(self):
             return self._empleados

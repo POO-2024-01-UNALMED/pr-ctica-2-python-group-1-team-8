@@ -348,6 +348,7 @@ def reabastecerManualmente(local:Tienda):
             pass
 def reabastecerPrioridad():
     pass
+# TODO: terminar metodo
 def reabastecerManualAux(local:Tienda,p:list[Juego],fechaActual:Fecha):
     while True:
         plataformas = []
@@ -362,22 +363,66 @@ def reabastecerManualAux(local:Tienda,p:list[Juego],fechaActual:Fecha):
         if plataforma.capitalize() not in plataformas:
             print("Plataforma no existe")
             continue
-        for i in p:
-            if i.getPlataforma() == plataforma:
-                print(f" COD: {i.getId}| Nombre: { i.getNombre()} | Plataforma: {i.getPlataforma()}")
+
         while True:
+            for i in p:
+                if i.getPlataforma() == plataforma:
+                    print(f" COD: {i.getId}| Nombre: {i.getNombre()} | Plataforma: {i.getPlataforma()}")
             opcion = input("Ingrese el codigo del producto que desea reabastecer(Ingrese 0 para salir)")
             if opcion == 0:
                 return
+            producto = None
             for i in p:
                 if i.getId() == opcion:
-                    for t in Tienda.get_locales():
+                    producto = i
+                    break
+            if producto is None:
+                print("El producto ingresado no existe")
+                continue
+            Nohay = False
+            for t in Tienda.get_locales():
+                for i in t.get_inventario() and t!=local:
+                    if i.getNombre == producto.getNombre() and t!=local:
                         cant = i.getCantidad() - i.getCantidadInicial()*0.4
                         if cant < 0:
                             cant = 0
-                else:
-                    print("Codigo no existe")
-                    continue
-            else:
-                print("Codigo no existe")
+                        print(f"•Local {t.get_nombre()} | Cantidad disponible: {cant}")
+                    elif Tienda.get_locales().index(t) == len(Tienda.get_locales())-1 and t.get_inventario().index(i) == len(t.get_inventario())-1:
+                        print("No hay otros locales con este producto")
+                        Nohay = True
+            if Nohay:
                 continue
+
+            while True:
+                nombre = ""
+                localOrigen = None
+                nombre = input("Ingrese el local del que desea reabastecer: ")
+                for t in Tienda.get_locales():
+                    if t.get_nombre() == nombre.capitalize():
+                        localOrigen = t
+                if localOrigen is None:
+                    print("Local no existe")
+                    continue
+                break
+            cant = 0
+            for i in localOrigen.get_inventario():
+                if i.getNombre() == producto.getNombre():
+                    cant = i.getCantidad() - i.getCantidadInicial()*0.4
+                    if cant < 0:
+                        cant = 0
+            if cant == 0:
+                print("El local no tiene suficiente cantidad de este producto")
+                continue
+            while True:
+                print(f"•{producto.getNombre()} | Cantidad disponible para el reabastecimiento: {cant}")
+                try:
+                    cantidad = input("Ingrese la cantidad a reabastecer: ")
+                    cantidad = eval(cantidad)
+                    if cantidad > producto.getCantidadInicial()*0.4:
+                        print("La cantidad ingresada es mayor a la cantidad disponible"+f"\nCantidad disponible: {int(producto.getCantidadInicial()*0.4)}")
+                        input("Presione enter para continuar")
+                        continue
+                except ValueError:
+                    print("Valor no valido")
+                    continue
+    return
