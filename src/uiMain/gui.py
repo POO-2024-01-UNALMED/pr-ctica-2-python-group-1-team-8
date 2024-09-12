@@ -1,6 +1,7 @@
 import tkinter as tk
 import tkinter.messagebox as messagebox
 from PIL import Image, ImageTk
+from pygments.styles.paraiso_dark import GREEN
 
 from colores import *  # Importar colores
 
@@ -239,7 +240,7 @@ class VentanaSecundaria:
         # Filas
         self.root.rowconfigure(0, weight=1, uniform='b')
 
-        (FieldFrame("aaa", ["nombre", "precio", "cantidad"], "bbbb", ["afasf"], [False], self.root)
+        (FieldFrame("aaa", ["nombre", "precio", "cantidad"], "bbbb", ["afasf", "aasfasf", "a"], [False, True, True], self.root)
                     .grid(row=0,column=0,sticky='nswe', padx=40,pady=40))
 
         # Menubar
@@ -281,25 +282,28 @@ class FieldFrame(tk.Frame):
         for i in range(1, len(criterios) + 1): numeros_criterios.append(i)
 
         # Configuracion de columnas y filas
-        self.columnconfigure(0, weight=5, uniform='a') # Columna para criterio
-        self.columnconfigure(1, weight=8, uniform='a') # Columna para valor
+        self.columnconfigure((0,1), weight=1, uniform='a') # Columnas para criterio y valor
         self.rowconfigure((0, len(criterios) + 1), weight=1,uniform='b') # Fila para titulo y botones
-        #self.rowconfigure(1, weight=len(criterios), uniform='b') # Fila para criterios-valores
         self.rowconfigure(tuple(numeros_criterios), weight=1, uniform='b')
 
         # Titulos
         (tk.Label(self, text=titulo_criterios, font=('Arial', 15, 'bold'))  # Criterio
-         .grid(row=0, column=0, ipadx=15, pady=10))
+         .grid(row=0, column=0, ipadx=15, padx=35, pady=10, sticky='e'))
         (tk.Label(self, text=titulo_valores, font=('Arial', 15, 'bold'))  # Valor
-         .grid(row=0, column=1, ipadx=15, pady=10))
+         .grid(row=0, column=1, ipadx=15, padx=35, pady=10, sticky='w'))
 
         # Criterios y valores
 
         for cri in criterios:
             (tk.Label(self, text=cri)
-             .grid(row=criterios.index(cri) + 1, column=0))
-            #TODO arreglar esto
+             .grid(row=criterios.index(cri) + 1, column=0, padx=35, sticky='e'))
+
+        for val in valores:
+            (tk.Entry(self, state='normal' if habilitados[valores.index(val)] else 'disabled')
+             .grid(row=valores.index(val) + 1, column=1, ipadx=45, padx=35, sticky='w'))
 
         # Botones
         (tk.Button(self, text='Aceptar', bg=RESALTO, bd=0)
-        .grid(row=2, column=0,))
+        .grid(row=len(criterios) + 1, column=0, padx=35, sticky='e'))
+        (tk.Button(self, text='Cancelar', bg= POWER, bd=0)
+        .grid(row=len(valores) + 1, column=1, padx=35, sticky='w'))
