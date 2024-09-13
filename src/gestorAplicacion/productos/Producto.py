@@ -5,7 +5,7 @@ class Producto(ABC):
 
     # Constructores
     # Constructor con todos los atributos menos Id
-    def __init__(self, nombre:str, precio:float, cantidad:int, cantidadInicial:int, prestable:bool, condicion:bytes, fechaLanzamiento:Fecha, descuento:float, puntosRequeridos:int):
+    def __init__(self, nombre:str, precio:float, cantidad:int, cantidadInicial:int, prestable:bool, condicion:int, fechaLanzamiento:Fecha, descuento:float, puntosRequeridos:int):
         self.id = Producto.ultimoId
         Producto.ultimoId += 1
         self._nombre = nombre
