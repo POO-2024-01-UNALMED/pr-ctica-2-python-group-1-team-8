@@ -1,4 +1,4 @@
-from Producto import Producto
+from src.gestorAplicacion.productos.Producto import Producto
 from src.gestorAplicacion.manejoLocal.Fecha import Fecha
 
 

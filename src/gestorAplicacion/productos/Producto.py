@@ -76,7 +76,7 @@ class Producto(ABC):
         return self._cantidadInicial
     def setCantidadInicial(self, cantidadInicial):
         self._cantidadInicial = cantidadInicial
-    def getPrestable(self):
+    def isPrestable(self):
         return self._prestable
     def setPrestable(self, prestable):
         self._prestable = prestable

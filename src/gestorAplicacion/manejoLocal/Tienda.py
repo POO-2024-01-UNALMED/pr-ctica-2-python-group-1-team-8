@@ -31,7 +31,7 @@ class Tienda:
     @classmethod
     def agregarTienda(cls, tienda):
         if isinstance(tienda, Tienda):
-            cls.locales.append(tienda)
+            cls._locales.append(tienda)
 
     # Reduce en uno la cantidad de un producto en un inventario dado segun codigo
     @staticmethod

@@ -15,7 +15,7 @@ class Empleado(Persona):
 
     # Metodos
     def ingresar_meta(self, meta):
-        self.metas.append(meta)
+        self._metas.append(meta)
     def ingresar_meta_alcanzada(self, meta):
         self.metas_alcanzadas.append(meta)
     def ingresar_meta_caducada(self, meta):

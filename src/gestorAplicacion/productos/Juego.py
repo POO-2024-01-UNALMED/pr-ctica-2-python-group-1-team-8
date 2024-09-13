@@ -1,6 +1,4 @@
-from Producto import Producto
-
-
+from src.gestorAplicacion.productos.Producto import Producto
 
 class Juego(Producto):
     def __init__(self, nombre, precio, cantidad, cantidadInicial, prestable, condicion, fechaLanzamiento, descuento, puntosRequeridos, genero,plataforma):
