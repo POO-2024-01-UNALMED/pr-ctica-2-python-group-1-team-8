@@ -4,7 +4,7 @@ class Producto(ABC):
     ultimoId = 1
 
     # Constructores
-    # Constructor con todos los atributos menos Id
+    # Constructor con todos los atributos y fecha en formato de objeto Fecha
     def __init__(self, nombre:str, precio:float, cantidad:int, cantidadInicial:int, prestable:bool, condicion:bytes, fechaLanzamiento:Fecha, descuento:float, puntosRequeridos:int):
         self.id = Producto.ultimoId
         Producto.ultimoId += 1
@@ -18,6 +18,7 @@ class Producto(ABC):
         self._descuento = descuento
         self._puntosRequeridos = puntosRequeridos
 
+    # Constructor con todos los atributos y fecha en formato de numeros separados
 
     # ~~~~~ Metodos ~~~~~
 
@@ -76,7 +77,7 @@ class Producto(ABC):
         return self._cantidadInicial
     def setCantidadInicial(self, cantidadInicial):
         self._cantidadInicial = cantidadInicial
-    def getPrestable(self):
+    def isPrestable(self):
         return self._prestable
     def setPrestable(self, prestable):
         self._prestable = prestable

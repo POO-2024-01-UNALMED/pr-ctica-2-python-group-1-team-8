@@ -1,9 +1,23 @@
 import tkinter as tk
 import tkinter.messagebox as messagebox
+from tkinter import ttk
 
 from PIL import Image, ImageTk
-
 from colores import *  # Importar colores
+
+from src.gestorAplicacion.manejoLocal.Fecha import Fecha
+from src.gestorAplicacion.manejoLocal.Tienda import Tienda
+from src.gestorAplicacion.productos.Consola import Consola
+from src.gestorAplicacion.productos.Juego import Juego
+
+# Objetos de prueba
+tienda1 = Tienda('Volador', 10000)
+tienda1.agregarProducto(Consola('Polystation 5', 400, 10, 10, True, 5, Fecha(1, 1, 2021), 0, 0, 'Sony'))
+tienda1.agregarProducto(Consola('Polystation 4', 300, 10, 10, True, 5, Fecha(1, 1, 2021), 0, 0, 'Sony'))
+
+tienda1.agregarProducto(Juego('GTA 5', 50, 10, 10, True, 5, Fecha(1, 1, 2021), 0, 0, 'Accion', 'Polystation 5'))
+
+fecha = Fecha(1, 1, 2021)
 
 class VentanaPrincipal:
     # Atributos de clase
@@ -225,6 +239,39 @@ class VentanaPrincipal:
             self.texto_saludo.insert(tk.END, self.__class__.saludo)
         self.texto_saludo.config(state=tk.DISABLED)
 
+    def recibir_fecha_local(self):
+        emergente = tk.Toplevel(self.root)
+        emergente.geometry("300x200")
+        emergente.title('Ingreso de local y fecha')
+        emergente.configure(bg=FONDO)
+        # columnas y filas
+        emergente.columnconfigure((0,1), weight=1, uniform='f')
+        emergente.rowconfigure((0,1,2), weight=1, uniform='g')
+
+        # Frame
+        frame = tk.Frame(emergente, bg=FONDO, highlightbackground=DETALLES, highlightthickness=2)
+
+        # labels
+        tk.Label(frame, text='Local', font=('Arial', 15, 'bold'), bg=FONDO).grid(row=0, column=0, padx=15, pady=15)
+        tk.Label(frame, text='Fecha', font=('Arial', 15, 'bold'), bg=FONDO).grid(row=1, column=0, padx=15, pady=15)
+
+        # entries
+        # local
+        nombres_locales = list(map(lambda local: local.get_nombre(), Tienda.get_locales()))
+        valor_defecto = tk.StringVar(value='Elija un local que gestionar')
+        ttk.Combobox(frame, values=nombres_locales, textvariable=valor_defecto).grid(row=0, column=1, padx=15, pady=15)
+
+        # fecha
+
+        emergente.mainloop()
+
+    def cambiar_ventana(self):
+        self.recibir_fecha_local()
+        #TODO hacer que el llamado a la ventana secundaria se haga desde un boton dentro de recibir_fecha_local
+        VentanaSecundaria(self.root)
+
+
+
 class VentanaSecundaria:
     def __init__(self, ventana_activa=None):
         # Si ya hay otra ventana abierta, cerrarla
@@ -349,6 +396,9 @@ class ExceptionLogica(ErrorAplicacion):
     def __init__(self, mensaje):
         super().__init__('Error logico en la aplicacion:\n' + mensaje)
 
+class ExceptionFechaInvalida(ExceptionLogica):
+    pass
+
 class ExceptionNoEncontrado(ExceptionLogica):
     def __init__(self):
         super().__init__('No se encontro ninguna instancia con este dato')
@@ -379,3 +429,6 @@ class ExceptionCampoVacio(ExceptionCampos):
                 self.campos_vacios.append(criterios[entries_val.index(entry)])
 
         return('Campos vacios: ' + ', '.join(self.campos_vacios))
+
+if __name__ == '__main__':
+    v = VentanaPrincipal()

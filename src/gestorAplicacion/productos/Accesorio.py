@@ -1,4 +1,4 @@
-from Producto import Producto
+from .Producto import Producto
 
 class Accesorio(Producto):
     def __init__(self, nombre, precio, cantidad, cantidadInicial, prestable, condicion, fechaLanzamiento, descuento, puntosRequeridos, marca, consola):
