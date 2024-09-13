@@ -98,6 +98,17 @@ class Tienda:
         if orden is not None:
             self._reabastecimientos.append(orden)
 
+    def get_productos_categoria(self, categoria):
+        if categoria == "Consola":
+            from src.gestorAplicacion.productos.Consola import Consola
+            return [p for p in self._inventario if isinstance(p, Consola)]
+        elif categoria == "Juego":
+            return [p for p in self._inventario if isinstance(p, Juego)]
+        elif categoria == "Accesorio":
+            from src.gestorAplicacion.productos.Accesorio import Accesorio
+            return [p for p in self._inventario if isinstance(p, Accesorio)]
+
+
 # Getters y setters
     def get_nombre(self):
             return self._nombre
