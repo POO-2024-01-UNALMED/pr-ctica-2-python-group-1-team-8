@@ -17,6 +17,8 @@ class Tienda:
         self._empleados = []
         Tienda.agregarTienda(self)
 
+
+
     # Metodos
     # Agregar producto al inventario correspondiente
     def agregarProducto(self, producto):
@@ -26,11 +28,10 @@ class Tienda:
             self._inventarioUsado.append(producto)
         else:
             self._inventario.append(producto)
-
     @classmethod
     def agregarTienda(cls, tienda):
         if isinstance(tienda, Tienda):
-            cls._locales.append(tienda)
+            cls.locales.append(tienda)
 
     # Reduce en uno la cantidad de un producto en un inventario dado segun codigo
     @staticmethod
@@ -74,8 +75,8 @@ class Tienda:
                     juego_recibido = producto_recibido
 
                     # Si ambos tienen la misma plataforma, aumentar la cantidad del producto local
-                    if juego_local._plataforma.lower() == juego_recibido._plataforma.lower():
-                        producto_local._cantidad += producto_recibido._cantidad
+                    if juego_local.plataforma.lower() == juego_recibido.plataforma.lower():
+                        producto_local.cantidad += producto_recibido.cantidad
                     else:  # si no, agregar el producto recibido al inventario
                         self._inventario.append(producto_recibido)
 
