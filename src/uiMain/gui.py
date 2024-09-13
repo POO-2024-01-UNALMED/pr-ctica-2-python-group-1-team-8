@@ -7,16 +7,55 @@ from colores import *  # Importar colores
 
 from src.gestorAplicacion.manejoLocal.Fecha import Fecha
 from src.gestorAplicacion.manejoLocal.Tienda import Tienda
+from src.gestorAplicacion.productos.Accesorio import Accesorio
 from src.gestorAplicacion.productos.Consola import Consola
 from src.gestorAplicacion.productos.Juego import Juego
 
 # Objetos de prueba
-tienda1 = Tienda('Volador', 10000)
-tienda1.agregarProducto(Consola('Polystation 5', 400, 10, 10, True, 5, Fecha(1, 1, 2021), 0, 0, 'Sony'))
-tienda1.agregarProducto(Consola('Polystation 4', 300, 10, 10, True, 5, Fecha(1, 1, 2021), 0, 0, 'Sony'))
 
-tienda1.agregarProducto(Juego('GTA 5', 50, 10, 10, True, 5, Fecha(1, 1, 2021), 0, 0, 'Accion', 'Polystation 5'))
+tienda1 = Tienda("Volador", 123)
 
+tienda1.agregarProducto(Consola("Polystation 5", 400, 10, 10, False, 5, Fecha(11, 11, 2021), 5, 100, "Sony"))
+tienda1.agregarProducto(Consola("Xbox 1080", 450, 10, 15, False, 5, Fecha(9, 11, 2021), 5, 0, "Microsoft"))
+tienda1.agregarProducto(Consola("Xbox 720", 250, 15, 15, False, 5, Fecha(12, 12, 2013), 5, 100, "Microsoft"))
+tienda1.agregarProducto(Consola("Noentiendo Swap", 300, 20, 20, False, 5, Fecha(13, 7, 2018), 5, 0, "Noentiendo"))
+tienda1.agregarProducto(Consola("Polystation 4", 250, 25, 25, False, 5, Fecha(14, 11, 2013), 15, 200, "Sony"))
+tienda1.agregarProducto(Consola("Xbox 360", 150, 15, 30, False, 5, Fecha(15, 12, 2005), 10, 0, "Microsoft"))
+tienda1.agregarProducto(Consola("Polystation 6", 600, 1, 1, False, 5, Fecha(16, 11, 2028), 0, 0, "Sony"))
+tienda1.agregarProducto(Consola("Arati 7800", 2000, 1, 1, False, 5, Fecha(17, 11, 1986), 0, 0, "Arati"))
+
+tienda1.agregarProducto(Juego("Carlos Duty", 30, 40, 40, False, 5, Fecha(10, 7, 2018), 5, 0, "FPS", "Xbox 360"))
+tienda1.agregarProducto(
+    Juego("Carlos Duty 2, Ahora es personal", 30, 30, 60, False, 5, Fecha(20, 10, 2024), 0, 0, "FPS", "Xbox 720"))
+tienda1.agregarProducto(Juego("Cyberpunk 2078", 55, 10, 15, False, 5, Fecha(15, 12, 2023), 0, 0, "RPG", "Xbox 1080"))
+tienda1.agregarProducto(Juego("Arch", 45, 8, 10, False, 5, Fecha(20, 11, 2023), 0, 0, "Aventura", "Xbox 1080"))
+tienda1.agregarProducto(Juego("Alive Space", 50, 12, 15, False, 5, Fecha(18, 10, 2023), 0, 0, "Horror", "Xbox 1080"))
+tienda1.agregarProducto(Juego("Full Life", 60, 5, 10, False, 5, Fecha(25, 9, 2023), 0, 0, "FPS", "Xbox 1080"))
+tienda1.agregarProducto(Juego("Meinkraft", 50, 7, 10, False, 5, Fecha(30, 8, 2023), 5, 10, "Sandbox", "Xbox 1080"))
+tienda1.agregarProducto(
+    Juego("Ronaldinho Soccer", 40, 40, 40, False, 5, Fecha(15, 8, 2020), 5, 0, "Deportes", "Polystation 5"))
+tienda1.agregarProducto(
+    Juego("Cyberpunk 2078", 60, 60, 60, False, 5, Fecha(15, 12, 2023), 10, 50, "RPG", "Polystation 5"))
+tienda1.agregarProducto(
+    Juego("Super Mario 256", 60, 50, 50, False, 5, Fecha(10, 10, 2022), 15, 30, "Plataformas", "Noentiendo Swap"))
+tienda1.agregarProducto(Juego("Arch", 65, 55, 70, False, 5, Fecha(20, 11, 2023), 10, 50, "Aventura", "Polystation 5"))
+tienda1.agregarProducto(
+    Juego("Alive Space", 50, 45, 50, False, 5, Fecha(18, 10, 2023), 0, 0, "Horror", "Polystation 5"))
+tienda1.agregarProducto(Juego("Full Life", 30, 40, 40, False, 5, Fecha(25, 9, 2023), 10, 0, "FPS", "Polystation 5"))
+tienda1.agregarProducto(
+    Juego("Meinkraft", 20, 50, 100, False, 5, Fecha(30, 8, 2023), 30, 100, "Sandbox", "Polystation 5"))
+tienda1.agregarProducto(
+    Juego("Super Mario 128", 60, 50, 50, False, 5, Fecha(10, 10, 2021), 5, 20, "Plataformas", "Noentiendo Swap"))
+
+tienda1.agregarProducto(
+    Accesorio("Control Polystation 5", 50, 60, 60, False, 5, Fecha(11, 11, 2021), 0, 0, "Sony", "Polystation 5"))
+tienda1.agregarProducto(
+    Accesorio("Control Polystation 4", 40, 50, 50, False, 5, Fecha(12, 12, 2013), 10, 0, "Sony", "Polystation 4"))
+tienda1.agregarProducto(
+    Accesorio("Control Polystation 3", 30, 40, 40, False, 5, Fecha(13, 11, 2006), 20, 0, "Sony", "Polystation 3"))
+
+
+tienda_actual = tienda1
 fecha = Fecha(1, 1, 2021)
 
 class VentanaPrincipal:
@@ -270,8 +309,6 @@ class VentanaPrincipal:
         #TODO hacer que el llamado a la ventana secundaria se haga desde un boton dentro de recibir_fecha_local
         VentanaSecundaria(self.root)
 
-
-
 class VentanaSecundaria:
     def __init__(self, ventana_activa=None):
         # Si ya hay otra ventana abierta, cerrarla
@@ -287,8 +324,11 @@ class VentanaSecundaria:
         # Filas
         self.root.rowconfigure(0, weight=1, uniform='b')
 
-        prueba_fieldframe = FieldFrame(self.root, "Criterios", ["nombre", "precio", "cantidad", "plataforma", "genero", "descripcion", "fecha_lanzamiento", "desarrolladora", "distribuidora"], "Valores")
-        prueba_fieldframe.grid(row=0,column=0,sticky='nswe', padx=40,pady=40)
+        # prueba_fieldframe = FieldFrame(self.root, "Criterios", ["nombre", "precio", "cantidad", "plataforma", "genero", "descripcion", "fecha_lanzamiento", "desarrolladora", "distribuidora"], "Valores")
+        # prueba_fieldframe.grid(row=0,column=0,sticky='nswe', padx=40,pady=40)
+
+        prueba_subfieldframe = FieldFrameProducto(self.root)
+        prueba_subfieldframe.grid(row=0, column=0, sticky='nswe', padx=40, pady=40)
 
         # Menubar
         menubar = tk.Menu(self.root)
@@ -340,7 +380,21 @@ class FieldFrame(tk.Frame):
         (tk.Label(self, text=titulo_valores, font=('Arial', 15, 'bold'), bg=FONDO)  # Valor
          .grid(row=0, column=1, ipadx=15, padx=35, pady=10, sticky='w'))
 
-        # Criterios y valores
+        self.dibujar_campos(criterios, valores, habilitados)
+
+        # Botones
+        (tk.Button(self, text='Aceptar', bg=RESALTO, bd=0, command=lambda: self.aceptar(self.entries_val, self.criterios))
+        .grid(row=len(criterios) + 1, column=0, padx=35, sticky='e'))
+        (tk.Button(self, text='Cancelar', bg= POWER, bd=0)
+        .grid(row=len(self.valores) + 1, column=1, padx=35, sticky='w'))
+
+    # Metodos
+    def getValue(self, criterio):
+        indice = self.criterios.index(criterio)
+        # Leer el valor del Entry correspondiente
+        return self.entries_val[indice].get()
+
+    def dibujar_campos(self, criterios, valores=None, habilitados=None):
 
         for cri in criterios:
             (tk.Label(self, text=cri, bg=FONDO)
@@ -359,19 +413,6 @@ class FieldFrame(tk.Frame):
             entr.grid(row=self.valores.index(val) + 1, column=1, ipadx=45, padx=35, sticky='w')
             self.entries_val.append(entr)
 
-
-        # Botones
-        (tk.Button(self, text='Aceptar', bg=RESALTO, bd=0, command=lambda: self.aceptar(self.entries_val, self.criterios))
-        .grid(row=len(criterios) + 1, column=0, padx=35, sticky='e'))
-        (tk.Button(self, text='Cancelar', bg= POWER, bd=0)
-        .grid(row=len(self.valores) + 1, column=1, padx=35, sticky='w'))
-
-    # Metodos
-    def getValue(self, criterio):
-        indice = self.criterios.index(criterio)
-        # Leer el valor del Entry correspondiente
-        return self.entries_val[indice].get()
-
     def aceptar(self, entries_val, criterios):
         try:
             # Buscar si hay algun campo vacio
@@ -385,6 +426,68 @@ class FieldFrame(tk.Frame):
             for entry in entries_val:
                 entry.config(bg='white')
 
+class FieldFrameProducto(tk.Frame):
+    def __init__(self, ventana):
+        super().__init__(ventana, bg=FONDO)
+
+        self.framemain = tk.Frame(ventana, bg=FONDO)
+        self.framemain.grid(row=0, column=0, sticky='nswe')
+        self.framemain.rowconfigure(0, weight=1, uniform='a')
+        self.framemain.rowconfigure(1, weight=4, uniform='a')
+        self.framemain.columnconfigure(0, weight=1, uniform='b')
+
+        self.subframe1 = tk.Frame(self.framemain, bg=FONDO, bd=0)
+        self.subframe1.grid(row=0, column=0, sticky='s')
+        self.subframe1.rowconfigure((0, 1), weight=1, uniform='aa')
+        self.subframe1.columnconfigure((0, 1, 2), weight=1, uniform='bb')
+
+        # Titulos
+        tk.Label(self.subframe1, text='Categoria', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, padx=15, sticky='e')
+        tk.Label(self.subframe1, text='Producto', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=1, column=0, padx=15, sticky='e')
+
+        # Comboboxes
+        categorias = ['Consola', 'Juego', 'Accesorio']
+
+        categoria_default = tk.StringVar(value='Elige una categoria')
+        self.combobox_categoria = ttk.Combobox(self.subframe1, values=categorias, textvariable=categoria_default)
+        self.combobox_categoria.grid(row=0, column=1, padx=15, pady=15)
+
+        # Crear combobox con listado de productos segun la categoria ingresada
+        def identificar_categoria_nombres(cat:str):
+            return list(map(lambda producto: producto.getNombre(), tienda_actual.get_productos_categoria(cat)))
+
+        self.listado_productos = []
+        self.combobox_producto = ttk.Combobox(self.subframe1)
+
+        def crear_listado(frame):
+            listado_default = tk.StringVar(value='Elige un producto')
+            listado_nombres = identificar_categoria_nombres(self.combobox_categoria.get())
+            self.listado_productos = tienda_actual.get_productos_categoria(self.combobox_categoria.get())
+
+            self.combobox_producto.config(values=listado_nombres, textvariable=listado_default)
+            self.combobox_producto.grid(row=1, column=1, padx=15, pady=15)
+
+        # Boton para crear combobox listado
+        self.boton_listado = tk.Button(self.subframe1, text='Buscar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=lambda: crear_listado(self.subframe1))
+        self.boton_listado.grid(row=0, column=2, padx=15, pady=15, sticky='w')
+
+        # Insertar producto seleccionado
+        self.producto_actual = None
+        def identificar_producto():
+            self.producto_actual = self.listado_productos[self.combobox_producto.current()]
+            # Espacio del FieldFrame
+            criterios = ['ID', 'Nombre', 'Precio', 'Cantidad', 'Fecha de lanzamiento']
+            valores = [str(self.producto_actual.getId()), self.producto_actual.getNombre(), str(self.producto_actual.getPrecio()), str(self.producto_actual.getCantidad()), str(self.producto_actual.getFechaLanzamiento())]
+            cri_habilitados = [False, False, False, False, False]
+
+            self.subframe2 = tk.Frame(self.framemain, bg=FONDO, bd=0)
+            self.subframe2.grid(row=1, column=0)
+            FieldFrame(self.subframe2, 'Dato', criterios, 'Valor', valores, cri_habilitados).grid(row=0, column=0, padx=15, pady=15)
+
+        # Boton para insertar producto seleccionado
+        self.boton_producto = tk.Button(self.subframe1, text='Insertar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=lambda: identificar_producto())
+        self.boton_producto.grid(row=1, column=2, padx=15, pady=15, sticky='w')
+
 # Excepciones
 class ErrorAplicacion(Exception):
     def __init__(self, mensaje):
@@ -397,7 +500,12 @@ class ExceptionLogica(ErrorAplicacion):
         super().__init__('Error logico en la aplicacion:\n' + mensaje)
 
 class ExceptionFechaInvalida(ExceptionLogica):
-    pass
+    def __init__(self, fecha):
+        super().__init__('Ingrese una fecha posterior a ' + fecha)
+
+class ExceptionCantidadInvalida(ExceptionLogica):
+    def __init__(self):
+        super().__init__('Este local no posee suficientes unidades de este producto')
 
 class ExceptionNoEncontrado(ExceptionLogica):
     def __init__(self):
