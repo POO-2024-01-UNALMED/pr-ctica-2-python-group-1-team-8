@@ -1,7 +1,7 @@
 import tkinter as tk
 import tkinter.messagebox as messagebox
+
 from PIL import Image, ImageTk
-from pygments.styles.paraiso_dark import GREEN
 
 from colores import *  # Importar colores
 
@@ -34,7 +34,7 @@ class VentanaPrincipal:
         if type(ventana_activa) == tk.Tk: ventana_activa.destroy()
 
         self.root = tk.Tk()
-        self.root.title("Villajuegos")
+        self.root.title("Inicio")
 
         self.root.geometry("540x540")
         self.root.configure(bg=FONDO)
@@ -240,8 +240,8 @@ class VentanaSecundaria:
         # Filas
         self.root.rowconfigure(0, weight=1, uniform='b')
 
-        (FieldFrame("aaa", ["nombre", "precio", "cantidad"], "bbbb", ["afasf", "aasfasf", "a"], [False, True, True], self.root)
-                    .grid(row=0,column=0,sticky='nswe', padx=40,pady=40))
+        prueba_fieldframe = FieldFrame(self.root, "Criterios", ["nombre", "precio", "cantidad", "plataforma", "genero", "descripcion", "fecha_lanzamiento", "desarrolladora", "distribuidora"], "Valores")
+        prueba_fieldframe.grid(row=0,column=0,sticky='nswe', padx=40,pady=40)
 
         # Menubar
         menubar = tk.Menu(self.root)
@@ -258,8 +258,6 @@ class VentanaSecundaria:
         procesomenu.add_command(label="Administrar inventario")
         procesomenu.add_command(label="Gestionar empleados")
         procesomenu.add_command(label="Subastar")
-        #procesomenu.add_command(label="Opciones de administrador)
-        # proceso para modificar objetos y empleados relacionados a un local
         menubar.add_cascade(label="Procesos y Consultas", menu=procesomenu)
 
         ayudamenu = tk.Menu(menubar, tearoff=0)
@@ -275,8 +273,11 @@ class VentanaSecundaria:
         self.root.mainloop()
 
 class FieldFrame(tk.Frame):
-    def __init__(self, titulo_criterios, criterios, titulo_valores, valores, habilitados, ventana):
+    def __init__(self, ventana, titulo_criterios, criterios, titulo_valores, valores=None, habilitados=None):
         super().__init__(ventana, bg=FONDO, highlightbackground=DETALLES, highlightthickness=2)
+
+        self.criterios = criterios
+        self.valores = criterios if valores is None else valores
 
         numeros_criterios = []
         for i in range(1, len(criterios) + 1): numeros_criterios.append(i)
@@ -287,23 +288,94 @@ class FieldFrame(tk.Frame):
         self.rowconfigure(tuple(numeros_criterios), weight=1, uniform='b')
 
         # Titulos
-        (tk.Label(self, text=titulo_criterios, font=('Arial', 15, 'bold'))  # Criterio
+        (tk.Label(self, text=titulo_criterios, font=('Arial', 15, 'bold'), bg=FONDO)  # Criterio
          .grid(row=0, column=0, ipadx=15, padx=35, pady=10, sticky='e'))
-        (tk.Label(self, text=titulo_valores, font=('Arial', 15, 'bold'))  # Valor
+        (tk.Label(self, text=titulo_valores, font=('Arial', 15, 'bold'), bg=FONDO)  # Valor
          .grid(row=0, column=1, ipadx=15, padx=35, pady=10, sticky='w'))
 
         # Criterios y valores
 
         for cri in criterios:
-            (tk.Label(self, text=cri)
+            (tk.Label(self, text=cri, bg=FONDO)
              .grid(row=criterios.index(cri) + 1, column=0, padx=35, sticky='e'))
 
-        for val in valores:
-            (tk.Entry(self, state='normal' if habilitados[valores.index(val)] else 'disabled')
-             .grid(row=valores.index(val) + 1, column=1, ipadx=45, padx=35, sticky='w'))
+        self.entries_val = [] # Lista para registrar cada entry
+        for val in self.valores:
+            entr = tk.Entry(self)
+
+            # Insertar valor inicial en el Entry si corresponde
+            if valores is not None:
+                if type(val) == str: entr.insert(0, val)
+
+            # Habilitar o deshabilitar los Entry segun la lista habilitados
+            if habilitados is not None: entr.config(state='normal' if habilitados[self.valores.index(val)] else 'disabled')
+            entr.grid(row=self.valores.index(val) + 1, column=1, ipadx=45, padx=35, sticky='w')
+            self.entries_val.append(entr)
+
 
         # Botones
-        (tk.Button(self, text='Aceptar', bg=RESALTO, bd=0)
+        (tk.Button(self, text='Aceptar', bg=RESALTO, bd=0, command=lambda: self.aceptar(self.entries_val, self.criterios))
         .grid(row=len(criterios) + 1, column=0, padx=35, sticky='e'))
         (tk.Button(self, text='Cancelar', bg= POWER, bd=0)
-        .grid(row=len(valores) + 1, column=1, padx=35, sticky='w'))
+        .grid(row=len(self.valores) + 1, column=1, padx=35, sticky='w'))
+
+    # Metodos
+    def getValue(self, criterio):
+        indice = self.criterios.index(criterio)
+        # Leer el valor del Entry correspondiente
+        return self.entries_val[indice].get()
+
+    def aceptar(self, entries_val, criterios):
+        try:
+            # Buscar si hay algun campo vacio
+            for entry in entries_val:
+                if entry.get() == '':
+                    raise ExceptionCampoVacio(entries_val, criterios)
+
+        # TODO agregar retorno y mas manejo de exepciones
+        except ExceptionCampoVacio:
+            # volver a colorear los campos invalidos una vez que se cierre la ventana emergente
+            for entry in entries_val:
+                entry.config(bg='white')
+
+# Excepciones
+class ErrorAplicacion(Exception):
+    def __init__(self, mensaje):
+        self.mensaje = 'Manejo de errores de la Aplicacion\n' + mensaje
+        messagebox.showerror('Error', self.mensaje)
+
+# Grupo 1
+class ExceptionLogica(ErrorAplicacion):
+    def __init__(self, mensaje):
+        super().__init__('Error logico en la aplicacion:\n' + mensaje)
+
+class ExceptionNoEncontrado(ExceptionLogica):
+    def __init__(self):
+        super().__init__('No se encontro ninguna instancia con este dato')
+
+# Grupo 2
+class ExceptionCampos(ErrorAplicacion):
+    def __init__(self, mensaje):
+        super().__init__('Error en los campos:\n' + mensaje)
+
+class ExceptionValorInvalido(ExceptionCampos):
+    def identificar_valor_invalido(self, entries_val, criterios):
+        self.valores_invalidos = []
+        self.mensaje = ''
+
+        #TODO encontrar una forma de hacer que se compruebe que el tipo de dato ingresado sea el esperado para cada fieldframe
+
+class ExceptionCampoVacio(ExceptionCampos):
+    def __init__(self, entries_val, criterios):
+        super().__init__(self.identificar_campos_vacios(entries_val, criterios))
+
+    def identificar_campos_vacios(self, entries_val, criterios):
+        self.campos_vacios = []
+        self.mensaje = ''
+
+        for entry in entries_val:
+            if entry.get() == '':
+                entry.config(bg='red')
+                self.campos_vacios.append(criterios[entries_val.index(entry)])
+
+        return('Campos vacios: ' + ', '.join(self.campos_vacios))
