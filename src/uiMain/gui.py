@@ -25,8 +25,7 @@ tienda1.agregarProducto(Consola("Polystation 6", 600, 1, 1, False, 5, Fecha(16, 
 tienda1.agregarProducto(Consola("Arati 7800", 2000, 1, 1, False, 5, Fecha(17, 11, 1986), 0, 0, "Arati"))
 
 tienda1.agregarProducto(Juego("Carlos Duty", 30, 40, 40, False, 5, Fecha(10, 7, 2018), 5, 0, "FPS", "Xbox 360"))
-tienda1.agregarProducto(
-    Juego("Carlos Duty 2, Ahora es personal", 30, 30, 60, False, 5, Fecha(20, 10, 2024), 0, 0, "FPS", "Xbox 720"))
+tienda1.agregarProducto(Juego("Carlos Duty 2, Ahora es personal", 30, 30, 60, False, 5, Fecha(20, 10, 2024), 0, 0, "FPS", "Xbox 720"))
 tienda1.agregarProducto(Juego("Cyberpunk 2078", 55, 10, 15, False, 5, Fecha(15, 12, 2023), 0, 0, "RPG", "Xbox 1080"))
 tienda1.agregarProducto(Juego("Arch", 45, 8, 10, False, 5, Fecha(20, 11, 2023), 0, 0, "Aventura", "Xbox 1080"))
 tienda1.agregarProducto(Juego("Alive Space", 50, 12, 15, False, 5, Fecha(18, 10, 2023), 0, 0, "Horror", "Xbox 1080"))
@@ -483,10 +482,17 @@ class FieldFrameProducto(tk.Frame):
             self.subframe2 = tk.Frame(self.framemain, bg=FONDO, bd=0)
             self.subframe2.grid(row=1, column=0)
             FieldFrame(self.subframe2, 'Dato', criterios, 'Valor', valores, cri_habilitados).grid(row=0, column=0, padx=15, pady=15)
+            # TODO que fieldframe tambien reciba el comando de aceptar para que se pueda hacer la modificacion, o que aceptar devuelva los valores y asi agregarlos al carrito en fieldframeproducto
 
         # Boton para insertar producto seleccionado
         self.boton_producto = tk.Button(self.subframe1, text='Insertar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=lambda: identificar_producto())
         self.boton_producto.grid(row=1, column=2, padx=15, pady=15, sticky='w')
+
+    def total_carrito(self):
+        # TODO Entry que muestre en cuanto va el total del carrito y que se actualice con cada insercion de producto
+        pass
+
+
 
 # Excepciones
 class ErrorAplicacion(Exception):
