@@ -426,12 +426,15 @@ class FieldFrame(tk.Frame):
                 entry.config(bg='white')
 
 class FieldFrameProducto(tk.Frame):
+    # TODO destruir este frame y colocar el de pago al presionar Comprar
+    carrito = []
+
     def __init__(self, ventana):
         super().__init__(ventana, bg=FONDO)
 
         self.framemain = tk.Frame(ventana, bg=FONDO)
         self.framemain.grid(row=0, column=0, sticky='nswe')
-        self.framemain.rowconfigure(0, weight=1, uniform='a')
+        self.framemain.rowconfigure((0,2), weight=1, uniform='a')
         self.framemain.rowconfigure(1, weight=4, uniform='a')
         self.framemain.columnconfigure(0, weight=1, uniform='b')
 
@@ -488,11 +491,19 @@ class FieldFrameProducto(tk.Frame):
         self.boton_producto = tk.Button(self.subframe1, text='Insertar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=lambda: identificar_producto())
         self.boton_producto.grid(row=1, column=2, padx=15, pady=15, sticky='w')
 
+        self.total_carrito()
+
     def total_carrito(self):
-        # TODO Entry que muestre en cuanto va el total del carrito y que se actualice con cada insercion de producto
-        pass
+        subframe3 = tk.Frame(self.framemain, bg=FONDO, bd=0)
+        subframe3.grid(row=2, column=0)
+        subframe3.columnconfigure((0,1), weight=1, uniform='a')
+        subframe3.rowconfigure((0, 1), weight=1, uniform='b')
 
+        tk.Label(subframe3, text='Total', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, padx=15, pady=15, sticky='e')
+        tk.Entry(subframe3, state='disabled').grid(row=0, column=1, padx=15, pady=15, sticky='w')
 
+        tk.Button(subframe3, text='Comprar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0).grid(row=1, column=0, padx=15, pady=15, sticky='e')
+        tk.Button(subframe3, text='Limpiar carrito', font=('Arial', 7, 'bold'), bg=POWER, bd=0).grid(row=1, column=1, padx=15, pady=15, sticky='w')
 
 # Excepciones
 class ErrorAplicacion(Exception):
