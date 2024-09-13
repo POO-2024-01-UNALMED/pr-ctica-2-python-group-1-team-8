@@ -75,8 +75,8 @@ class Tienda:
                     juego_recibido = producto_recibido
 
                     # Si ambos tienen la misma plataforma, aumentar la cantidad del producto local
-                    if juego_local.plataforma.lower() == juego_recibido.plataforma.lower():
-                        producto_local.cantidad += producto_recibido.cantidad
+                    if juego_local._plataforma.lower() == juego_recibido._plataforma.lower():
+                        producto_local._cantidad += producto_recibido._cantidad
                     else:  # si no, agregar el producto recibido al inventario
                         self._inventario.append(producto_recibido)
 
