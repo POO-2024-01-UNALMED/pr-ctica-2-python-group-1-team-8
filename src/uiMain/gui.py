@@ -8,8 +8,12 @@ from colores import *  # Importar colores
 from src.gestorAplicacion.manejoLocal.Fecha import Fecha
 from src.gestorAplicacion.manejoLocal.Tienda import Tienda
 
-# Objetos prueba TODO importar los objetos serializados
-
+import pickle
+# TODO importar los objetos serializados
+deserializarLocales = open("../temp/locales.txt", "rb")
+locales = pickle.load(deserializarLocales)
+deserializarClientes = open("../temp/clientes.txt", "rb")
+clientes = pickle.load(deserializarClientes)
 
 class VentanaPrincipal:
     # Atributos de clase
@@ -250,8 +254,8 @@ class VentanaPrincipal:
 
         # entries
         # local
-        nombres_locales = list(map(lambda local: local.get_nombre(), Tienda.get_locales()))
-        lista_locales = Tienda.get_locales()
+        nombres_locales = list(map(lambda local: local.get_nombre(), locales))
+        lista_locales = locales
 
         valor_defecto = tk.StringVar(value='Elija un local que gestionar')
         self.combobox = ttk.Combobox(emergente, values=nombres_locales, textvariable=valor_defecto)
