@@ -7,58 +7,17 @@ from colores import *  # Importar colores
 
 from src.gestorAplicacion.manejoLocal.Fecha import Fecha
 from src.gestorAplicacion.manejoLocal.Tienda import Tienda
-from src.gestorAplicacion.productos.Accesorio import Accesorio
-from src.gestorAplicacion.productos.Consola import Consola
-from src.gestorAplicacion.productos.Juego import Juego
 
-# Objetos de prueba
-
-tienda1 = Tienda("Volador", 123)
-
-tienda1.agregarProducto(Consola("Polystation 5", 400, 10, 10, False, 5, Fecha(11, 11, 2021), 5, 100, "Sony"))
-tienda1.agregarProducto(Consola("Xbox 1080", 450, 10, 15, False, 5, Fecha(9, 11, 2021), 5, 0, "Microsoft"))
-tienda1.agregarProducto(Consola("Xbox 720", 250, 15, 15, False, 5, Fecha(12, 12, 2013), 5, 100, "Microsoft"))
-tienda1.agregarProducto(Consola("Noentiendo Swap", 300, 20, 20, False, 5, Fecha(13, 7, 2018), 5, 0, "Noentiendo"))
-tienda1.agregarProducto(Consola("Polystation 4", 250, 25, 25, False, 5, Fecha(14, 11, 2013), 15, 200, "Sony"))
-tienda1.agregarProducto(Consola("Xbox 360", 150, 15, 30, False, 5, Fecha(15, 12, 2005), 10, 0, "Microsoft"))
-tienda1.agregarProducto(Consola("Polystation 6", 600, 1, 1, False, 5, Fecha(16, 11, 2028), 0, 0, "Sony"))
-tienda1.agregarProducto(Consola("Arati 7800", 2000, 1, 1, False, 5, Fecha(17, 11, 1986), 0, 0, "Arati"))
-
-tienda1.agregarProducto(Juego("Carlos Duty", 30, 40, 40, False, 5, Fecha(10, 7, 2018), 5, 0, "FPS", "Xbox 360"))
-tienda1.agregarProducto(Juego("Carlos Duty 2, Ahora es personal", 30, 30, 60, False, 5, Fecha(20, 10, 2024), 0, 0, "FPS", "Xbox 720"))
-tienda1.agregarProducto(Juego("Cyberpunk 2078", 55, 10, 15, False, 5, Fecha(15, 12, 2023), 0, 0, "RPG", "Xbox 1080"))
-tienda1.agregarProducto(Juego("Arch", 45, 8, 10, False, 5, Fecha(20, 11, 2023), 0, 0, "Aventura", "Xbox 1080"))
-tienda1.agregarProducto(Juego("Alive Space", 50, 12, 15, False, 5, Fecha(18, 10, 2023), 0, 0, "Horror", "Xbox 1080"))
-tienda1.agregarProducto(Juego("Full Life", 60, 5, 10, False, 5, Fecha(25, 9, 2023), 0, 0, "FPS", "Xbox 1080"))
-tienda1.agregarProducto(Juego("Meinkraft", 50, 7, 10, False, 5, Fecha(30, 8, 2023), 5, 10, "Sandbox", "Xbox 1080"))
-tienda1.agregarProducto(
-    Juego("Ronaldinho Soccer", 40, 40, 40, False, 5, Fecha(15, 8, 2020), 5, 0, "Deportes", "Polystation 5"))
-tienda1.agregarProducto(
-    Juego("Cyberpunk 2078", 60, 60, 60, False, 5, Fecha(15, 12, 2023), 10, 50, "RPG", "Polystation 5"))
-tienda1.agregarProducto(
-    Juego("Super Mario 256", 60, 50, 50, False, 5, Fecha(10, 10, 2022), 15, 30, "Plataformas", "Noentiendo Swap"))
-tienda1.agregarProducto(Juego("Arch", 65, 55, 70, False, 5, Fecha(20, 11, 2023), 10, 50, "Aventura", "Polystation 5"))
-tienda1.agregarProducto(
-    Juego("Alive Space", 50, 45, 50, False, 5, Fecha(18, 10, 2023), 0, 0, "Horror", "Polystation 5"))
-tienda1.agregarProducto(Juego("Full Life", 30, 40, 40, False, 5, Fecha(25, 9, 2023), 10, 0, "FPS", "Polystation 5"))
-tienda1.agregarProducto(
-    Juego("Meinkraft", 20, 50, 100, False, 5, Fecha(30, 8, 2023), 30, 100, "Sandbox", "Polystation 5"))
-tienda1.agregarProducto(
-    Juego("Super Mario 128", 60, 50, 50, False, 5, Fecha(10, 10, 2021), 5, 20, "Plataformas", "Noentiendo Swap"))
-
-tienda1.agregarProducto(
-    Accesorio("Control Polystation 5", 50, 60, 60, False, 5, Fecha(11, 11, 2021), 0, 0, "Sony", "Polystation 5"))
-tienda1.agregarProducto(
-    Accesorio("Control Polystation 4", 40, 50, 50, False, 5, Fecha(12, 12, 2013), 10, 0, "Sony", "Polystation 4"))
-tienda1.agregarProducto(
-    Accesorio("Control Polystation 3", 30, 40, 40, False, 5, Fecha(13, 11, 2006), 20, 0, "Sony", "Polystation 3"))
-
-
-tienda_actual = tienda1
-fecha = Fecha(1, 1, 2021)
+# Objetos prueba TODO importar los objetos serializados
+tienda1 = Tienda('Villajuegos', 1000)
+tienda2 = Tienda('Villajuegos2', 1000)
+tienda3 = Tienda('Villajuegos3', 1000)
 
 class VentanaPrincipal:
     # Atributos de clase
+
+    ultima_fecha = Fecha(1, 1, 2021)
+
     # estos atributos son con el fin de permitir la funcion de metodos en la clase
     num_imagen_local = 0
     num_imagen_integrante = 0
@@ -131,7 +90,7 @@ class VentanaPrincipal:
 
         # Boton para siguiente ventana
         self.boton_secundaria = tk.Button(self.subframe1, text='Abrir programa', font=('Arial', 12, 'bold'), bg=RESALTO, fg='black', cursor='hand2', highlightbackground=DETALLES, highlightthickness=2, bd=0,
-                                          command=lambda: VentanaSecundaria(self.root))
+                                          command=lambda: self.recibir_fecha_local())
         self.boton_secundaria.grid(row=1, column=0, sticky='nsew', padx=8, pady=8)
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # FRAME 2
@@ -286,30 +245,62 @@ class VentanaPrincipal:
         emergente.columnconfigure((0,1), weight=1, uniform='f')
         emergente.rowconfigure((0,1,2), weight=1, uniform='g')
 
-        # Frame
-        frame = tk.Frame(emergente, bg=FONDO, highlightbackground=DETALLES, highlightthickness=2)
 
         # labels
-        tk.Label(frame, text='Local', font=('Arial', 15, 'bold'), bg=FONDO).grid(row=0, column=0, padx=15, pady=15)
-        tk.Label(frame, text='Fecha', font=('Arial', 15, 'bold'), bg=FONDO).grid(row=1, column=0, padx=15, pady=15)
+        tk.Label(emergente, text='Local', font=('Arial', 10, 'bold'), bg=FONDO).grid(row=0, column=0, padx=3, pady=2)
+        tk.Label(emergente, text='Fecha', font=('Arial', 10, 'bold'), bg=FONDO).grid(row=1, column=0, padx=3, pady=2)
 
         # entries
         # local
         nombres_locales = list(map(lambda local: local.get_nombre(), Tienda.get_locales()))
+        lista_locales = Tienda.get_locales()
+
         valor_defecto = tk.StringVar(value='Elija un local que gestionar')
-        ttk.Combobox(frame, values=nombres_locales, textvariable=valor_defecto).grid(row=0, column=1, padx=15, pady=15)
+        self.combobox = ttk.Combobox(emergente, values=nombres_locales, textvariable=valor_defecto)
+        self.combobox.grid(row=0, column=1, padx=3, pady=2)
 
         # fecha
+        self.entry_fecha = tk.Entry(emergente)
+        self.entry_fecha.grid(row=1, column=1, padx=3, pady=2)
+
+        def aceptar():
+            # Convertir la fecha ingresada a un objeto Fecha
+            fecha_ingreso = self.entry_fecha.get().split('/')
+            fecha_ingreso = Fecha(int(fecha_ingreso[0]), int(fecha_ingreso[1]), int(fecha_ingreso[2]))
+
+            try:
+                # Buscar si hay algun campo vacio
+                if self.combobox.get() == '' or self.entry_fecha.get() == '':
+                    raise ExceptionCampoVacio([self.combobox, self.entry_fecha], ['Local', 'Fecha'])
+
+                # Comprobar que la fecha sea posterior o igual a la ultima registrada
+
+                if fecha_ingreso.get_total_dias() < self.__class__.ultima_fecha.get_total_dias():
+                    raise ExceptionFechaInvalida(self.__class__.ultima_fecha)
+
+                local_actual = lista_locales[nombres_locales.index(self.combobox.get())]
+
+            except ExceptionCampoVacio:
+                pass
+            except ExceptionFechaInvalida:
+                pass
+            else:
+                # Actualizar fecha y local actuales
+                self.__class__.ultima_fecha = fecha_ingreso
+
+                # Destruir esta ventana y llamar la siguiente
+                VentanaSecundaria(self.root, local_actual, fecha_ingreso)
+                emergente.destroy()
+                self.root.destroy()
+
+        # botones
+        tk.Button(emergente, text='Aceptar', background=RESALTO, bd=0, command=aceptar).grid(row=2, column=0, padx=3, pady=2)
+        tk.Button(emergente, text='Cancelar', background=POWER, bd=0).grid(row=2, column=1, padx=3, pady=2)
 
         emergente.mainloop()
 
-    def cambiar_ventana(self):
-        self.recibir_fecha_local()
-        #TODO hacer que el llamado a la ventana secundaria se haga desde un boton dentro de recibir_fecha_local
-        VentanaSecundaria(self.root)
-
 class VentanaSecundaria:
-    def __init__(self, ventana_activa=None):
+    def __init__(self, ventana_activa, local, fecha):
         # Si ya hay otra ventana abierta, cerrarla
         if type(ventana_activa) == tk.Tk: ventana_activa.destroy()
 
@@ -326,8 +317,9 @@ class VentanaSecundaria:
         # prueba_fieldframe = FieldFrame(self.root, "Criterios", ["nombre", "precio", "cantidad", "plataforma", "genero", "descripcion", "fecha_lanzamiento", "desarrolladora", "distribuidora"], "Valores")
         # prueba_fieldframe.grid(row=0,column=0,sticky='nswe', padx=40,pady=40)
 
-        prueba_subfieldframe = FieldFrameProducto(self.root)
-        prueba_subfieldframe.grid(row=0, column=0, sticky='nswe', padx=40, pady=40)
+        def llamar_compra():
+            prueba_subfieldframe = FieldFrameProducto(self.root, local)
+            prueba_subfieldframe.grid(row=0, column=0, sticky='nswe', padx=40, pady=40)
 
         # Menubar
         menubar = tk.Menu(self.root)
@@ -339,7 +331,7 @@ class VentanaSecundaria:
         menubar.add_cascade(label="Archivo", menu=archivomenu)
 
         procesomenu = tk.Menu(menubar, tearoff=0)
-        procesomenu.add_command(label="Registrar compra")
+        procesomenu.add_command(label="Registrar compra", command=llamar_compra)
         procesomenu.add_command(label="Hacer prestamo")
         procesomenu.add_command(label="Administrar inventario")
         procesomenu.add_command(label="Gestionar empleados")
@@ -429,7 +421,7 @@ class FieldFrameProducto(tk.Frame):
     # TODO destruir este frame y colocar el de pago al presionar Comprar
     carrito = []
 
-    def __init__(self, ventana):
+    def __init__(self, ventana, tienda_actual):
         super().__init__(ventana, bg=FONDO)
 
         self.framemain = tk.Frame(ventana, bg=FONDO)
@@ -518,7 +510,7 @@ class ExceptionLogica(ErrorAplicacion):
 
 class ExceptionFechaInvalida(ExceptionLogica):
     def __init__(self, fecha):
-        super().__init__('Ingrese una fecha posterior a ' + fecha)
+        super().__init__('Ingrese una fecha posterior a ' + str(fecha))
 
 class ExceptionCantidadInvalida(ExceptionLogica):
     def __init__(self):
