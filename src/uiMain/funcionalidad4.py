@@ -7,16 +7,24 @@ def inspeccionEmpleado(local, fecha_actual):
     total_ventas_semana_actual = 0
     total_ventas_mes_actual = 0
     total_ventas_year_actual = 0
+    #/ *~~~ Identificacion del empleado ~~~ * /
+
     empleado = indentificarEmpleado(local)
 
     if empleado is None:
         return
 
+    #/ *~~~ Gestionar metas ~~~ * /
+
     gestionarMeta(empleado, fecha_actual)
     print("Presione enter para revisar si hay metas alcanzadas")
     input()
 
+    #/*~~~ Mostrar metas alcanzadas ~~~ * /
+
     mostrarMetasAlcanzadas(empleado)
+
+    #/ *~~~ Revisar metas caducadas ~~~ * /
 
     while not empleado.get_metas_caducadas() == False:
         mostrarMetasCaducadas(empleado)
@@ -29,13 +37,28 @@ def inspeccionEmpleado(local, fecha_actual):
         else:
             break
 
+    #/* ~~~ Ver rendimiento ~~~ */
     while True:
         pregunta = siNo("¿Desea ver el rendimiento del empleado?")
         if not pregunta:
             break
 
-        rendimineto = verRendimiento(empleado, fecha_actual)
-        compararRendimiento(empleado, fechaActual, rendimiento)
+        rendimiento = verRendimiento(empleado, fecha_actual)
+        compararRendimiento(empleado, fecha_actual, rendimiento)
+        try:
+            decision = int(input("¿Qué desea hacer? \n1. Ver el rendimiento en otro periodo \n2. Continuar"))
+
+        except ValueError:
+            print("Ingrese un numero valido. Presione enter para volver a intentar")
+            input()
+            continue
+
+        if decision == 2:
+            break
+
+    #/* ~~~ Modificar Salarios o dias laborales ~~~ */
+    while True:
+
 
 
 
@@ -111,7 +134,7 @@ def mostrarMetasCaducadas(empleado):
         input()
 
     else:
-        print(f"Las me¿etas caducadas por el empleado {empleado.get_nombre()} son:")
+        print(f"Las metas caducadas por el empleado {empleado.get_nombre()} son:")
         for m in empleado.get_metas_caducadas():
             print(m)
 
@@ -183,14 +206,14 @@ def ampliarMeta(empleado, meta, fecha_actual):
 def verRendimiento(empleado, fecha_actual):
     while True:
         try:
-            opcion = int(print(f"Desea ver el rendimiento del empleado {empleado.get_nombre()} \n1. Semanal \n2. Mensual \n3. Anual"))
+            option = int(input(f"Desea ver el rendimiento del empleado {empleado.get_nombre()} \n1. Semanal \n2. Mensual \n3. Anual"))
 
         except ValueError:
             print("Ingrese un numero valido. Presione enter para volver a intentar")
             input()
             continue
 
-        match opcion:
+        match option:
             case 1:
                 global total_ventas_semana_actual
                 for t in empleado.get_transacciones():
@@ -217,6 +240,211 @@ def verRendimiento(empleado, fecha_actual):
                 input()
                 break
 
-        while True
+        while True:
             try:
-                print("¿Qué desea haer?")
+                decision = int(input("¿Qué desea hacer? \n1. Ver el rendimiento en otro periodo de tiempo. \n2. Comparar el rendimiento con período anterior"))
+
+            except ValueError:
+                print("Ingrese un numero valido. Presione enter para volver a intentar")
+                input()
+                continue
+
+            match decision:
+                case 1:
+                    break
+                case 2:
+                    return option
+                case _:
+                    print("Ingrese una opcion valida. Presione enter para volver a intentar")
+                    input()
+                    break
+
+def compararRendimiento(empleado, fecha_actual, decision):
+    match decision:
+        case 1:
+            total_semana = 0
+            for t in empleado.get_transacciones():
+                if fecha_actual.get_totalDias - 14 <= t.get_fecha().get_totalDias() and fecha_actual.get_totalDias - 7 >= t.get_fecha().get_totalDias():
+                    total_semana += 1
+
+            print(f"El total de ventas en la semana anterior del empleado {empleado.get_nombre()} fueron: {total_semana}")
+            print("Presione enter para continuar.\n")
+            input()
+
+            if total_semana < total_ventas_semana_actual:
+                calculo = ((total_ventas_semana_actual - total_semana) * 100) / total_semana
+                print(f"El total de ventas en esta semana incremento en un {calculo}%")
+                if calculo > 30:
+                    print("El empleado tuvo un incremento en ventas mayor al 30%. El empleado debería tener una bonificacion remunerada")
+                    print("Presione enter para continuar")
+                    input()
+
+            elif total_semana == total_ventas_semana_actual:
+                print(f"El total de ventas fue igual al de la semana pasada {total_semana} ventas")
+                print("Presione enter para continuar")
+                input()
+
+            else:
+                calculo = ((total_semana - total_ventas_semana_actual) * 100) / total_semana
+                print(f"El total de ventas en esta semana disminuyo en un {calculo}%")
+                print("Presione enter para continuar")
+                input()
+
+        case 2:
+            total_mes = 0
+            for t in empleado.get_transacciones():
+                if fecha_actual.get_totalDias - 62 <= t.get_fecha().get_totalDias() and fecha_actual.get_totalDias - 31 >= t.get_fecha().get_totalDias():
+                    total_mes += 1
+
+            if total_mes < total_ventas_mes_actual:
+                calculo = ((total_ventas_mes_actual - total_mes) * 100) / total_mes
+                print(f"El total de ventas en este mes incremento en un {calculo}%")
+                if calculo > 30:
+                    print("El empleado tuvo un incremento en ventas mayor al 30%. El empleado debería tener una bonificacion remunerada")
+                    print("Presione enter para continuar")
+                    input()
+
+            elif total_mes == total_ventas_mes_actual:
+                print(f"El total de ventas fue igual al del mes pasado {total_mes} ventas")
+                print("Presione enter para continuar")
+                input()
+
+            else:
+                calculo = ((total_mes - total_ventas_mes_actual) * 100) / total_mes
+                print(f"El total de ventas en este mes disminuyo en un {calculo}%")
+                print("Presione enter para continuar")
+                input()
+
+        case 3:
+            total_year = 0
+            for t in empleado.get_transacciones():
+                if fecha_actual.get_totalDias - 730 <= t.get_fecha().get_totalDias() and fecha_actual.get_totalDias - 365 >= t.get_fecha().get_totalDias():
+                    total_year += 1
+
+            if total_year < total_ventas_year_actual:
+                calculo = ((total_ventas_year_actual - total_year) * 100) / total_year
+                print(f"El total de ventas en este año incremento en un {calculo}%")
+                if calculo > 30:
+                    print("El empleado tuvo un incremento en ventas mayor al 30%. El empleado debería tener una bonificacion remunerada")
+                    print("Presione enter para continuar")
+                    input()
+
+            elif total_year == total_ventas_year_actual:
+                print(f"El total de ventas fue igual al del año pasado {total_year} ventas")
+                print("Presione enter para continuar")
+                input()
+
+            else:
+                calculo = ((total_year - total_ventas_year_actual) * 100) / total_year
+                print(f"El total de ventas en este año disminuyo en un {calculo}%")
+                print("Presione enter para continuar")
+                input()
+
+        case _:
+            print("Ingrese una opcion valida. Presione enter para volver a intentar")
+            input()
+
+def modificarSalario(empleado):
+    while True:
+        try:
+            salario = int(input("Desea moficiar: \n1. Salario fijo \n2. Salario porcentual"))
+        except ValueError:
+            print("Ingrese un numero valido. Presione enter para volver a intentar")
+            input()
+            continue
+
+        match salario:
+            case 1:
+                try:
+                    print(f"El salario fijo del empleado es: {empleado.get_salario()}")
+                    nuevo_salario = int(input("Ingrese el nuevo salario fijo: "))
+                except ValueError:
+                    print("Ingrese un numero valido. Presione enter para volver a intentar")
+                    input()
+                    continue
+
+                empleado.set_salario(nuevo_salario)
+                print(f"El salario fijo del empleado {empleado.get_nombre()} ha sido actualizado a {nuevo_salario}")
+                return
+
+            case 2:
+                try:
+                    print(f"El salario porcentual del empleado es: {empleado.get_salario_porcentual()}")
+                    nuevo_salario = int(input("Ingrese el nuevo salario porcentual: "))
+                except ValueError:
+                    print("Ingrese un numero valido. Presione enter para volver a intentar")
+                    input()
+                    continue
+
+                empleado.set_salario_porcentual(nuevo_salario)
+                print(f"El salario porcentual del empleado {empleado.get_nombre()} ha sido actualizado a {nuevo_salario}")
+                return
+
+            case _:
+                print("Ingrese una opcion valida. Presione enter para volver a intentar")
+                input()
+                return
+def modifcarDiasLaborales(empleado):
+    while True:
+        try:
+            print(f"Los dias laborales del empleado {empleado.get_nombre()} son: {empleado.get_dias_laborales()} a la semana")
+            nuevo_dias = int(input("Ingrese el nuevo numero de dias laborales: "))
+        except ValueError:
+            print("Ingrese un numero valido. Presione enter para volver a intentar")
+            input()
+            continue
+
+        if nuevo_dias < 6 and nuevo_dias > 0:
+            empleado.set_dias_laborales(nuevo_dias)
+            print(f"Los dias laborales del empleado {empleado.get_nombre()} han sido actualizados a {dias_laborales}")
+            return
+
+        else:
+            print("Cantidad inhumana de dias. Presione enter para volver a intentar")
+            input()
+
+def asignarMeta(empleado):
+    while True:
+        print(f"Las metas del empleado {empleado.get_nombre()} son: ")
+        for m in empleado.get_metas():
+            print(m)
+        print("Presione enter para continuar")
+        input()
+
+        try:
+            year_limite = int(input("Ingrese el año limite de la meta: "))
+        except ValueError:
+            print("Ingrese un numero valido. Presione enter para volver a intentar")
+            input()
+            continue
+
+        try:
+            mes_limite = int(input("Ingrese el mes limite de la meta: "))
+        except ValueError:
+            print("Ingrese un numero valido. Presione enter para volver a intentar")
+            input()
+            continue
+
+        try:
+            dia_limite = int(input("Ingrese el dia limite de la meta: "))
+        except ValueError:
+            print("Ingrese un numero valido. Presione enter para volver a intentar")
+            input()
+            continue
+
+        try:
+            valor_alcanzar = int(input("Ingrese el valor a alcanzar de la meta: "))
+        except ValueError:
+            print("Ingrese un numero valido. Presione enter para volver a intentar")
+            input()
+            continue
+
+        try:
+            valor_bonificacion = int(input("Ingrese el valor de la bonificacion de la meta: "))
+        except ValueError:
+            print("Ingrese un numero valido. Presione enter para volver a intentar")
+            input()
+            continue
+
+        new Meta(empleado, year_limite, mes_limite, dia_limite, valor_alcanzar, valor_bonificacion)
+        return
