@@ -1,14 +1,19 @@
-import Producto
+from src.gestorAplicacion.productos.Producto import Producto
+from src.gestorAplicacion.manejoLocal.Fecha import Fecha
+
 
 class Consola(Producto):
-    def __init__(self, nombre, precio, cantidad,cantidadInicial, prestable, condicion, fechaLanzamiento, descuento, puntosRequeridos, marca):
+    def __init__(self, nombre:str, precio:float, cantidad:int,cantidadInicial:int, prestable:bool, condicion:int, fechaLanzamiento:Fecha, descuento:float, puntosRequeridos:int, marca:str):
         super().__init__(nombre, precio, cantidad,cantidadInicial, prestable, condicion, fechaLanzamiento, descuento, puntosRequeridos)
         self._marca = marca
 
     def __str__(self):
-        return f"Nombre: {self.nombre}\nPrecio: {self.precio}\nCantidad: {self.cantidad}\nMarca: {self.marca}"
+        return f"Nombre: {self._nombre}\nPrecio: {self._precio}\nCantidad: {self._cantidad}\nMarca: {self._marca}"
 
-    def get_marca(self):
-        return self.marca
-    def set_marca(self, marca):
+    def getMarca(self):
+        return self._marca
+    def setMarca(self, marca):
         self._marca = marca
+
+    def metodo_abstracto(self):
+        pass

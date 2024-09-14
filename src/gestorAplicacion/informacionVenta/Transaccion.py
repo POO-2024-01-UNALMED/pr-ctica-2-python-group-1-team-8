@@ -25,7 +25,7 @@ class Transaccion:
     #Getters y setters
     def get_id(self):
         return self._id
-    def get_fecha(self):
+    def getFecha(self):
         return self._fecha
     def get_cliente(self):
         return self._cliente
@@ -42,7 +42,7 @@ class Transaccion:
 
     def set_id(self, id):
         self._id = id
-    def set_fecha(self, fecha):
+    def setFecha(self, fecha):
         self._fecha = fecha
     def set_cliente(self, cliente):
         self._cliente = cliente

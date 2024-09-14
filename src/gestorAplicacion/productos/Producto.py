@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
-
+from src.gestorAplicacion.manejoLocal.Fecha import Fecha
 class Producto(ABC):
     ultimoId = 1
 
     # Constructores
     # Constructor con todos los atributos menos Id
-    def __init__(self, nombre, precio, cantidad, cantidadInicial, prestable, condicion, fechaLanzamiento, descuento, puntosRequeridos):
+    def __init__(self, nombre:str, precio:float, cantidad:int, cantidadInicial:int, prestable:bool, condicion:int, fechaLanzamiento:Fecha, descuento:float, puntosRequeridos:int):
         self.id = Producto.ultimoId
         Producto.ultimoId += 1
         self._nombre = nombre
@@ -24,17 +24,27 @@ class Producto(ABC):
     # Metodo para calcular las ventas en base a la cantidad inicial y la actual
     # (recordemos que la cantidad inicial se reinicia cada mes)
     def calcular_ventas(self):
-        return self.cantidadInicial - self.cantidad
+        return self._cantidadInicial - self._cantidad
+    #Diccionario de prioridad para el orden
+
 
     # TODO metodos para ordenar productos por defecto
     @classmethod
-    def ordenar(cls,parametro:str,lista):
+    def ordenar(cls, parametro:str, lista, ):
         if parametro.lower() == "nombre":
-            sorted(lista,key=lambda x:x.__nombre)
+            sorted(lista,key=lambda x:x.get_nombre())
+            return lista
         elif parametro.lower() == "precio":
-            sorted(lista,key=lambda x:x.__precio)
+            sorted(lista,key=lambda x:x.get_precio())
+            return lista
         elif parametro.lower() == "ventas":
             sorted(lista,key=lambda x:x.calcular_ventas())
+            return lista
+        elif parametro.lower() == "prioridad":
+            prio = {"prioridad muy alta": 1, "prioridad alta": 2, "prioridad media": 3, "prioridad baja": 4}
+            sorted(lista, key=lambda x:prio[x.getPrioridad()])
+            return lista
+
 
     # TODO metodo para clonar producto
 
@@ -48,40 +58,40 @@ class Producto(ABC):
 
 
     # ~~~~~ Getters y Setters ~~~~~
-    def get_id(self):
+    def getId(self):
         return self.id
-    def get_nombre(self):
+    def getNombre(self):
         return self._nombre
-    def set_nombre(self, nombre):
+    def setNombre(self, nombre):
         self._nombre = nombre
-    def get_precio(self):
+    def getPrecio(self):
         return self._precio
-    def set_precio(self, precio):
+    def setPrecio(self, precio):
         self._precio = precio
-    def get_cantidad(self):
+    def getCantidad(self):
         return self._cantidad
-    def set_cantidad(self, cantidad):
+    def setCantidad(self, cantidad):
         self._cantidad = cantidad
-    def get_cantidadInicial(self):
+    def getCantidadInicial(self):
         return self._cantidadInicial
-    def set_cantidadInicial(self, cantidadInicial):
+    def setCantidadInicial(self, cantidadInicial):
         self._cantidadInicial = cantidadInicial
-    def get_prestable(self):
+    def isPrestable(self):
         return self._prestable
-    def set_prestable(self, prestable):
+    def setPrestable(self, prestable):
         self._prestable = prestable
-    def get_condicion(self):
+    def getCondicion(self):
         return self._condicion
-    def set_condicion(self, condicion):
+    def setCondicion(self, condicion):
         self._condicion = condicion
-    def get_fechaLanzamiento(self):
+    def getFechaLanzamiento(self):
         return self._fechaLanzamiento
 
-    def get_descuento(self):
+    def getDescuento(self):
         return self._descuento
-    def set_descuento(self, descuento):
+    def setDescuento(self, descuento):
         self._descuento = descuento
-    def get_puntosRequeridos(self):
+    def getPuntosRequeridos(self):
         return self._puntosRequeridos
-    def set_puntosRequeridos(self, puntosRequeridos):
+    def setPuntosRequeridos(self, puntosRequeridos):
         self._puntosRequeridos = puntosRequeridos

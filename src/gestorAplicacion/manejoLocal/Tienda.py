@@ -1,20 +1,23 @@
-from src.gestorAplicacion.productos import Juego
+from src.gestorAplicacion.informacionVenta.Transaccion import Transaccion
+from src.gestorAplicacion.productos.Juego import Juego
 
 class Tienda:
     # Constructor
+    _locales = []
+
     def __init__(self, nombre, fondos=0):
         self._nombre = nombre
         self._fondos = fondos
-        self._caja = []
+        self._caja:list[Transaccion] = []
         self._subastas = []
         self._inventario = []
         self._inventarioPrestamo = []
         self._inventarioUsado = []
         self._reabastecimientos = []
         self._empleados = []
-        Tienda.locales.append(self)
+        Tienda.agregarTienda(self)
 
-    locales = []
+
 
     # Metodos
     # Agregar producto al inventario correspondiente
@@ -25,6 +28,10 @@ class Tienda:
             self._inventarioUsado.append(producto)
         else:
             self._inventario.append(producto)
+    @classmethod
+    def agregarTienda(cls, tienda):
+        if isinstance(tienda, Tienda):
+            cls._locales.append(tienda)
 
     # Reduce en uno la cantidad de un producto en un inventario dado segun codigo
     @staticmethod
@@ -68,8 +75,8 @@ class Tienda:
                     juego_recibido = producto_recibido
 
                     # Si ambos tienen la misma plataforma, aumentar la cantidad del producto local
-                    if juego_local.plataforma.lower() == juego_recibido.plataforma.lower():
-                        producto_local.cantidad += producto_recibido.cantidad
+                    if juego_local._plataforma.lower() == juego_recibido._plataforma.lower():
+                        producto_local._cantidad += producto_recibido._cantidad
                     else:  # si no, agregar el producto recibido al inventario
                         self._inventario.append(producto_recibido)
 
@@ -90,6 +97,17 @@ class Tienda:
     def agregar_orden(self, orden):
         if orden is not None:
             self._reabastecimientos.append(orden)
+
+    def get_productos_categoria(self, categoria):
+        if categoria == "Consola":
+            from src.gestorAplicacion.productos.Consola import Consola
+            return [p for p in self._inventario if isinstance(p, Consola)]
+        elif categoria == "Juego":
+            return [p for p in self._inventario if isinstance(p, Juego)]
+        elif categoria == "Accesorio":
+            from src.gestorAplicacion.productos.Accesorio import Accesorio
+            return [p for p in self._inventario if isinstance(p, Accesorio)]
+
 
 # Getters y setters
     def get_nombre(self):
@@ -136,10 +154,10 @@ class Tienda:
 
     @classmethod
     def get_locales(cls):
-            return Tienda.locales
+            return Tienda._locales
 
     def set_locales(locales):
-            Tienda.locales = locales
+            Tienda._locales = locales
 
     def get_empleados(self):
             return self._empleados

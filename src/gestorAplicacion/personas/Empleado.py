@@ -16,13 +16,13 @@ class Empleado(Persona):
 
     # Metodos
     def ingresar_meta(self, meta):
-        self.metas.append(meta)
+        self._metas.append(meta)
     def ingresar_meta_alcanzada(self, meta):
-        self.metas_alcanzadas.append(meta)
+        self._metas_alcanzadas.append(meta)
     def ingresar_meta_caducada(self, meta):
-        self.metas_caducadas.append(meta)
+        self._metas_caducadas.append(meta)
     def ingresar_transaccion(self, transaccion):
-        self.transacciones.append(transaccion)
+        self._transacciones.append(transaccion)
     def __str__(self):
         return f"* Nombre: {self._nombre} - Cedula: {self._cedula}"
 
