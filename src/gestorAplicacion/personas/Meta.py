@@ -33,7 +33,7 @@ class Meta:
         return self._valor_bonificacion
     def get_estado(self):
         return self._estado
-        def get_acumulado(self):
+    def get_acumulado(self):
         return self._acumulado
 
     def set_codigo(self, codigo):

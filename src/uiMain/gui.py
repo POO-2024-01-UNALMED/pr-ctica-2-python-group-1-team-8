@@ -9,9 +9,7 @@ from src.gestorAplicacion.manejoLocal.Fecha import Fecha
 from src.gestorAplicacion.manejoLocal.Tienda import Tienda
 
 # Objetos prueba TODO importar los objetos serializados
-tienda1 = Tienda('Villajuegos', 1000)
-tienda2 = Tienda('Villajuegos2', 1000)
-tienda3 = Tienda('Villajuegos3', 1000)
+
 
 class VentanaPrincipal:
     # Atributos de clase
@@ -310,7 +308,7 @@ class VentanaSecundaria:
         self.root.configure(bg=FONDO)
 
         # Columnas
-        self.root.columnconfigure((0), weight=1, uniform='a')
+        self.root.columnconfigure(0, weight=1, uniform='a')
         # Filas
         self.root.rowconfigure(0, weight=1, uniform='b')
 
@@ -319,6 +317,10 @@ class VentanaSecundaria:
 
         def llamar_compra():
             prueba_subfieldframe = FieldFrameProducto(self.root, local)
+            prueba_subfieldframe.grid(row=0, column=0, sticky='nswe', padx=40, pady=40)
+
+        def llamar_administrar():
+            prueba_subfieldframe = FieldFrameAdministrar(self.root, local)
             prueba_subfieldframe.grid(row=0, column=0, sticky='nswe', padx=40, pady=40)
 
         # Menubar
@@ -333,7 +335,7 @@ class VentanaSecundaria:
         procesomenu = tk.Menu(menubar, tearoff=0)
         procesomenu.add_command(label="Registrar compra", command=llamar_compra)
         procesomenu.add_command(label="Hacer prestamo")
-        procesomenu.add_command(label="Administrar inventario")
+        procesomenu.add_command(label="Administrar inventario", command=llamar_administrar)
         procesomenu.add_command(label="Gestionar empleados")
         procesomenu.add_command(label="Subastar")
         menubar.add_cascade(label="Procesos y Consultas", menu=procesomenu)
@@ -496,6 +498,25 @@ class FieldFrameProducto(tk.Frame):
 
         tk.Button(subframe3, text='Comprar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0).grid(row=1, column=0, padx=15, pady=15, sticky='e')
         tk.Button(subframe3, text='Limpiar carrito', font=('Arial', 7, 'bold'), bg=POWER, bd=0).grid(row=1, column=1, padx=15, pady=15, sticky='w')
+
+class FieldFrameAdministrar(tk.Frame):
+    def __init__(self,ventana,tienda_actual:Tienda):
+        super().__init__(ventana,bg=FONDO)
+
+        self.framemain = tk.Frame(ventana,bg=FONDO)
+        self.framemain.grid(row=0,column=0,sticky='nswe')
+        self.framemain.rowconfigure((0,2),weight=1,uniform='a')
+        self.framemain.rowconfigure(1,weight=4,uniform='a')
+        self.framemain.columnconfigure(0,weight=1,uniform='b')
+
+        self.subframe1 = tk.Frame(self.framemain,bg=FONDO,bd=0)
+        self.subframe1.grid(row=0,column=0,sticky='s')
+        self.subframe1.rowconfigure((0,1),weight=1,uniform='aa')
+        self.subframe1.columnconfigure((0,1,2),weight=1,uniform='bb')
+
+        #titulos
+        tk.Label(self.subframe1,text='prueba1',font=('Arial',11,'bold'),bg=FONDO).grid(row=0,column=0,padx=15,sticky='e')
+        tk.Label(self.subframe1,text='prueba2',font=('Arial',11,'bold'),bg=FONDO).grid(row=1,column=0,padx=15,sticky='e')
 
 # Excepciones
 class ErrorAplicacion(Exception):
