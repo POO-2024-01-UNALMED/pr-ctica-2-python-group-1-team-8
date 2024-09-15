@@ -428,7 +428,14 @@ class FieldFrame(tk.Frame):
 
     def cancelar(self, entries_val):
         for entry in entries_val:
+            # Si el entry esta deshabilitado, habilitarlo
+            estaba_habilitado = False
+
+            if entry.cget('state') == 'disabled':
+                estaba_habilitado = True
+                entry.config(state='normal')
             entry.delete(0, tk.END)
+            if estaba_habilitado: entry.config(state='disabled')
 
 class FieldFrameProducto(tk.Frame):
     # TODO destruir este frame y colocar el de pago al presionar Comprar
