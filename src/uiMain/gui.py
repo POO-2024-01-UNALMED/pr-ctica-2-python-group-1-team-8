@@ -382,7 +382,7 @@ class FieldFrame(tk.Frame):
         # Botones
         (tk.Button(self, text='Aceptar', bg=RESALTO, bd=0, command=lambda: self.aceptar(self.entries_val, self.criterios))
         .grid(row=len(criterios) + 1, column=0, padx=35, sticky='e'))
-        (tk.Button(self, text='Cancelar', bg= POWER, bd=0)
+        (tk.Button(self, text='Cancelar', bg= POWER, bd=0, command=lambda: self.cancelar(self.entries_val))
         .grid(row=len(self.valores) + 1, column=1, padx=35, sticky='w'))
 
     # Metodos
@@ -417,11 +417,25 @@ class FieldFrame(tk.Frame):
                 if entry.get() == '':
                     raise ExceptionCampoVacio(entries_val, criterios)
 
-        # TODO agregar retorno y mas manejo de exepciones
+                # retornar los valores dentro de las entries
+                return list(map(lambda entry: entry.get(), entries_val))
+
+        # TODO mas manejo de exepciones
         except ExceptionCampoVacio:
             # volver a colorear los campos invalidos una vez que se cierre la ventana emergente
             for entry in entries_val:
                 entry.config(bg='white')
+
+    def cancelar(self, entries_val):
+        for entry in entries_val:
+            # Si el entry esta deshabilitado, habilitarlo
+            estaba_habilitado = False
+
+            if entry.cget('state') == 'disabled':
+                estaba_habilitado = True
+                entry.config(state='normal')
+            entry.delete(0, tk.END)
+            if estaba_habilitado: entry.config(state='disabled')
 
 class FieldFrameProducto(tk.Frame):
     # TODO destruir este frame y colocar el de pago al presionar Comprar
@@ -502,6 +516,10 @@ class FieldFrameProducto(tk.Frame):
 
         tk.Button(subframe3, text='Comprar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0).grid(row=1, column=0, padx=15, pady=15, sticky='e')
         tk.Button(subframe3, text='Limpiar carrito', font=('Arial', 7, 'bold'), bg=POWER, bd=0).grid(row=1, column=1, padx=15, pady=15, sticky='w')
+
+    def limpiar_frame(self):
+        for widget in self.framemain.winfo_children():
+            widget.destroy()
 
 class FieldFrameAdministrar(tk.Frame):
     def __init__(self,ventana,tienda_actual:Tienda):
