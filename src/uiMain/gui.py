@@ -327,6 +327,10 @@ class VentanaSecundaria:
             prueba_subfieldframe = FieldFrameProducto(self.root, local)
             prueba_subfieldframe.grid(row=0, column=0, sticky='nswe', padx=40, pady=40)
 
+        def llamar_prestamo():
+            prueba_subfieldframe = FieldFramePrestamo(self.root, local)
+            prueba_subfieldframe.grid(row=0, column=0, sticky='nswe', padx=40, pady=40)
+
         def llamar_administrar():
             prueba_subfieldframe = FieldFrameAdministrar(self.root, local)
             prueba_subfieldframe.grid(row=0, column=0, sticky='nswe', padx=40, pady=40)
@@ -342,7 +346,7 @@ class VentanaSecundaria:
 
         procesomenu = tk.Menu(menubar, tearoff=0)
         procesomenu.add_command(label="Registrar compra", command=llamar_compra)
-        procesomenu.add_command(label="Hacer prestamo")
+        procesomenu.add_command(label="Hacer prestamo", command=llamar_prestamo)
         procesomenu.add_command(label="Administrar inventario", command=llamar_administrar)
         procesomenu.add_command(label="Gestionar empleados")
         procesomenu.add_command(label="Subastar")
@@ -426,14 +430,15 @@ class FieldFrame(tk.Frame):
     def aceptar(self):
         try:
             # Buscar si hay algun campo vacio
-            for entry in self.entries_val:
-                if entry.get() == '':
+            lista_values = []
+            for cri in self.criterios:
+                if self.getValue(cri) == '': # Revisar si el campo esta vacio
                     raise ExceptionCampoVacio(self.entries_val, self.criterios)
+                else:
+                    lista_values.append(self.getValue(cri))
+            return lista_values
 
-                # retornar los valores dentro de las entries
-                return list(map(lambda entry: entry.get(), self.entries_val))
-
-        # TODO mas manejo de exepciones
+        # TODO mas manejo de exepciones, como comprobacion de tipos
         except ExceptionCampoVacio:
             # volver a colorear los campos invalidos una vez que se cierre la ventana emergente
             for entry in self.entries_val:
@@ -745,6 +750,12 @@ class FieldFrameProducto(tk.Frame):
         # Botones
         tk.Button(mainframe_cliente, text='Registrado', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=cliente_existente).grid(row=1, column=0, padx=15, pady=15, sticky='e')
         tk.Button(mainframe_cliente, text='Nuevo', font=('Arial', 7, 'bold'), bg=POWER, bd=0, command=crear_cliente).grid(row=1, column=1, padx=15, pady=15, sticky='w')
+
+class FieldFramePrestamo(FieldFrameProducto):
+    def __init__(self, ventana, tienda_actual):
+        super().__init__(ventana, tienda_actual)
+
+
 
 
 class FieldFrameAdministrar(tk.Frame):
