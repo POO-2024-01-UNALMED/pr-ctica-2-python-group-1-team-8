@@ -357,9 +357,10 @@ class VentanaSecundaria:
         self.root.mainloop()
 
 class FieldFrame(tk.Frame):
-    def __init__(self, ventana, titulo_criterios, criterios, titulo_valores, valores=None, habilitados=None):
+    def __init__(self, ventana, titulo_criterios, criterios, titulo_valores, valores=None, habilitados=None, aceptar_callback=None):
         super().__init__(ventana, bg=FONDO, highlightbackground=DETALLES, highlightthickness=2)
 
+        self.aceptar_callback = aceptar_callback
         self.criterios = criterios
         self.valores = criterios if valores is None else valores
 
@@ -380,7 +381,7 @@ class FieldFrame(tk.Frame):
         self.dibujar_campos(criterios, valores, habilitados)
 
         # Botones
-        (tk.Button(self, text='Aceptar', bg=RESALTO, bd=0, command=lambda: self.aceptar(self.entries_val, self.criterios))
+        (tk.Button(self, text='Aceptar', bg=RESALTO, bd=0, command=self.al_aceptar)
         .grid(row=len(criterios) + 1, column=0, padx=35, sticky='e'))
         (tk.Button(self, text='Cancelar', bg= POWER, bd=0, command=lambda: self.cancelar(self.entries_val))
         .grid(row=len(self.valores) + 1, column=1, padx=35, sticky='w'))
@@ -392,7 +393,6 @@ class FieldFrame(tk.Frame):
         return self.entries_val[indice].get()
 
     def dibujar_campos(self, criterios, valores=None, habilitados=None):
-
         for cri in criterios:
             (tk.Label(self, text=cri, bg=FONDO)
              .grid(row=criterios.index(cri) + 1, column=0, padx=35, sticky='e'))
@@ -410,20 +410,25 @@ class FieldFrame(tk.Frame):
             entr.grid(row=self.valores.index(val) + 1, column=1, ipadx=45, padx=35, sticky='w')
             self.entries_val.append(entr)
 
-    def aceptar(self, entries_val, criterios):
+    def al_aceptar(self):
+        result = self.aceptar()
+        if self.aceptar_callback:
+            self.aceptar_callback(result)  # llamar el callback con los valores obtenidos
+
+    def aceptar(self):
         try:
             # Buscar si hay algun campo vacio
-            for entry in entries_val:
+            for entry in self.entries_val:
                 if entry.get() == '':
-                    raise ExceptionCampoVacio(entries_val, criterios)
+                    raise ExceptionCampoVacio(self.entries_val, self.criterios)
 
                 # retornar los valores dentro de las entries
-                return list(map(lambda entry: entry.get(), entries_val))
+                return list(map(lambda entry: entry.get(), self.entries_val))
 
         # TODO mas manejo de exepciones
         except ExceptionCampoVacio:
             # volver a colorear los campos invalidos una vez que se cierre la ventana emergente
-            for entry in entries_val:
+            for entry in self.entries_val:
                 entry.config(bg='white')
 
     def cancelar(self, entries_val):
@@ -494,9 +499,14 @@ class FieldFrameProducto(tk.Frame):
             valores = [str(self.producto_actual.getId()), self.producto_actual.getNombre(), str(self.producto_actual.getPrecio()), str(self.producto_actual.getCantidad()), str(self.producto_actual.getFechaLanzamiento())]
             cri_habilitados = [False, False, False, False, False]
 
+            def al_aceptar_callback(resultado):
+                print("Acepted values:", resultado)
+                FieldFrameProducto.carrito.extend(resultado)
+
             self.subframe2 = tk.Frame(self.framemain, bg=FONDO, bd=0)
             self.subframe2.grid(row=1, column=0)
-            FieldFrame(self.subframe2, 'Dato', criterios, 'Valor', valores, cri_habilitados).grid(row=0, column=0, padx=15, pady=15)
+            (FieldFrame(self.subframe2, 'Dato', criterios, 'Valor', valores, cri_habilitados, aceptar_callback=al_aceptar_callback)
+                        .grid(row=0, column=0, padx=15, pady=15))
             # TODO que fieldframe tambien reciba el comando de aceptar para que se pueda hacer la modificacion, o que aceptar devuelva los valores y asi agregarlos al carrito en fieldframeproducto
 
         # Boton para insertar producto seleccionado
