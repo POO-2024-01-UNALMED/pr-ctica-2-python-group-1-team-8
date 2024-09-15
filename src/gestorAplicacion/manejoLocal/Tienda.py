@@ -98,20 +98,38 @@ class Tienda:
         if orden is not None:
             self._reabastecimientos.append(orden)
 
-    def get_productos_categoria(self, categoria):
+    def get_productos_categoria_inventario(self, categoria, tipo_inventario=None):
+        invent = []
+        match tipo_inventario:
+            case None:
+                invent = self._inventario
+            case "prestamo":
+                invent = self._inventarioPrestamo
+            case "usado":
+                invent = self._inventarioUsado
+
         if categoria == "Consola":
             from src.gestorAplicacion.productos.Consola import Consola
-            return [p for p in self._inventario if isinstance(p, Consola)]
+            return [p for p in invent if isinstance(p, Consola)]
         elif categoria == "Juego":
-            return [p for p in self._inventario if isinstance(p, Juego)]
+            return [p for p in invent if isinstance(p, Juego)]
         elif categoria == "Accesorio":
             from src.gestorAplicacion.productos.Accesorio import Accesorio
-            return [p for p in self._inventario if isinstance(p, Accesorio)]
+            return [p for p in invent if isinstance(p, Accesorio)]
 
-    def buscar_producto_id(self, id):
-        for p in self._inventario:
-            if p.id == id:
-                return p
+    def buscar_producto_id(self, id, tipo_inventario=None):
+        if tipo_inventario is None:
+            for p in self._inventario:
+                if p.id == id:
+                    return p
+        elif tipo_inventario == "prestamo":
+            for p in self._inventarioPrestamo:
+                if p.id == id:
+                    return p
+        elif tipo_inventario == "usado":
+            for p in self._inventarioUsado:
+                if p.id == id:
+                    return p
         return None
 
 
