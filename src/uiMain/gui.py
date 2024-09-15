@@ -1,3 +1,4 @@
+import copy
 import tkinter as tk
 import tkinter.messagebox as messagebox
 from tkinter import ttk
@@ -501,14 +502,44 @@ class FieldFrameProducto(tk.Frame):
             cri_habilitados = [False, False, False, False, False]
 
             def al_aceptar_callback(resultado):
-                print("Acepted values:", resultado)
-                FieldFrameProducto.carrito.extend(resultado)
+                # buscar id del producto recibido en el inventario de la tienda actual
+                producto_en_field = tienda_actual.buscar_producto_id(int(resultado[0]))
+
+                try:
+                    # identificar producto en el carrito si ya esta
+                    producto_en_carrito = None
+                    for producto in self.carrito:
+                        if producto.getId() == producto_en_field.getId():  # Si el producto es reconocido
+                            producto_en_carrito = producto
+                            # Si la cantidad es insuficiente
+                            if producto_en_field.getCantidad() - producto_en_carrito.getCantidad() == 0:
+                                raise ExceptionCantidadInvalida()
+                            break
+
+
+                    if producto_en_carrito is not None:
+                        producto_en_carrito.setCantidad(producto_en_carrito.getCantidad() + 1)
+                    else:
+                        # Agregar clon del producto al carrito
+                        # la idea de usar un clon es para que el carrito maneje un atributo cantidad independiente
+                        if producto_en_field.getCantidad() == 0: # Si la cantidad es insuficiente
+                            raise ExceptionCantidadInvalida()
+                        producto_clonado = copy.deepcopy(producto_en_field)
+                        producto_clonado.setCantidad(1)
+                        self.carrito.append(producto_clonado)
+
+                    # mostrar nuevo total del carrito en la entry correspondiente
+                    self.entry_total_carrito.config(state='normal')
+                    self.entry_total_carrito.delete(0, tk.END)
+                    self.entry_total_carrito.insert(0, str(sum(map(lambda prod: prod.getPrecio(), self.carrito))))
+                    self.entry_total_carrito.config(state='disabled')
+                except ExceptionCantidadInvalida:
+                    pass
 
             self.subframe2 = tk.Frame(self.framemain, bg=FONDO, bd=0)
             self.subframe2.grid(row=1, column=0)
             (FieldFrame(self.subframe2, 'Dato', criterios, 'Valor', valores, cri_habilitados, aceptar_callback=al_aceptar_callback)
                         .grid(row=0, column=0, padx=15, pady=15))
-            # TODO que fieldframe tambien reciba el comando de aceptar para que se pueda hacer la modificacion, o que aceptar devuelva los valores y asi agregarlos al carrito en fieldframeproducto
 
         # Boton para insertar producto seleccionado
         self.boton_producto = tk.Button(self.subframe1, text='Insertar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=lambda: identificar_producto())
@@ -523,7 +554,8 @@ class FieldFrameProducto(tk.Frame):
         subframe3.rowconfigure((0, 1), weight=1, uniform='b')
 
         tk.Label(subframe3, text='Total', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, padx=15, pady=15, sticky='e')
-        tk.Entry(subframe3, state='disabled').grid(row=0, column=1, padx=15, pady=15, sticky='w')
+        self.entry_total_carrito = tk.Entry(subframe3, state='disabled')
+        self.entry_total_carrito.grid(row=0, column=1, padx=15, pady=15, sticky='w')
 
         tk.Button(subframe3, text='Comprar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0).grid(row=1, column=0, padx=15, pady=15, sticky='e')
         tk.Button(subframe3, text='Limpiar carrito', font=('Arial', 7, 'bold'), bg=POWER, bd=0).grid(row=1, column=1, padx=15, pady=15, sticky='w')
