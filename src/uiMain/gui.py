@@ -328,7 +328,7 @@ class VentanaSecundaria:
             prueba_subfieldframe.grid(row=0, column=0, sticky='nswe', padx=40, pady=40)
 
         def llamar_prestamo():
-            prueba_subfieldframe = FieldFramePrestamo(self.root, local)
+            prueba_subfieldframe = FieldFramePrestamo(self.root, local, fecha)
             prueba_subfieldframe.grid(row=0, column=0, sticky='nswe', padx=40, pady=40)
 
         def llamar_administrar():
@@ -491,7 +491,7 @@ class FieldFrameProducto(tk.Frame):
 
         # Crear combobox con listado de productos segun la categoria ingresada
         def identificar_categoria_nombres(cat:str):
-            return list(map(lambda producto: producto.getNombre(), self.tienda_actual.get_productos_categoria(cat)))
+            return list(map(lambda producto: producto.getNombre(), self.tienda_actual.get_productos_categoria_inventario(cat)))
 
         self.listado_productos = []
         self.combobox_producto = ttk.Combobox(self.subframe1)
@@ -499,7 +499,7 @@ class FieldFrameProducto(tk.Frame):
         def crear_listado(frame):
             listado_default = tk.StringVar(value='Elige un producto')
             listado_nombres = identificar_categoria_nombres(self.combobox_categoria.get())
-            self.listado_productos = self.tienda_actual.get_productos_categoria(self.combobox_categoria.get())
+            self.listado_productos = self.tienda_actual.get_productos_categoria_inventario(self.combobox_categoria.get())
 
             self.combobox_producto.config(values=listado_nombres, textvariable=listado_default)
             self.combobox_producto.grid(row=1, column=1, padx=15, pady=15)
@@ -752,9 +752,202 @@ class FieldFrameProducto(tk.Frame):
         tk.Button(mainframe_cliente, text='Nuevo', font=('Arial', 7, 'bold'), bg=POWER, bd=0, command=crear_cliente).grid(row=1, column=1, padx=15, pady=15, sticky='w')
 
 class FieldFramePrestamo(FieldFrameProducto):
-    def __init__(self, ventana, tienda_actual):
+    def __init__(self, ventana, tienda_actual, fecha_actual):
         super().__init__(ventana, tienda_actual)
+        self.fecha_actual = fecha_actual
+        self.hay_vencidos = False
 
+    def identificar_producto(self):
+        self.framemain.rowconfigure((0,2), weight=1, uniform='a')
+        self.framemain.rowconfigure(1, weight=4, uniform='a')
+        self.framemain.columnconfigure(0, weight=1, uniform='b')
+
+        self.subframe1 = tk.Frame(self.framemain, bg=FONDO, bd=0)
+        self.subframe1.grid(row=0, column=0, sticky='s')
+        self.subframe1.rowconfigure((0, 1), weight=1, uniform='aa')
+        self.subframe1.columnconfigure((0, 1, 2), weight=1, uniform='bb')
+
+        # Titulos
+        tk.Label(self.subframe1, text='Categoria', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, padx=15, sticky='e')
+        tk.Label(self.subframe1, text='Producto', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=1, column=0, padx=15, sticky='e')
+
+        # Comboboxes
+        categorias = ['Consola', 'Juego', 'Accesorio']
+
+        categoria_default = tk.StringVar(value='Elige una categoria')
+        self.combobox_categoria = ttk.Combobox(self.subframe1, values=categorias, textvariable=categoria_default)
+        self.combobox_categoria.grid(row=0, column=1, padx=15, pady=15)
+
+        # Crear combobox con listado de productos segun la categoria ingresada
+        def identificar_categoria_nombres(cat:str):
+            return list(map(lambda producto: producto.getNombre(), self.tienda_actual.get_productos_categoria_inventario(cat, 'prestamo')))
+
+        self.listado_productos = []
+        self.combobox_producto = ttk.Combobox(self.subframe1)
+
+        def crear_listado(frame):
+            listado_default = tk.StringVar(value='Elige un producto')
+            listado_nombres = identificar_categoria_nombres(self.combobox_categoria.get())
+            self.listado_productos = self.tienda_actual.get_productos_categoria_inventario(self.combobox_categoria.get(), 'prestamo')
+
+            self.combobox_producto.config(values=listado_nombres, textvariable=listado_default)
+            self.combobox_producto.grid(row=1, column=1, padx=15, pady=15)
+
+        # Boton para crear combobox listado
+        self.boton_listado = tk.Button(self.subframe1, text='Buscar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=lambda: crear_listado(self.subframe1))
+        self.boton_listado.grid(row=0, column=2, padx=15, pady=15, sticky='w')
+
+        # Insertar producto seleccionado
+        self.producto_actual = None
+        def insertar_producto():
+            self.producto_actual = self.listado_productos[self.combobox_producto.current()]
+            # Espacio del FieldFrame
+            criterios = ['ID', 'Nombre', 'Precio', 'Cantidad', 'Fecha de lanzamiento']
+            valores = [str(self.producto_actual.getId()), self.producto_actual.getNombre(), str(self.producto_actual.getPrecio()), str(self.producto_actual.getCantidad()), str(self.producto_actual.getFechaLanzamiento())]
+            cri_habilitados = [False, False, False, False, False]
+
+            def al_aceptar_callback(resultado):
+                # buscar id del producto recibido en el inventario de la tienda actual
+                producto_en_field = self.tienda_actual.buscar_producto_id(int(resultado[0]), 'prestamo')
+
+                try:
+                    # identificar producto en el carrito si ya esta
+                    producto_en_carrito = None
+                    for producto in self.carrito:
+                        if producto.getId() == producto_en_field.getId():  # Si el producto es reconocido
+                            producto_en_carrito = producto
+                            # Si la cantidad es insuficiente
+                            if producto_en_field.getCantidad() - producto_en_carrito.getCantidad() == 0:
+                                raise ExceptionCantidadInvalida()
+                            break
+
+
+                    if producto_en_carrito is not None:
+                        producto_en_carrito.setCantidad(producto_en_carrito.getCantidad() + 1)
+                    else:
+                        # Agregar clon del producto al carrito
+                        # la idea de usar un clon es para que el carrito maneje un atributo cantidad independiente
+                        if producto_en_field.getCantidad() == 0: # Si la cantidad es insuficiente
+                            raise ExceptionCantidadInvalida()
+                        producto_clonado = copy.deepcopy(producto_en_field)
+                        producto_clonado.setCantidad(1)
+                        self.carrito.append(producto_clonado)
+
+                    # mostrar nuevo total del carrito en la entry correspondiente
+                    self.entry_total_carrito.config(state='normal')
+                    self.entry_total_carrito.delete(0, tk.END)
+                    nuevo_total = str(sum(map(lambda prod: prod.getPrecio() * prod.getCantidad(), self.carrito)))
+                    self.entry_total_carrito.insert(0, nuevo_total)
+                    self.entry_total_carrito.config(state='disabled')
+                except ExceptionCantidadInvalida:
+                    pass
+
+            self.subframe2 = tk.Frame(self.framemain, bg=FONDO, bd=0)
+            self.subframe2.grid(row=1, column=0)
+            (FieldFrame(self.subframe2, 'Dato', criterios, 'Valor', valores, cri_habilitados, aceptar_callback=al_aceptar_callback)
+                        .grid(row=0, column=0, padx=15, pady=15))
+
+        # Boton para insertar producto seleccionado
+        self.boton_producto = tk.Button(self.subframe1, text='Insertar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=lambda: insertar_producto())
+        self.boton_producto.grid(row=1, column=2, padx=15, pady=15, sticky='w')
+
+        self.total_carrito()
+
+    # Metodo estatico que genera temporalmente un frame para la creacion de un cliente
+    def identificar_cliente(self, frame_c):
+        frame_c.rowconfigure(0, weight=1, uniform='a')
+        frame_c.columnconfigure(0, weight=1, uniform='b')
+
+        # Crear frame para identificar o crear un cliente que despues se destruira
+        mainframe_cliente = tk.Frame(frame_c, bg=FONDO, bd=0)
+        mainframe_cliente.grid(row=0, column=0)
+
+        # Columnas y filas
+        mainframe_cliente.columnconfigure((0, 1), weight=1, uniform='f')
+        mainframe_cliente.rowconfigure((0, 1), weight=1, uniform='g')
+
+        def cliente_existente():
+            self.limpiar_frame(mainframe_cliente)
+
+            def al_cliente_existente_callback(resultado):
+                try:
+                    cliente_encontrado = Cliente.buscar_cliente(int(resultado[0]))
+                    if cliente_encontrado is None:
+                        raise ExceptionNoEncontrado('Cliente')
+
+                    self.cliente_actual = cliente_encontrado
+
+                    messagebox.showinfo('Cliente encontrado', f'Cliente {cliente_encontrado.get_nombre()} identificado con exito\n') #TODO recomendaciones
+
+                    # Comprobacion de prestamos vencidos
+                    self.hay_vencidos = False
+                    for prestamo in self.cliente_actual.get_prestamos():
+                        if prestamo.get_fecha_fin() < self.fecha_actual:
+                            prestamo.set_estado('Vencido')
+                            self.hay_vencidos = True
+
+                    # Elegir entre devolver o realizar prestamo
+                    mainframe_cliente.destroy()
+                    self.elegir_prestar_devolver()
+                except ExceptionNoEncontrado:
+                    pass
+
+            # fieldframe para identificacion
+            criterios_cliente = ['Identificacion']
+            FieldFrame(mainframe_cliente, 'Dato', criterios_cliente, 'Valor', None, None, aceptar_callback=al_cliente_existente_callback).grid(row=0, column=0, rowspan=2, columnspan=2)
+
+        def crear_cliente():
+            self.limpiar_frame(mainframe_cliente)
+
+            def al_crear_cliente_callback(resultado):
+                cedula = int(resultado[0])
+                nombre = resultado[1]
+                correo = resultado[2]
+                telefono = resultado[3]
+
+                # Crear cliente
+                cliente_creado = Cliente(cedula, nombre, correo, telefono)
+
+                self.cliente_actual = cliente_creado
+
+                messagebox.showinfo('Cliente creado', f'Cliente {nombre} creado con exito')
+                mainframe_cliente.destroy()
+                self.identificar_producto()
+
+            # fieldframe para creacion
+            criterios_cliente = ['Identificacion', 'Nombre', 'Correo', 'Telefono']
+            FieldFrame(mainframe_cliente, 'Dato', criterios_cliente, 'Valor', None, None, aceptar_callback=al_crear_cliente_callback).grid(row=0, column=0, rowspan=2, columnspan=2)
+
+        tk.Label(mainframe_cliente, text='¿El cliente esta registrado o es nuevo?', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, columnspan=2, padx=15, pady=15, ipadx=30)
+        # Botones
+        tk.Button(mainframe_cliente, text='Registrado', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=cliente_existente).grid(row=1, column=0, padx=15, pady=15, sticky='e')
+        tk.Button(mainframe_cliente, text='Nuevo', font=('Arial', 7, 'bold'), bg=POWER, bd=0, command=crear_cliente).grid(row=1, column=1, padx=15, pady=15, sticky='w')
+
+    def elegir_prestar_devolver(self):
+        self.limpiar_frame(self.framemain)
+
+        self.framemain.columnconfigure(0, weight=1, uniform='a')
+        self.framemain.rowconfigure(0, weight=1, uniform='b')
+
+        subframe1 = tk.Frame(self.framemain, bg=FONDO, bd=0)
+        subframe1.grid(row=0, column=0)
+        subframe1.rowconfigure((0, 1), weight=1, uniform='a')
+        subframe1.columnconfigure((0, 1), weight=1, uniform='b')
+
+        tk.Label(subframe1, text='¿Desea prestar o devolver un producto?', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, columnspan=2, padx=15, pady=15, ipadx=30)
+        tk.Button(subframe1, text='Prestar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=self.prestar).grid(row=1, column=0, padx=15, pady=15, sticky='e')
+        tk.Button(subframe1, text='Devolver', font=('Arial', 7, 'bold'), bg=POWER, bd=0, command=self.devolver).grid(row=1, column=1, padx=15, pady=15, sticky='w')
+
+    def prestar(self):
+        if self.hay_vencidos:
+            messagebox.showinfo('Prestamo no disponible', 'No se puede realizar prestamo, el cliente tiene prestamos vencidos')
+            return
+
+
+        #TODO pantalla de identificacion de productos
+
+    def devolver(self):
+        pass
 
 
 
