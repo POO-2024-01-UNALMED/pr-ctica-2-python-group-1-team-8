@@ -108,6 +108,12 @@ class Tienda:
             from src.gestorAplicacion.productos.Accesorio import Accesorio
             return [p for p in self._inventario if isinstance(p, Accesorio)]
 
+    def buscar_producto_id(self, id):
+        for p in self._inventario:
+            if p.id == id:
+                return p
+        return None
+
 
 # Getters y setters
     def get_nombre(self):
