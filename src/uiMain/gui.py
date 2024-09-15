@@ -10,11 +10,14 @@ from src.gestorAplicacion.manejoLocal.Fecha import Fecha
 from src.gestorAplicacion.manejoLocal.Tienda import Tienda
 
 import pickle
+
+from src.gestorAplicacion.personas.Cliente import Cliente
+
 # TODO importar los objetos serializados
 deserializarLocales = open("../temp/locales.txt", "rb")
 locales = pickle.load(deserializarLocales)
 deserializarClientes = open("../temp/clientes.txt", "rb")
-clientes = pickle.load(deserializarClientes)
+Cliente.clientes = pickle.load(deserializarClientes)
 
 class VentanaPrincipal:
     # Atributos de clase
@@ -399,7 +402,10 @@ class FieldFrame(tk.Frame):
              .grid(row=criterios.index(cri) + 1, column=0, padx=35, sticky='e'))
 
         self.entries_val = [] # Lista para registrar cada entry
-        for val in self.valores:
+
+        for i in range(len(self.valores)):
+            val = self.valores[i]
+            fila = i + 1
             entr = tk.Entry(self)
 
             # Insertar valor inicial en el Entry si corresponde
@@ -408,7 +414,7 @@ class FieldFrame(tk.Frame):
 
             # Habilitar o deshabilitar los Entry segun la lista habilitados
             if habilitados is not None: entr.config(state='normal' if habilitados[self.valores.index(val)] else 'disabled')
-            entr.grid(row=self.valores.index(val) + 1, column=1, ipadx=45, padx=35, sticky='w')
+            entr.grid(row=fila, column=1, ipadx=45, padx=35, sticky='w')
             self.entries_val.append(entr)
 
     # Este metodo llama al metodo callback que se le ingrese al inicializado para que se pueda retornar el resultado de darle click al boton aceptar
@@ -446,10 +452,12 @@ class FieldFrame(tk.Frame):
 
 class FieldFrameProducto(tk.Frame):
     # TODO destruir este frame y colocar el de pago al presionar Comprar
-    carrito = []
 
     def __init__(self, ventana, tienda_actual):
         super().__init__(ventana, bg=FONDO)
+
+        self.carrito = []
+        self.tienda_actual = tienda_actual
 
         self.framemain = tk.Frame(ventana, bg=FONDO)
         self.framemain.grid(row=0, column=0, sticky='nswe')
@@ -531,7 +539,8 @@ class FieldFrameProducto(tk.Frame):
                     # mostrar nuevo total del carrito en la entry correspondiente
                     self.entry_total_carrito.config(state='normal')
                     self.entry_total_carrito.delete(0, tk.END)
-                    self.entry_total_carrito.insert(0, str(sum(map(lambda prod: prod.getPrecio(), self.carrito))))
+                    nuevo_total = str(sum(map(lambda prod: prod.getPrecio() * prod.getCantidad(), self.carrito)))
+                    self.entry_total_carrito.insert(0, nuevo_total)
                     self.entry_total_carrito.config(state='disabled')
                 except ExceptionCantidadInvalida:
                     pass
@@ -557,12 +566,105 @@ class FieldFrameProducto(tk.Frame):
         self.entry_total_carrito = tk.Entry(subframe3, state='disabled')
         self.entry_total_carrito.grid(row=0, column=1, padx=15, pady=15, sticky='w')
 
-        tk.Button(subframe3, text='Comprar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0).grid(row=1, column=0, padx=15, pady=15, sticky='e')
+        tk.Button(subframe3, text='Comprar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=self.pantalla_pago).grid(row=1, column=0, padx=15, pady=15, sticky='e')
         tk.Button(subframe3, text='Limpiar carrito', font=('Arial', 7, 'bold'), bg=POWER, bd=0).grid(row=1, column=1, padx=15, pady=15, sticky='w')
 
-    def limpiar_frame(self):
-        for widget in self.framemain.winfo_children():
+    @staticmethod
+    def limpiar_frame(frame):
+        for widget in frame.winfo_children():
             widget.destroy()
+
+    def pantalla_pago(self):
+        if len(self.carrito) == 0: # Si el carrito esta vacio, no hacer nada
+            return
+
+        self.limpiar_frame(self.framemain)
+        subframe = tk.Frame(self.framemain, bg=FONDO, bd=0)
+        subframe.grid(row=0, column=0, rowspan=2)
+        subframe.columnconfigure(0, weight=1, uniform='a')
+        subframe.rowconfigure(0, weight=8, uniform='b')
+        subframe.rowconfigure((1,2), weight=1, uniform='b')
+
+        def calcular_descuentos(carrito, cliente):
+            total_final = 0
+            puntos_usados = 0
+
+            for prod in carrito:
+                precio_final_individual = 0
+                valor_temp = 0
+
+                if prod.getDescuento() > 0: # En caso de que el producto tenga descuento
+                    if prod.getPuntosRequeridos() == 0: # En caso de que el producto no requiera puntos
+                        valor_temp = prod.getPrecio() * prod.getCantidad()
+                        precio_final_individual = valor_temp - (valor_temp * prod.getDescuento() / 100) # calcular descuento
+                        total_final += precio_final_individual
+
+                    elif prod.getPuntosRequeridos() > 0 and (cliente.get_puntos_fidelidad() - puntos_usados) >= prod.getPuntosRequeridos():
+                        valor_temp = prod.getPrecio() * prod.getCantidad()
+                        precio_final_individual = valor_temp - (valor_temp * prod.getDescuento() / 100)
+                        total_final += precio_final_individual
+
+                        puntos_usados += prod.getPuntosRequeridos()
+                    else: # En caso de que el cliente no tenga suficientes puntos
+                        total_final += prod.getPrecio() * prod.getCantidad()
+
+                else: # En caso de que el producto no tenga descuento
+                    total_final += prod.getPrecio() * prod.getCantidad()
+
+            return total_final, puntos_usados
+
+        def confirmacion_pago(carrito, total, cliente, puntos, empleado):
+            # Reflejar productos del carrito en el inventario del local
+            for prod in carrito:
+                prod_actual = self.tienda_actual.buscar_producto_id(prod.getId())
+                prod_actual.setCantidad(prod_actual.getCantidad() - prod.getCantidad())
+
+            # Actualizar puntos de fidelidad del cliente
+            cliente.set_puntos_fidelidad(cliente.get_puntos_fidelidad() - puntos)
+
+            # Limpiar carrito
+            messagebox.showinfo('Compra realizada', f'Compra realizada con exito\nTotal: {total}\nPuntos usados: {puntos}\nEmpleado: {empleado.get_nombre()}')
+            self.limpiar_frame(self.framemain)
+            self.framemain.destroy()
+            self.destroy()
+
+        def al_confirmar_personal_callback(resultado):
+            try:
+                from src.gestorAplicacion.personas.Empleado import Empleado
+                cliente = Cliente.buscar_cliente(int(resultado[1]))
+                empleado = Empleado.buscar_empleado(int(resultado[2]), self.tienda_actual)
+
+                # Comprobar que el cliente exista
+                if cliente is None:
+                    raise ExceptionNoEncontrado('Cliente')
+
+                # Comprobar que el empleado exista
+                if empleado is None:
+                    raise ExceptionNoEncontrado('Empleado')
+
+                # Entry con el pago total con descuentos aplicados
+                pago_total, puntos_usados = calcular_descuentos(self.carrito, Cliente.buscar_cliente(int(resultado[1])))
+
+                total_entry = tk.Entry(subframe)
+                total_entry.insert(0, str(pago_total))
+                total_entry.grid(row=1, column=0, padx=15, pady=5)
+                total_entry.config(state='disabled')
+
+                # Boton para completar la compra
+                (tk.Button(subframe, text='Completar compra', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=lambda: confirmacion_pago(self.carrito, pago_total, cliente, puntos_usados, empleado))
+                            .grid(row=2, column=0, padx=15, pady=5))
+
+            except ExceptionNoEncontrado:
+                pass
+
+        # TODO ventana de creacion de cliente. Se llamara en caso de levantarse una excepcion ClienteNoEncontrado
+        criterios_pago = ['Subtotal', 'Identificacion cliente', 'Identificacion empleado']
+        subtotal = sum(map(lambda prod: prod.getPrecio() * prod.getCantidad(), self.carrito))
+        valores_pago = [str(subtotal), None, None]
+
+        FieldFrame(subframe, 'Dato', criterios_pago, 'Valor', valores_pago, [False, True, True], aceptar_callback=al_confirmar_personal_callback).grid(row=0, column=0, padx=15, pady=15)
+
+
 
 class FieldFrameAdministrar(tk.Frame):
     def __init__(self,ventana,tienda_actual:Tienda):
@@ -603,8 +705,8 @@ class ExceptionCantidadInvalida(ExceptionLogica):
         super().__init__('Este local no posee suficientes unidades de este producto')
 
 class ExceptionNoEncontrado(ExceptionLogica):
-    def __init__(self):
-        super().__init__('No se encontro ninguna instancia con este dato')
+    def __init__(self, tipo):
+        super().__init__(f'No se encontro ninguna instancia del tipo {tipo} con este valor')
 
 # Grupo 2
 class ExceptionCampos(ErrorAplicacion):
