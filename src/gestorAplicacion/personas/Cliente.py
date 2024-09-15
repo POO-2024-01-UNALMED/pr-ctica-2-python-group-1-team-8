@@ -1,12 +1,24 @@
+from multimethod import multimethod
+
 from src.gestorAplicacion.personas.Persona import Persona
 
 class Cliente(Persona):
     clientes = []
 
-    #Constructor
+    # Constructor
+    @multimethod
     def __init__(self, cedula, nombre, correo, telefono, puntos_fidelidad):
         super().__init__(cedula, nombre, correo, telefono)
         self._puntos_fidelidad = puntos_fidelidad
+        self._prestamos = []
+        self._compras = []
+        Cliente.clientes.append(self)
+
+    # Constructor sin puntos de fidelidad
+    @multimethod
+    def __init__(self, cedula, nombre, correo, telefono):
+        super().__init__(cedula, nombre, correo, telefono)
+        self._puntos_fidelidad = 0
         self._prestamos = []
         self._compras = []
         Cliente.clientes.append(self)
