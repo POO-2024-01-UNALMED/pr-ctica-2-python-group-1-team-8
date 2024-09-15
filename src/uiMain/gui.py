@@ -326,7 +326,21 @@ class VentanaSecundaria:
         def llamar_administrar():
             prueba_subfieldframe = FieldFrameAdministrar(self.root, local)
             prueba_subfieldframe.grid(row=0, column=0, sticky='nswe', padx=40, pady=40)
-
+        def revisar_producto():
+            self.subframe2 = tk.Frame(self.framemain,bg=FONDO,bd=0)
+            self.subframe2.grid(row=1,column=0)
+            (FieldFrame(self.subframe2,'Dato',['ID','Nombre','Precio','Cantidad','Fecha de lanzamiento'],'Valor',['1','Juego1','10000','10','01/01/2021'])
+             .grid(row=0,column=0,padx=15,pady=15))
+        def modificar_producto():
+            self.subframe2 = tk.Frame(self.framemain,bg=FONDO,bd=0)
+            self.subframe2.grid(row=1,column=0)
+            (FieldFrame(self.subframe2,'Dato',['ID','Nombre','Precio','Cantidad','Fecha de lanzamiento'],'Valor',['1','Juego1','10000','10','01/01/2021'])
+             .grid(row=0,column=0,padx=15,pady=15))
+        def revisar_prioridad():
+            self.subframe2 = tk.Frame(self.framemain,bg=FONDO,bd=0)
+            self.subframe2.grid(row=1,column=0)
+            (FieldFrame(self.subframe2,'Dato',['ID','Nombre','Precio','Cantidad','Fecha de lanzamiento'],'Valor',['1','Juego1','10000','10','01/01/2021'])
+             .grid(row=0,column=0,padx=15,pady=15))
         # Menubar
         menubar = tk.Menu(self.root)
 
@@ -538,7 +552,7 @@ class FieldFrameAdministrar(tk.Frame):
 
         self.framemain = tk.Frame(ventana,bg=FONDO)
         self.framemain.grid(row=0,column=0,sticky='nswe')
-        self.framemain.rowconfigure((0,2),weight=1,uniform='a')
+        self.framemain.rowconfigure((0,2),weight=4,uniform='a')
         self.framemain.rowconfigure(1,weight=4,uniform='a')
         self.framemain.columnconfigure(0,weight=1,uniform='b')
 
@@ -548,8 +562,15 @@ class FieldFrameAdministrar(tk.Frame):
         self.subframe1.columnconfigure((0,1,2),weight=1,uniform='bb')
 
         #titulos
-        tk.Label(self.subframe1,text='prueba1',font=('Arial',11,'bold'),bg=FONDO).grid(row=0,column=0,padx=15,sticky='e')
-        tk.Label(self.subframe1,text='prueba2',font=('Arial',11,'bold'),bg=FONDO).grid(row=1,column=0,padx=15,sticky='e')
+        tk.Label(self.subframe1,text='prueba1',font=('Arial',11,'bold'),bg=FONDO).grid(row=0,column=1,padx=15,sticky='w')
+        tk.Label(self.subframe1,text='prueba2',font=('Arial',11,'bold'),bg=FONDO).grid(row=1,column=1,padx=15,sticky='w')
+
+        #Botones
+        (tk.Button(self.subframe1,text='Revisar productos',bg=RESALTO,bd=0,command=lla)).grid(row=0,column=0,padx=15,pady=15,sticky='e')
+        tk.Button(self.subframe1, text='Modificar producto', bg=RESALTO, bd=0).grid(row=1, column=0, padx=15, pady=15, sticky='e')
+        tk.Button(self.subframe1, text='Revisar prioridad', bg=RESALTO, bd=0).grid(row=2, column=0, padx=15, pady=15, sticky='e')
+
+       #Metodos
 
 # Excepciones
 class ErrorAplicacion(Exception):
