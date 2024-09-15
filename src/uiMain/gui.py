@@ -410,6 +410,7 @@ class FieldFrame(tk.Frame):
             entr.grid(row=self.valores.index(val) + 1, column=1, ipadx=45, padx=35, sticky='w')
             self.entries_val.append(entr)
 
+    # Este metodo llama al metodo callback que se le ingrese al inicializado para que se pueda retornar el resultado de darle click al boton aceptar
     def al_aceptar(self):
         result = self.aceptar()
         if self.aceptar_callback:
