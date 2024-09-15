@@ -681,7 +681,7 @@ class FieldFrameProducto(tk.Frame):
         combobox_empleado.grid(row=1, column=1, padx=15, pady=15, sticky='w')
 
         # Boton para confirmar empleado
-        tk.Button(subframe_subtotal_empleado, text='Confirmar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=al_confirmar_personal).grid(row=2, column=1, columnspan=2, padx=15, pady=15)
+        tk.Button(subframe_subtotal_empleado, text='Confirmar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=al_confirmar_personal).grid(row=2, column=0, columnspan=2, padx=15, pady=15)
 
 
     # Metodo estatico que genera temporalmente un frame para la creacion de un cliente
