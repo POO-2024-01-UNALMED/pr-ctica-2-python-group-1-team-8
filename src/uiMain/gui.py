@@ -1,5 +1,6 @@
 import tkinter as tk
 import tkinter.messagebox as messagebox
+from random import uniform
 from tkinter import ttk
 
 from PIL import Image, ImageTk
@@ -533,42 +534,69 @@ class FieldFrameProducto(tk.Frame):
             widget.destroy()
 
 class FieldFrameAdministrar(tk.Frame):
+    tienda_actual:Tienda = None
     def __init__(self,ventana,tienda_actual:Tienda):
         super().__init__(ventana,bg=FONDO)
 
+        tienda_actual = tienda_actual
+
         self.framemain = tk.Frame(ventana,bg=FONDO)
         self.framemain.grid(row=0,column=0,sticky='nswe')
-        self.framemain.rowconfigure((0,2),weight=4,uniform='a')
-        self.framemain.rowconfigure(1,weight=4,uniform='a')
+        self.framemain.rowconfigure(0,weight=1,uniform='a')
         self.framemain.columnconfigure(0,weight=1,uniform='b')
 
         self.subframe1 = tk.Frame(self.framemain,bg=FONDO,bd=0)
-        self.subframe1.grid(row=0,column=0,sticky='s')
-        self.subframe1.rowconfigure((0,1),weight=1,uniform='aa')
-        self.subframe1.columnconfigure((0,1,2),weight=1,uniform='bb')
+        self.subframe1.grid(row=0,column=0,sticky='nswe')
+        self.subframe1.rowconfigure((0,5),weight=3,uniform='aa')
+        self.subframe1.rowconfigure((1,2,3,4),weight=2,uniform='aa')
+        self.subframe1.columnconfigure((0,2),weight=2,uniform='bb')
+        self.subframe1.columnconfigure(1,weight=1,uniform='bb')
 
         #titulos
-        tk.Label(self.subframe1,text='prueba1',font=('Arial',11,'bold'),bg=FONDO).grid(row=0,column=1,padx=15,sticky='w')
-        tk.Label(self.subframe1,text='prueba2',font=('Arial',11,'bold'),bg=FONDO).grid(row=1,column=1,padx=15,sticky='w')
 
         #Botones
-        tk.Button(self.subframe1,text='Revisar productos',bg=RESALTO,bd=0).grid(row=0,column=0,padx=15,pady=15,sticky='e')
-        tk.Button(self.subframe1, text='Modificar producto', bg=RESALTO, bd=0).grid(row=1, column=0, padx=15, pady=15, sticky='e')
-        tk.Button(self.subframe1, text='Revisar prioridad', bg=RESALTO, bd=0).grid(row=2, column=0, padx=15, pady=15, sticky='e')
+        tk.Button(self.subframe1,text='Revisar productos',bg=botoncito,bd=0, command=lambda: self.revisar_producto()).grid(row=1,column=1,padx=15,pady=15,sticky='nswe')
+        tk.Button(self.subframe1, text='Modificar producto', bg=botoncito, bd=0, command= lambda: self.modificar_producto()).grid(row=2, column=1, padx=15, pady=15, sticky='nswe')
+        tk.Button(self.subframe1, text='Revisar prioridad', bg=botoncito, bd=0, command=lambda: self.revisar_prioridad()).grid(row=3, column=1, padx=15, pady=15, sticky='nswe')
+        tk.Button(self.subframe1, text='Regresar', bg=botoncito, bd=0).grid(row=4, column=1, padx=15, pady=15, sticky='nswe')
 
            #Metodos
-        def revisar_producto(self):
-            tk.Label(self.subframe2,text='Descripcion',font=('Arial',11,'bold'),bg=FONDO).grid(row=1,column=0,padx=15,pady=15,sticky='w')
-        def modificar_producto():
-                self.subframe2 = tk.Frame(self.framemain,bg=FONDO,bd=0)
-                self.subframe2.grid(row=1,column=0)
-                (FieldFrame(self.subframe2,'Dato',['ID','Nombre','Precio','Cantidad','Fecha de lanzamiento'],'Valor',['1','Juego1','10000','10','01/01/2021'])
-                 .grid(row=0,column=0,padx=15,pady=15))
-        def revisar_prioridad():
-                self.subframe2 = tk.Frame(self.framemain,bg=FONDO,bd=0)
-                self.subframe2.grid(row=1,column=0)
-                (FieldFrame(self.subframe2,'Dato',['ID','Nombre','Precio','Cantidad','Fecha de lanzamiento'],'Valor',['1','Juego1','10000','10','01/01/2021'])
-                 .grid(row=0,column=0,padx=15,pady=15))
+
+    def revisar_producto(self):
+        self.limpiar_frame(self.subframe1)
+        self.subframe1.grid(row=0, column=0, sticky='nswe')
+        self.subframe1.rowconfigure((0, 3), weight=3, uniform='aa')
+        self.subframe1.columnconfigure((0, 1), weight=1, uniform='bb')
+        tk.Label(self.subframe1, text='Revisar', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, padx=15, pady=15, sticky='e')
+
+        revisar_default = tk.StringVar(value=' - ')
+        self.combobox_eleccion = ttk.Combobox(self.subframe1, values=['Todos', 'Tipo'], textvariable=revisar_default)
+        self.combobox_eleccion.grid(row=0, column=1, padx=15, pady=15, sticky='nswe')
+        tk.Button(self.subframe1, text='Buscar', bg=DETALLES, bd=0,command=lambda:self.eleccion(self.combobox_eleccion.get())).grid(row=0, column=2, padx=15, pady=15, sticky='w')
+    def eleccion(self,opcion):
+
+        if opcion == 'Todos':
+            self.subframe2 = tk.Frame(self.framemain, bg=FONDO, bd=0)
+
+        elif opcion == 'Tipo':
+            self.revisar_tipo()
+
+
+
+
+    def modificar_producto(self):
+        self.limpiar_frame(self.subframe1)
+
+    def revisar_prioridad(self):
+        self.limpiar_frame(self.subframe1)
+
+    def regresar(self):
+        self.limpiar_frame(self.framemain)
+
+    @staticmethod
+    def limpiar_frame(frame):
+        for widget in frame.winfo_children():
+            widget.destroy()
 # Excepciones
 class ErrorAplicacion(Exception):
     def __init__(self, mensaje):
