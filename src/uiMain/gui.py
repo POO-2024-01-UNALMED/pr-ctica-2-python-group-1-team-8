@@ -4,7 +4,7 @@ import tkinter.messagebox as messagebox
 from tkinter import ttk
 
 from PIL import Image, ImageTk
-from colores import *  # Importar colores
+from src.uiMain.colores import *  # Importar colores
 
 import sys
 import os
