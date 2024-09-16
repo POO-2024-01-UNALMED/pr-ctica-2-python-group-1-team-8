@@ -1,4 +1,7 @@
 from re import match
+
+from src.gestorAplicacion.personas.Meta import Meta
+
 totalVentasSemanaActual = 0
 totalVentasMesActual = 0
 totalVentasYearActual = 0
@@ -58,6 +61,18 @@ def inspeccionEmpleado(local, fecha_actual):
 
     #/* ~~~ Modificar Salarios o dias laborales ~~~ */
     while True:
+        try:
+            decision = int(input("¿Qué desea hacer? \n1. Modificar salarios \n2. Modificar dias laborales \n3. Continuar a asignar meta"))
+
+        except ValueError:
+            print("Ingrese un numero valido. Presione enter para volver a intentar")
+            input()
+            continue
+
+        if decision == 1:
+            modificarSalario(empleado)
+
+
 
 
 
@@ -204,6 +219,7 @@ def ampliarMeta(empleado, meta, fecha_actual):
             break
 
 def verRendimiento(empleado, fecha_actual):
+    global option
     while True:
         try:
             option = int(input(f"Desea ver el rendimiento del empleado {empleado.get_nombre()} \n1. Semanal \n2. Mensual \n3. Anual"))
@@ -254,6 +270,7 @@ def verRendimiento(empleado, fecha_actual):
                     break
                 case 2:
                     return option
+
                 case _:
                     print("Ingrese una opcion valida. Presione enter para volver a intentar")
                     input()
@@ -396,7 +413,7 @@ def modifcarDiasLaborales(empleado):
 
         if nuevo_dias < 6 and nuevo_dias > 0:
             empleado.set_dias_laborales(nuevo_dias)
-            print(f"Los dias laborales del empleado {empleado.get_nombre()} han sido actualizados a {dias_laborales}")
+            print(f"Los dias laborales del empleado {empleado.get_nombre()} han sido actualizados a {nuevo_dias}")
             return
 
         else:
@@ -446,5 +463,5 @@ def asignarMeta(empleado):
             input()
             continue
 
-        new Meta(empleado, year_limite, mes_limite, dia_limite, valor_alcanzar, valor_bonificacion)
+        meta = Meta(empleado, year_limite, mes_limite, dia_limite, valor_alcanzar, valor_bonificacion)
         return

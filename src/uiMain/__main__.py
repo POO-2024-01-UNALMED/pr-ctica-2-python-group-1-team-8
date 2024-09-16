@@ -1,15 +1,17 @@
 from gui import VentanaPrincipal
 import pickle
 
+from src.gestorAplicacion.personas.Empleado import Empleado
+
 if __name__ == "__main__":
     # Objetos para pruebas
 
-    #serializar = open("../temp/locales.txt","wb")
-    #pickle.dump(tiendas,serializar)
-    #serializar.close()
-    #serializar1 = open("../temp/clientes.txt", "wb")
-    #pickle.dump(clientes, serializar1)
-    #serializar1.close()
+    # serializar = open("../temp/locales.txt","wb")
+    # pickle.dump(tiendas,serializar)
+    # serializar.close()
+    # serializar1 = open("../temp/clientes.txt", "wb")
+    # pickle.dump(clientes, serializar1)
+    # serializar1.close()
 
 
     deserializarLocales = open("../baseDatos/temp/locales.txt", "rb")
