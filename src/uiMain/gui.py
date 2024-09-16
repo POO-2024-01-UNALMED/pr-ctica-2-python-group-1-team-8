@@ -943,13 +943,61 @@ class FieldFramePrestamo(FieldFrameProducto):
             messagebox.showinfo('Prestamo no disponible', 'No se puede realizar prestamo, el cliente tiene prestamos vencidos')
             return
 
-
         #TODO pantalla de identificacion de productos
 
     def devolver(self):
-        pass
+        self.limpiar_frame(self.framemain)
 
+        subframe1 = tk.Frame(self.framemain, bg=FONDO, bd=0)
+        subframe1.grid(row=0, column=0,sticky='nswe')
+        subframe1.columnconfigure((0,1), weight=1, uniform='a')
+        subframe1.rowconfigure(0, weight=1, uniform='b')
+        subframe1.rowconfigure(1, weight=4, uniform='b')
+        #filas: seleccionar prestamo - boton confirmar prestamo -> dibujar:  mostrar total dias - mostrar total a pagar - mostrar productos en combobox - boton confirmar
 
+        def actualizar_prestamos_activos():
+            values_prestamos = []
+            for prestamo in self.cliente_actual.get_prestamos():
+                if prestamo.get_estado() == 'Activo' or prestamo.get_estado() == 'Vencido':
+                    values_prestamos.append(str(prestamo.get_id()) + ' | Fecha inicio: ' + str(
+                        prestamo.get_fecha_inicio()) + ' | Fecha fin: ' + str(
+                        prestamo.get_fecha_fin()) + ' | Estado: ' + prestamo.get_estado())
+
+            return values_prestamos
+
+        def confirmar_prestamo_seleccionado():
+            # Buscar id del prestamo en la lista de prestamos del cliente
+            try:
+                if self.combobox_prestamo_selec.get() == 'Elige un prestamo' or self.combobox_prestamo_selec.get() == '':
+                    raise ExceptionCampoVacio([self.combobox_prestamo_selec], ['Prestamo'])
+
+                id_prestamo = int(self.combobox_prestamo_selec.get().split(' | ')[0])
+                prestamo_seleccionado = None
+                for prestamo in self.cliente_actual.get_prestamos():
+                    if prestamo.get_id() == id_prestamo:
+                        prestamo_seleccionado = prestamo
+                        break
+
+                if prestamo_seleccionado is None:
+                    raise ExceptionNoEncontrado('Prestamo')
+
+                # Abrir subframe para mostrar total de dias y total a pagar
+                subframe2 = tk.Frame(self.framemain, bg=FONDO, bd=0)
+                subframe2.grid(row=1, column=0)
+                subframe2.columnconfigure(0, weight=1, uniform='a')
+
+            except ExceptionNoEncontrado:
+                pass
+            except ExceptionCampoVacio:
+                pass
+
+        # Seleccionar prestamo
+
+        valor_defecto = tk.StringVar(value='Elige un prestamo')
+        self.combobox_prestamo_selec = ttk.Combobox(subframe1, values=actualizar_prestamos_activos(), textvariable=valor_defecto)
+        self.combobox_prestamo_selec.grid(row=0, column=0, padx=15, pady=15, ipadx=60, sticky='e')
+
+        tk.Button(subframe1, text='Confirmar prestamo', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=confirmar_prestamo_seleccionado).grid(row=0, column=1, padx=15, pady=15, ipadx=60, sticky='w')
 
 class FieldFrameAdministrar(tk.Frame):
     def __init__(self,ventana,tienda_actual:Tienda):
