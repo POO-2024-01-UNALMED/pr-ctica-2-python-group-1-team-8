@@ -11,20 +11,116 @@ class Subasta:
         self._ofertantes = []
         self._oferta_mayor = oferta_mayor
         self._estado = "Activa"
-        self._local = local
         self._tipo = tipo
+        self._local = local
 
-    #TODO: Implementar metodos
+        local.agregarSubasta(self)
+
+    # Sumarle 7 dias a la fecha de fin de la subasta y decrementar su oferta inicial
     def extender_subasta(self, fecha_actual):
-        pass
+        from src.gestorAplicacion.manejoLocal.Fecha import Fecha
+        self._fecha_fin = Fecha(fecha_actual.get_total_dias() + 7)
 
-    def agregar_oferta(self, oferta, cliente) throws Exception:
+        if (self._tipo == 'Ascendente' or self._tipo == 'Descendente') and self._oferta_mayor > 0:
+            oferta_mayor_anterior = self._oferta_mayor
+            oferta_mayor_nueva = int(self._oferta_mayor * 0.8)
+            self._oferta_mayor = oferta_mayor_nueva
+
+            return 'Se ha extendido la subasta por 7 dias y se ha decrementado la oferta mayor de ' + str(oferta_mayor_anterior) + ' a ' + str(oferta_mayor_nueva)
+
+    # ~~ Agregar subastas ~~
+    # Metodo para agregar una oferta a una subasta ascendente
+    def agregar_oferta(self, oferta, cliente):
         if oferta > self._oferta_mayor:
             self._ofertas.append(oferta)
             self._ofertantes.append(cliente)
             self._oferta_mayor = oferta
-        else:
-            print("La oferta ingresada es menor a la oferta mayor")
+
+    # Metodo para agregar oferta a una subasta anonima
+    def agregar_oferta_anonima(self, oferta, cliente):
+        self._ofertas.append(oferta)
+        self._ofertantes.append(cliente)
+
+        # Actualizar oferta mayor
+        if (oferta > self._oferta_mayor):
+            self._oferta_mayor = oferta
+
+    # Registra oferta ganadora de una subasta descendente
+    def registrar_oferta_ganadora(self, cliente):
+        self._ofertas.append(self._oferta_mayor)
+        self._ofertantes.append(cliente)
+        self._estado = "Finalizada"
+
+        # Actualizar puntos del ganador
+        cliente.set_puntos(cliente.get_puntos() + self._oferta_mayor)
+
+    # ~~ Finalizar subastas ~~
+    # Finalizar subasta ascendente o descendente. Retorna al ganador
+    def finalizar_subasta(self):
+        self._estado = 'Finalizada'
+
+        # Buscar ofertante ganador
+        ganador = self._ofertantes[self._ofertas.index(self._oferta_mayor)]
+
+        # Actualizar puntos de ganador
+        ganador.set_puntos(ganador.get_puntos() + self._oferta_mayor)
+
+        return ganador
+
+    # Finalizar subasta anonima. Retorna al ganador, y en caso de empate,
+    # el ganador sera el primero en haber ofertado
+    def finalizar_subasta_anonima(self):
+        self._estado = 'Finalizada'
+
+        # Buscar mayor oferta
+        for i in range(len(self._ofertas)):
+            if self._ofertas[i] == self._oferta_mayor:
+                return self._ofertantes[i]
+
+    # ~~ Calcular valoracion de objetos de subasta ~~
+    # Calcular valoracion de subasta ascendente del conjunto de productos que recibe
+    @staticmethod
+    def calcular_valoracion_ascendente(productos, fecha_actual):
+        valor_total = 0
+
+        for pro in productos:
+            rareza = 0
+
+            # Valorar por diferencia de tiempo entre el año de lanzamiento y la fecha actual
+            years_diferencia = abs(fecha_actual.get_year() - pro.getFechaLanzamiento().get_year())
+            rareza += years_diferencia // 5
+
+            # Valorar por condicion
+            rareza += pro.getCondicion() - 1
+
+            # Añadir el valor de la rareza al valor total
+            valor_inicial = int(pro.getPrecio() * (pow(1.2, rareza) - 1))
+
+            valor_total += valor_inicial
+
+        return valor_total
+
+    # Calcular valoracion de subasta descendente del conjunto de productos que recibe
+    @staticmethod
+    def calcular_valoracion_descendente(productos, fecha_actual):
+        valor_total = 0
+
+        for pro in productos:
+            rareza = 0
+
+            # Valorar por diferencia de tiempo entre el año de lanzamiento y la fecha actual
+            years_diferencia = abs(fecha_actual.get_year() - pro.getFechaLanzamiento().get_year())
+            rareza += years_diferencia // 5
+
+            # Valorar por condicion
+            rareza += pro.getCondicion() - 1
+
+            # Añadir el valor de la rareza al valor total
+            valor_inicial = int(pro.getPrecio() * (pow(1.4, rareza) + 1))
+
+            valor_total += valor_inicial
+
+        return valor_total
 
     #Getters y setters
     def get_id(self):

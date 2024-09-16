@@ -1,4 +1,5 @@
 from src.gestorAplicacion.personas.Persona import Persona
+from src.gestorAplicacion.personas.Meta import Meta
 
 class Empleado(Persona):
     def __init__(self, cedula, nombre, correo, telefono, salario, salario_porcentual, acumulado_mensual, dias_laborales, tienda):
@@ -23,6 +24,12 @@ class Empleado(Persona):
         self._metas_caducadas.append(meta)
     def ingresar_transaccion(self, transaccion):
         self._transacciones.append(transaccion)
+    @staticmethod
+    def buscar_empleado(cedula, local):
+        for e in local.get_empleados():
+            if e.get_cedula() == cedula:
+                return e
+        return None
     def __str__(self):
         return f"* Nombre: {self._nombre} - Cedula: {self._cedula}"
 

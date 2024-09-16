@@ -14,9 +14,9 @@ if __name__ == "__main__":
     # serializar1.close()
 
 
-    deserializarLocales = open("../temp/locales.txt", "rb")
+    deserializarLocales = open("../baseDatos/temp/locales.txt", "rb")
     locales = pickle.load(deserializarLocales)
-    deserializarClientes = open("../temp/clientes.txt", "rb")
+    deserializarClientes = open("../baseDatos/temp/clientes.txt", "rb")
     cliente = pickle.load(deserializarClientes)
 
     a = VentanaPrincipal()

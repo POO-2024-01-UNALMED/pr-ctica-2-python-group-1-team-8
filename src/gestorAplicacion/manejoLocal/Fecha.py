@@ -1,5 +1,8 @@
+from multimethod import multimethod
+
 class Fecha:
-    def __init__(self, dia, mes, year):
+    @multimethod
+    def __init__(self, dia:int, mes:int, year:int):
         self._dia = dia
         self._mes = mes
         self._year = year
@@ -7,6 +10,10 @@ class Fecha:
         self._total_dias = Fecha.fecha_a_dias(dia, mes, year)
 
     # TODO Crear constructor con totalDias
+    @multimethod
+    def __init__(self, total_dias:int):
+        self._total_dias = total_dias
+        self.dias_a_fecha(total_dias)
 
     # Metodo que retorna la cantidad de dias en una fecha dada
     @staticmethod
@@ -27,9 +34,9 @@ class Fecha:
         # Sumar la cantidad de dias que corresponde por cada mes
         for (mesTemp) in range(2, mes + 1):
             match mesTemp:
-                case 1, 3, 5, 7, 8, 10, 12:
+                case 1 | 3 | 5 | 7 | 8 | 10 | 12:
                     total_dias += 31
-                case 4, 6, 9, 11:
+                case 4 | 6 | 9 | 11:
                     total_dias += 30
                 case 2:
                     if Fecha.es_bisiesto(year):
@@ -64,7 +71,7 @@ class Fecha:
         # el total de días sea menor a la cantidad de dias que tiene un mes
         while total_dias > 0:
             match mes:
-                case 1, 3, 5, 7, 8, 10, 12:
+                case 1 | 3 | 5 | 7 | 8 | 10 | 12:
                     if total_dias - 31 > 0:
                         total_dias -= 31
                         mes += 1
@@ -72,7 +79,7 @@ class Fecha:
                         dia = total_dias
                         total_dias = 0
 
-                case 4, 6, 9, 11:
+                case 4 | 6 | 9 | 11:
                     if total_dias - 30 > 0:
                         total_dias -= 30
                         mes += 1
