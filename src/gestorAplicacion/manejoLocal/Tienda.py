@@ -134,6 +134,12 @@ class Tienda:
                     return p
         return None
 
+    def buscar_producto_id(self, id):
+        for p in self._inventario:
+            if p.id == id:
+                return p
+        return None
+
 
 # Getters y setters
     def get_nombre(self):
