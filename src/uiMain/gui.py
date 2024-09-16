@@ -802,7 +802,7 @@ class FieldFramePrestamo(FieldFrameProducto):
         def insertar_producto():
             self.producto_actual = self.listado_productos[self.combobox_producto.current()]
             # Espacio del FieldFrame
-            criterios = ['ID', 'Nombre', 'Precio', 'Cantidad', 'Fecha de lanzamiento']
+            criterios = ['ID', 'Nombre', 'Costo/dia', 'Cantidad', 'Fecha de lanzamiento']
             valores = [str(self.producto_actual.getId()), self.producto_actual.getNombre(), str(self.producto_actual.getPrecio()), str(self.producto_actual.getCantidad()), str(self.producto_actual.getFechaLanzamiento())]
             cri_habilitados = [False, False, False, False, False]
 
@@ -853,6 +853,98 @@ class FieldFramePrestamo(FieldFrameProducto):
 
         self.total_carrito()
 
+    def pantalla_pago(self):
+        if len(self.carrito) == 0: # Si el carrito esta vacio, no hacer nada
+            return
+
+        self.limpiar_frame(self.framemain)
+        subframe = tk.Frame(self.framemain, bg=FONDO, bd=0)
+        subframe.grid(row=0, column=0, rowspan=2)
+        subframe.columnconfigure(0, weight=1, uniform='a')
+        subframe.rowconfigure(0, weight=3, uniform='b')
+        subframe.rowconfigure((1,2), weight=1, uniform='b')
+
+        def confirmacion_pago(valor_total, dias):
+            # Reflejar productos del carrito en el inventario del local
+            for prod in self.carrito:
+                prod_actual = self.tienda_actual.buscar_producto_id(prod.getId(), 'prestamo')
+                prod_actual.setCantidad(prod_actual.getCantidad() - prod.getCantidad())
+
+            # Crear prestamo
+            fecha_fin = Fecha(int(self.fecha_actual.get_total_dias() + dias))
+
+            from src.gestorAplicacion.informacionVenta.Prestamo import Prestamo
+            Prestamo(self.fecha_actual, fecha_fin, self.cliente_actual, self.carrito, valor_total, 'Activo')
+
+            # Limpiar
+            messagebox.showinfo('Prestamo realizado', f'Prestamo realizado con exito\nTotal: {valor_total}\nDias de plazo: {dias}\nCliente: ' + self.cliente_actual.get_nombre())
+            self.limpiar_frame(self.framemain)
+            self.framemain.destroy()
+            self.destroy()
+
+        def al_confirmar_prest():
+            try:
+                if combobox_plazo.get() == '':
+                    raise ExceptionCampoVacio([combobox_plazo], 'Plazo')
+
+                valor_total = sum(map(lambda prod: (prod.getPrecio() * prod.getCantidad()), self.carrito))
+                dias = 0
+                total_dias = int(combobox_plazo.get())
+
+                match total_dias:
+                    case 14:
+                        dias = 14
+                        valor_total = valor_total * dias
+                    case 30:
+                        dias = 30
+                        valor_total = valor_total * dias
+                    case 45:
+                        dias = 45
+                        valor_total = int(valor_total * dias * 0.9)
+                    case 60:
+                        dias = 60
+                        valor_total = int(valor_total * dias * 0.85)
+                    case _:
+                        raise ExceptionCampos('Error en ingreso de plazo')
+
+                total_entry = tk.Entry(subframe)
+                total_entry.insert(0, str(valor_total))
+                total_entry.grid(row=1, column=0, padx=15, pady=5)
+                total_entry.config(state='disabled')
+
+                # Boton para completar la compra
+                (tk.Button(subframe, text='Completar compra', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=lambda: confirmacion_pago(valor_total, dias))
+                            .grid(row=2, column=0, padx=15, pady=5))
+
+            except ExceptionCampos: #TODO AQUI PUEDE HABER LIGADURA
+                pass
+
+        subtotal = sum(map(lambda prod: prod.getPrecio() * prod.getCantidad(), self.carrito))
+
+        # Subframe para poder organizar subtotal y empleado y sus entries
+        subframe_subtotal_empleado = tk.Frame(subframe, bg=FONDO, bd=0)
+        subframe_subtotal_empleado.grid(row=0, column=0)
+        subframe_subtotal_empleado.columnconfigure((0,1), weight=1, uniform='a')
+        subframe_subtotal_empleado.rowconfigure((0, 1, 2), weight=1, uniform='b')
+
+        # Subtotal
+        tk.Label(subframe_subtotal_empleado, text='Subtotal', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, padx=15, pady=15, sticky='e')
+        entry_subtotal = tk.Entry(subframe_subtotal_empleado)
+        entry_subtotal.insert(0, str(subtotal))
+        entry_subtotal.config(state='disabled')
+        entry_subtotal.grid(row=0, column=1, padx=15, pady=15, sticky='w')
+
+        # Plazo
+        tk.Label(subframe_subtotal_empleado, text='Dias de plazo', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=1, column=0, padx=15, pady=15, sticky='e')
+
+        values_dias = [str(14), str(30), str(45), str(60)]
+        combobox_plazo = ttk.Combobox(subframe_subtotal_empleado, values=values_dias)
+        combobox_plazo.grid(row=1, column=1, padx=15, pady=15, sticky='w')
+
+        # Boton para confirmar prestamo
+        tk.Button(subframe_subtotal_empleado, text='Confirmar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=al_confirmar_prest).grid(row=2, column=0, columnspan=2, padx=15, pady=15)
+
+
     # Metodo estatico que genera temporalmente un frame para la creacion de un cliente
     def identificar_cliente(self, frame_c):
         frame_c.rowconfigure(0, weight=1, uniform='a')
@@ -882,7 +974,7 @@ class FieldFramePrestamo(FieldFrameProducto):
                     # Comprobacion de prestamos vencidos
                     self.hay_vencidos = False
                     for prestamo in self.cliente_actual.get_prestamos():
-                        if prestamo.get_fecha_fin() < self.fecha_actual:
+                        if prestamo.get_fecha_fin().get_total_dias() < self.fecha_actual.get_total_dias():
                             prestamo.set_estado('Vencido')
                             self.hay_vencidos = True
 
@@ -943,15 +1035,27 @@ class FieldFramePrestamo(FieldFrameProducto):
             messagebox.showinfo('Prestamo no disponible', 'No se puede realizar prestamo, el cliente tiene prestamos vencidos')
             return
 
+        self.limpiar_frame(self.framemain)
+        self.identificar_producto()
         #TODO pantalla de identificacion de productos
 
     def devolver(self):
+        hay_prestamos_activos_vencidos = False
+        for prestamo in self.cliente_actual.get_prestamos():
+            if prestamo.get_estado() == 'Activo' or prestamo.get_estado() == 'Vencido':
+                hay_prestamos_activos_vencidos = True
+                break
+
+        if not hay_prestamos_activos_vencidos:
+            messagebox.showinfo('Devolucion no disponible', 'No se puede realizar devolucion, el cliente no tiene prestamos activos o vencidos')
+            return
+
         self.limpiar_frame(self.framemain)
 
         subframe1 = tk.Frame(self.framemain, bg=FONDO, bd=0)
         subframe1.grid(row=0, column=0,sticky='nswe')
         subframe1.columnconfigure((0,1), weight=1, uniform='a')
-        subframe1.rowconfigure(0, weight=1, uniform='b')
+        subframe1.rowconfigure((0,2), weight=1, uniform='b')
         subframe1.rowconfigure(1, weight=4, uniform='b')
         #filas: seleccionar prestamo - boton confirmar prestamo -> dibujar:  mostrar total dias - mostrar total a pagar - mostrar productos en combobox - boton confirmar
 
@@ -959,9 +1063,8 @@ class FieldFramePrestamo(FieldFrameProducto):
             values_prestamos = []
             for prestamo in self.cliente_actual.get_prestamos():
                 if prestamo.get_estado() == 'Activo' or prestamo.get_estado() == 'Vencido':
-                    values_prestamos.append(str(prestamo.get_id()) + ' | Fecha inicio: ' + str(
-                        prestamo.get_fecha_inicio()) + ' | Fecha fin: ' + str(
-                        prestamo.get_fecha_fin()) + ' | Estado: ' + prestamo.get_estado())
+                    values_prestamos.append(str(prestamo.get_id()) + ' | Fecha fin: ' + str(
+                        prestamo.get_fecha_fin()) + ' | ' + prestamo.get_estado())
 
             return values_prestamos
 
@@ -984,7 +1087,38 @@ class FieldFramePrestamo(FieldFrameProducto):
                 # Abrir subframe para mostrar total de dias y total a pagar
                 subframe2 = tk.Frame(self.framemain, bg=FONDO, bd=0)
                 subframe2.grid(row=1, column=0)
-                subframe2.columnconfigure(0, weight=1, uniform='a')
+                subframe2.columnconfigure((0,1,2,3), weight=1, uniform='a')
+
+                # total dias
+                total_dias = prestamo_seleccionado.get_fecha_fin().get_total_dias() - self.fecha_actual.get_total_dias()
+
+                tk.Label(subframe2, text='Total dias', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, padx=15, pady=15, sticky='e')
+                entry_total_dias = tk.Entry(subframe2)
+                entry_total_dias.insert(0, str(total_dias))
+                entry_total_dias.config(state='disabled')
+                entry_total_dias.grid(row=0, column=1, padx=15, pady=15, sticky='w')
+
+                # listado de productos en combobox
+                tk.Label(subframe2, text='Productos', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=1, column=0, padx=15, pady=15, sticky='e')
+                combobox_producto = ttk.Combobox(subframe2, values=prestamo_seleccionado.get_productos(), state='readonly')
+                combobox_producto.grid(row=1, column=1, padx=15, pady=15, sticky='w')
+
+                def confirmar_devolucion():
+                    # Cambiar estado del prestamo a 'Devuelto'
+                    prestamo_seleccionado.set_estado('Devuelto')
+
+                    # Actualizar cantidad de productos en el inventario
+                    for producto in prestamo_seleccionado.get_productos():
+                        producto_actual = self.tienda_actual.buscar_producto_id(producto.getId(), 'prestamo')
+                        producto_actual.setCantidad(producto_actual.getCantidad() + producto.getCantidad())
+
+                    messagebox.showinfo('Devolucion realizada', f'Devolucion realizada con exito')
+                    self.limpiar_frame(self.framemain)
+                    self.elegir_prestar_devolver()
+
+                # boton para confirmar devolucion
+                tk.Button(subframe2, text='Confirmar devolucion', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=confirmar_devolucion).grid(row=2, column=0, rowspan=2, columnspan=2, padx=15, pady=15)
+
 
             except ExceptionNoEncontrado:
                 pass
@@ -998,6 +1132,7 @@ class FieldFramePrestamo(FieldFrameProducto):
         self.combobox_prestamo_selec.grid(row=0, column=0, padx=15, pady=15, ipadx=60, sticky='e')
 
         tk.Button(subframe1, text='Confirmar prestamo', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=confirmar_prestamo_seleccionado).grid(row=0, column=1, padx=15, pady=15, ipadx=60, sticky='w')
+        tk.Button(subframe1, text='Volver', font=('Arial', 7, 'bold'), bg=POWER, bd=0, command=self.elegir_prestar_devolver).grid(row=2, column=0, columnspan=2, padx=15, pady=15, ipadx=60)
 
 class FieldFrameAdministrar(tk.Frame):
     def __init__(self,ventana,tienda_actual:Tienda):

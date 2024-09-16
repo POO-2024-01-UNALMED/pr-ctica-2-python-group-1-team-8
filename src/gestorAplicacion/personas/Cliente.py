@@ -23,6 +23,9 @@ class Cliente(Persona):
         self._compras = []
         Cliente.clientes.append(self)
 
+    def agregar_prestamo(self, prestamo):
+        self._prestamos.append(prestamo)
+
     @staticmethod
     def buscar_cliente(cedula):
         for c in Cliente.clientes:

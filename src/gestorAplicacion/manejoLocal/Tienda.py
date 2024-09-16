@@ -23,6 +23,7 @@ class Tienda:
     # Agregar producto al inventario correspondiente
     def agregarProducto(self, producto):
         if producto.isPrestable():
+            producto.setPrecio(producto.getPrecio() * 0.01)
             self._inventarioPrestamo.append(producto)
         elif producto.getCondicion() < 5:
             self._inventarioUsado.append(producto)
