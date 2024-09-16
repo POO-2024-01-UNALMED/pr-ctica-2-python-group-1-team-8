@@ -326,6 +326,11 @@ class VentanaSecundaria:
         def llamar_administrar():
             prueba_subfieldframe = FieldFrameAdministrar(self.root, local)
             prueba_subfieldframe.grid(row=0, column=0, sticky='nswe', padx=40, pady=40)
+
+        def llamar_empleado():
+            prueba_subfieldframe = FieldFrameEmpleado(self.root, local)
+            prueba_subfieldframe.grid(row=0, column=0, sticky='nswe', padx=40, pady=40)
+
         def revisar_producto():
             self.subframe2 = tk.Frame(self.framemain,bg=FONDO,bd=0)
             self.subframe2.grid(row=1,column=0)
@@ -354,7 +359,7 @@ class VentanaSecundaria:
         procesomenu.add_command(label="Registrar compra", command=llamar_compra)
         procesomenu.add_command(label="Hacer prestamo")
         procesomenu.add_command(label="Administrar inventario", command=llamar_administrar)
-        procesomenu.add_command(label="Gestionar empleados")
+        procesomenu.add_command(label="Gestionar empleados", command=llamar_empleado)
         procesomenu.add_command(label="Subastar")
         menubar.add_cascade(label="Procesos y Consultas", menu=procesomenu)
 
@@ -545,6 +550,82 @@ class FieldFrameProducto(tk.Frame):
     def limpiar_frame(self):
         for widget in self.framemain.winfo_children():
             widget.destroy()
+
+class FieldFrameEmpleado(tk.Frame):
+    def __init__(self, ventana, tienda_actual):
+        super().__init__(ventana, bg=FONDO)
+
+        self.framemain = tk.Frame(ventana, bg=FONDO)
+        self.framemain.grid(row=0, column=0, sticky='nswe')
+        self.framemain.rowconfigure((0, 2), weight=1, uniform='a')
+        self.framemain.rowconfigure(1, weight=4, uniform='a')
+        self.framemain.columnconfigure(0, weight=1, uniform='b')
+
+        self.subframe1 = tk.Frame(self.framemain, bg=FONDO, bd=0)
+        self.subframe1.grid(row=0, column=0, sticky='s')
+        self.subframe1.rowconfigure((0, 1), weight=1, uniform='aa')
+        self.subframe1.columnconfigure((0, 1, 2), weight=1, uniform='bb')
+
+        # Titulos
+        tk.Label(self.subframe1, text='Empleados', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, padx=15, sticky='e')
+
+        # Comboboxes
+
+        def identificar_categoria_nombres():
+            return list(map(lambda empleado: empleado.get_nombre(), tienda_actual.get_empleados()))
+
+        self.listado_empleados = []
+        self.combobox_empleado = ttk.Combobox(self.subframe1)
+
+        def crear_listado(frame):
+            listado_default = tk.StringVar(value='Elige un empleado')
+            listado_nombres = identificar_categoria_nombres()
+            self.listado_empleados = tienda_actual.get_empleados()
+
+            self.combobox_empleado.config(values=listado_nombres, textvariable=listado_default)
+            self.combobox_empleado.grid(row=0, column=1, padx=15, pady=15)
+
+        crear_listado(self.subframe1)
+
+        # Insertar empleado seleccionado
+        self.empleado_actual = self.listado_empleados[self.combobox_empleado.current()]
+        def identificar_empleado(empleado_actual):
+            # Espacio del FieldFrame
+
+            def identificar_meta_codigo():
+                return list(map(lambda meta: meta.get_codigo(), empleado_actual.get_metas()))
+
+            criterios = identificar_meta_codigo()
+
+            def identificar_meta_porcentaje():
+                return list(map(lambda meta: meta., empleado_actual.get_metas()))
+
+            valores = []
+
+            cri_habilitados = [False, False, False, False, False]
+
+            def al_aceptar_callback(resultado):
+                print("Acepted values:", resultado)
+                FieldFrameProducto.carrito.extend(resultado)
+
+            self.subframe2 = tk.Frame(self.framemain, bg=FONDO, bd=0)
+            self.subframe2.grid(row=1, column=0)
+            (FieldFrame(self.subframe2, 'Codigo', criterios, 'Porcentaje de progreso', valores, cri_habilitados, aceptar_callback=al_aceptar_callback)
+                        .grid(row=0, column=0, padx=15, pady=15))
+            # TODO que fieldframe tambien reciba el comando de aceptar para que se pueda hacer la modificacion, o que aceptar devuelva los valores y asi agregarlos al carrito en fieldframeproducto
+
+        # Boton para insertar empleado seleccionado
+        self.boton_empleado = tk.Button(self.subframe1, text='Insertar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=lambda: identificar_empleado())
+        self.boton_empleado.grid(row=0, column=2, padx=15, pady=15, sticky='w')
+
+
+
+
+
+
+
+
+
 
 class FieldFrameAdministrar(tk.Frame):
     def __init__(self,ventana,tienda_actual:Tienda):
