@@ -1302,21 +1302,21 @@ class FieldFrameAdministrar(tk.Frame):
             subframe2.rowconfigure(0, weight=1, uniform='aa')
             subframe2.columnconfigure(0, weight=1, uniform='bb')
 
-        def modificar_producto(self):
-            subframe2 = tk.Frame(self.subframe1, bg=botoncito, bd=0)
-            self.limpiar_frame(self)
-            self.limpiar_frame(self.subframe1)
+    def modificar_producto(self):
+        subframe2 = tk.Frame(self.subframe1, bg=botoncito, bd=0)
+        self.limpiar_frame(self)
+        self.limpiar_frame(self.subframe1)
 
-        def revisar_prioridad(self):
-            self.limpiar_frame(self.subframe1)
+    def revisar_prioridad(self):
+        self.limpiar_frame(self.subframe1)
 
-        def regresar(self):
-            self.limpiar_frame(self.framemain)
+    def regresar(self):
+        self.limpiar_frame(self.framemain)
 
-        @staticmethod
-        def limpiar_frame(frame):
-            for widget in frame.winfo_children():
-                widget.destroy()
+    @staticmethod
+    def limpiar_frame(frame):
+        for widget in frame.winfo_children():
+            widget.destroy()
 
 
 class FieldFrameSubasta(tk.Frame):
