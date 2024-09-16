@@ -6,18 +6,32 @@ from tkinter import ttk
 from PIL import Image, ImageTk
 from colores import *  # Importar colores
 
-from src.gestorAplicacion.manejoLocal.Fecha import Fecha
-from src.gestorAplicacion.manejoLocal.Tienda import Tienda
-
+import sys
+import os
 import pickle
 
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+sys.path.append(project_root)
+
+from src.gestorAplicacion.manejoLocal.Fecha import Fecha
+from src.gestorAplicacion.manejoLocal.Tienda import Tienda
 from src.gestorAplicacion.personas.Cliente import Cliente
 
-# TODO importar los objetos serializados
-deserializarLocales = open("../temp/locales.txt", "rb")
-locales = pickle.load(deserializarLocales)
-deserializarClientes = open("../temp/clientes.txt", "rb")
-Cliente.clientes = pickle.load(deserializarClientes)
+temp_dir = os.path.join(os.path.dirname(__file__), '..', 'temp')
+locales_path = os.path.join(temp_dir, 'locales.txt')
+clientes_path = os.path.join(temp_dir, 'clientes.txt')
+
+try:
+    deserializarLocales = open(locales_path, "rb")
+    locales = pickle.load(deserializarLocales)
+    deserializarClientes = open(clientes_path, "rb")
+    Cliente.clientes = pickle.load(deserializarClientes)
+
+except FileNotFoundError as e:
+    print(f"No se encontro el archivo: {e.filename}")
+except Exception as e:
+    print(f"Hubo un error: {str(e)}")
+
 
 class VentanaPrincipal:
     # Atributos de clase
@@ -30,16 +44,42 @@ class VentanaPrincipal:
     saludo = 'Hola, bienvenido a Villajuegos. Aqui podras encontrar los mejores juegos para ti y tus amigos.'
     descripcion = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cr'
 
+    # Obtener la carpeta actual
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+
+    # Path absoluto para la carpeta de imagenes
+    imagenes_dir = os.path.join(current_dir, 'imagenes')
+
     # Imagenes de local
-    paths_local = ['imagenes/tienda/tienda1.jpg', 'imagenes/tienda/tienda2.jpg', 'imagenes/tienda/tienda3.jpg', 'imagenes/tienda/tienda4.jpg', 'imagenes/tienda/tienda5.jpg']
+    paths_local = [
+        os.path.join(imagenes_dir, 'tienda', 'tienda1.jpg'),
+        os.path.join(imagenes_dir, 'tienda', 'tienda2.jpg'),
+        os.path.join(imagenes_dir, 'tienda', 'tienda3.jpg'),
+        os.path.join(imagenes_dir, 'tienda', 'tienda4.jpg'),
+        os.path.join(imagenes_dir, 'tienda', 'tienda5.jpg')
+    ]
 
     # Imagenes de integrantes
-    paths1 = ['imagenes/integrantes/villa/images1.jpg', 'imagenes/integrantes/villa/images2.jpg',
-              'imagenes/integrantes/villa/images3.jpg', 'imagenes/integrantes/villa/images4.jpg']
-    paths2 = ['imagenes/integrantes/seba/images1.jpg', 'imagenes/integrantes/seba/images2.jpg',
-              'imagenes/integrantes/seba/images3.jpg', 'imagenes/integrantes/seba/images4.jpg']
-    paths3 = ['imagenes/integrantes/andres/images1.jpg', 'imagenes/integrantes/andres/images2.jpg',
-              'imagenes/integrantes/andres/images3.jpg', 'imagenes/integrantes/andres/images4.jpg']
+    paths1 = [
+        os.path.join(imagenes_dir, 'integrantes', 'villa', 'images1.jpg'),
+        os.path.join(imagenes_dir, 'integrantes', 'villa', 'images2.jpg'),
+        os.path.join(imagenes_dir, 'integrantes', 'villa', 'images3.jpg'),
+        os.path.join(imagenes_dir, 'integrantes', 'villa', 'images4.jpg')
+    ]
+
+    paths2 = [
+        os.path.join(imagenes_dir, 'integrantes', 'seba', 'images1.jpg'),
+        os.path.join(imagenes_dir, 'integrantes', 'seba', 'images2.jpg'),
+        os.path.join(imagenes_dir, 'integrantes', 'seba', 'images3.jpg'),
+        os.path.join(imagenes_dir, 'integrantes', 'seba', 'images4.jpg')
+    ]
+
+    paths3 = [
+        os.path.join(imagenes_dir, 'integrantes', 'andres', 'images1.jpg'),
+        os.path.join(imagenes_dir, 'integrantes', 'andres', 'images2.jpg'),
+        os.path.join(imagenes_dir, 'integrantes', 'andres', 'images3.jpg'),
+        os.path.join(imagenes_dir, 'integrantes', 'andres', 'images4.jpg')
+    ]
 
     paths = [paths1, paths2, paths3]
 
