@@ -33,9 +33,9 @@ import pickle
 #     deserializarClientes = open("../temp/clientes.txt", "rb")
 #     Cliente.clientes = pickle.load(deserializarClientes)
 
-deserializarLocales = open("../temp/locales.txt", "rb")
+deserializarLocales = open("../baseDatos/temp/locales.txt", "rb")
 Tienda.set_locales(pickle.load(deserializarLocales))
-deserializarClientes = open("../temp/clientes.txt", "rb")
+deserializarClientes = open("../baseDatos/temp/clientes.txt", "rb")
 Cliente.clientes = pickle.load(deserializarClientes)
 
 locales = Tienda.get_locales()
