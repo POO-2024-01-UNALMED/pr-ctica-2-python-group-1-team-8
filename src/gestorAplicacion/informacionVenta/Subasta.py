@@ -11,8 +11,10 @@ class Subasta:
         self._ofertantes = []
         self._oferta_mayor = oferta_mayor
         self._estado = "Activa"
-        self._local = local
         self._tipo = tipo
+        self._local = local
+
+        local.agregarSubasta(self)
 
     # Sumarle 7 dias a la fecha de fin de la subasta y decrementar su oferta inicial
     def extender_subasta(self, fecha_actual):
@@ -85,14 +87,14 @@ class Subasta:
             rareza = 0
 
             # Valorar por diferencia de tiempo entre el año de lanzamiento y la fecha actual
-            years_diferencia = abs(fecha_actual.get_year() - pro.get_fecha_lanzamiento().get_year())
+            years_diferencia = abs(fecha_actual.get_year() - pro.getFechaLanzamiento().get_year())
             rareza += years_diferencia // 5
 
             # Valorar por condicion
-            rareza += pro.get_condicion() - 1
+            rareza += pro.getCondicion() - 1
 
             # Añadir el valor de la rareza al valor total
-            valor_inicial = int(pro.get_valor() * (pow(1.2, rareza) - 1))
+            valor_inicial = int(pro.getPrecio() * (pow(1.2, rareza) - 1))
 
             valor_total += valor_inicial
 
@@ -107,14 +109,14 @@ class Subasta:
             rareza = 0
 
             # Valorar por diferencia de tiempo entre el año de lanzamiento y la fecha actual
-            years_diferencia = abs(fecha_actual.get_year() - pro.get_fecha_lanzamiento().get_year())
+            years_diferencia = abs(fecha_actual.get_year() - pro.getFechaLanzamiento().get_year())
             rareza += years_diferencia // 5
 
             # Valorar por condicion
-            rareza += pro.get_condicion() - 1
+            rareza += pro.getCondicion() - 1
 
             # Añadir el valor de la rareza al valor total
-            valor_inicial = int(pro.get_valor() * (pow(1.4, rareza) + 1))
+            valor_inicial = int(pro.getPrecio() * (pow(1.4, rareza) + 1))
 
             valor_total += valor_inicial
 
