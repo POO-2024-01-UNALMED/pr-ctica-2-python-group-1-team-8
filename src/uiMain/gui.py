@@ -1090,7 +1090,7 @@ class FieldFramePrestamo(FieldFrameProducto):
                 subframe2.columnconfigure((0,1,2,3), weight=1, uniform='a')
 
                 # total dias
-                total_dias = prestamo_seleccionado.get_fecha_fin().get_total_dias() - self.fecha_actual.get_total_dias()
+                total_dias = int(prestamo_seleccionado.get_fecha_fin().get_total_dias() - self.fecha_actual.get_total_dias())
 
                 tk.Label(subframe2, text='Total dias', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, padx=15, pady=15, sticky='e')
                 entry_total_dias = tk.Entry(subframe2)
@@ -1098,10 +1098,21 @@ class FieldFramePrestamo(FieldFrameProducto):
                 entry_total_dias.config(state='disabled')
                 entry_total_dias.grid(row=0, column=1, padx=15, pady=15, sticky='w')
 
+                # total a pagar si el prestamo esta vencido
+                tk.Label(subframe2, text='Total a pagar', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=1, column=0, padx=15, pady=15, sticky='e')
+                total_pagar = 0
+                if prestamo_seleccionado.get_estado() == 'Vencido':
+                    for producto in prestamo_seleccionado.get_productos():
+                        total_pagar += producto.getPrecio() * abs(total_dias) * 1.1
+                entry_total_a_pagar = tk.Entry(subframe2)
+                entry_total_a_pagar.insert(0, str(total_pagar))
+                entry_total_a_pagar.config(state='disabled')
+                entry_total_a_pagar.grid(row=1, column=1, padx=15, pady=15, sticky='w')
+
                 # listado de productos en combobox
-                tk.Label(subframe2, text='Productos', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=1, column=0, padx=15, pady=15, sticky='e')
+                tk.Label(subframe2, text='Productos', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=2, column=0, padx=15, pady=15, sticky='e')
                 combobox_producto = ttk.Combobox(subframe2, values=prestamo_seleccionado.get_productos(), state='readonly')
-                combobox_producto.grid(row=1, column=1, padx=15, pady=15, sticky='w')
+                combobox_producto.grid(row=2, column=1, padx=15, pady=15, sticky='w')
 
                 def confirmar_devolucion():
                     # Cambiar estado del prestamo a 'Devuelto'
@@ -1117,7 +1128,7 @@ class FieldFramePrestamo(FieldFrameProducto):
                     self.elegir_prestar_devolver()
 
                 # boton para confirmar devolucion
-                tk.Button(subframe2, text='Confirmar devolucion', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=confirmar_devolucion).grid(row=2, column=0, rowspan=2, columnspan=2, padx=15, pady=15)
+                tk.Button(subframe2, text='Confirmar devolucion', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=confirmar_devolucion).grid(row=3, column=0, rowspan=2, columnspan=2, padx=15, pady=15)
 
 
             except ExceptionNoEncontrado:
