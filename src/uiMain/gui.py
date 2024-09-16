@@ -1253,18 +1253,18 @@ class FieldFrameAdministrar(tk.Frame):
         self.combobox_eleccion.grid(row=0, column=1, padx=5, pady=0, sticky='we')
         tk.Button(self.subframe1, text='Buscar', bg=RESALTO, bd=0, command=lambda: self.categoria(self.combobox_eleccion.get()) if self.combobox_eleccion.get() == 'Tipo' else self.eleccion(self.combobox_eleccion.get())).grid(row=0, column=2, padx=15, pady=0, sticky='w')
     @staticmethod
-    def categoria(frame:FieldFrame,cat):
+    def categoria(frame:Frame,cat):
         #Crear un combobox para elegir categoria y su boton de acción
         for widget in frame.grid_slaves(row=1):
             widget.destroy()
-        tk.Label(self.subframe1, text='Categoria', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=1, column=0, padx=15, pady=0, sticky='e')
-        categoriaDefault = tk.StringVar(value=' ------- ')
-        combobox_categoria = ttk.Combobox(self.subframe1, values=['Consola', 'Juego', 'Accesorio'], textvariable=categoriaDefault)
+        tk.Label(frame, text='Categoria', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=1, column=0, padx=15, pady=0, sticky='e')
+        categoriaDefault = tk.StringVar(value='INgrese una categoria')
+        combobox_categoria = ttk.Combobox(frame, values=['Consola', 'Juego', 'Accesorio'], textvariable=categoriaDefault)
         combobox_categoria.grid(row=1, column=1, padx=5, pady=0, sticky='we')
-        tk.Button(frame, text='Buscar', bg=RESALTO, bd=0,command=FieldFrameAdministrar.ordenar()).grid(row=1, column=2, padx=15, pady=0, sticky='w')
+        tk.Button(frame, text='Buscar', bg=RESALTO, bd=0,command= FieldFrameAdministrar.ordenar(frame,FieldFrameAdministrar.tienda_actual.get_productos_categoria(combobox_categoria.get()),2)).grid(row=1, column=2, padx=15, pady=0, sticky='w')
 
     @staticmethod
-    def ordenar(frame,lista:list[str],fila):
+    def ordenar(frame:Frame,lista:list[str],fila):
         #crear un combobox para elegir como ordenar y su boton de accion
         tk.Label(frame,text='Ordenar',font=('Arial', 11, 'bold'),bg=FONDO).grid(row=fila, column=0, padx=15, pady=0, sticky='e')
         ordenarDefecto = tk.StringVar(value=' -------- ')
