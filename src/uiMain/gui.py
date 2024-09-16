@@ -1,6 +1,7 @@
 import tkinter as tk
 import tkinter.messagebox as messagebox
-from tkinter import ttk
+from operator import indexOf
+from tkinter import ttk, Frame
 
 from PIL import Image, ImageTk
 from colores import *  # Importar colores
@@ -9,6 +10,9 @@ from src.gestorAplicacion.manejoLocal.Fecha import Fecha
 from src.gestorAplicacion.manejoLocal.Tienda import Tienda
 
 import pickle
+
+from src.gestorAplicacion.productos.Producto import Producto
+
 # TODO importar los objetos serializados
 deserializarLocales = open("../temp/locales.txt", "rb")
 locales = pickle.load(deserializarLocales)
@@ -577,19 +581,40 @@ class FieldFrameAdministrar(tk.Frame):
         self.combobox_eleccion = ttk.Combobox(self.subframe1, values=['Todos', 'Tipo'], textvariable=revisar_default)
         self.combobox_eleccion.grid(row=0, column=1, padx=5, pady=0, sticky='we')
         tk.Button(self.subframe1, text='Buscar', bg=RESALTO, bd=0, command=lambda: self.categoria(self.combobox_eleccion.get()) if self.combobox_eleccion.get() == 'Tipo' else self.eleccion(self.combobox_eleccion.get())).grid(row=0, column=2, padx=15, pady=0, sticky='w')
-
-    def categoria(self,cat):
-        for widget in self.subframe1.grid_slaves(row=1):
+    @staticmethod
+    def categoria(frame:FieldFrame,cat):
+        #Crear un combobox para elegir categoria y su boton de acción
+        for widget in frame.grid_slaves(row=1):
             widget.destroy()
         tk.Label(self.subframe1, text='Categoria', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=1, column=0, padx=15, pady=0, sticky='e')
         categoriaDefault = tk.StringVar(value=' ------- ')
-        self.combobox_categoria = ttk.Combobox(self.subframe1, values=['Consola', 'Juego', 'Accesorio'], textvariable=categoriaDefault)
-        self.combobox_categoria.grid(row=1, column=1, padx=5, pady=0, sticky='we')
-        tk.Button(self.subframe1, text='Buscar', bg=RESALTO, bd=0,command=lambda: self.ordenar(self.combobox_categoria.get())).grid(row=1, column=2, padx=15, pady=0, sticky='w')
-    def ordenar(self):
+        combobox_categoria = ttk.Combobox(self.subframe1, values=['Consola', 'Juego', 'Accesorio'], textvariable=categoriaDefault)
+        combobox_categoria.grid(row=1, column=1, padx=5, pady=0, sticky='we')
+        tk.Button(frame, text='Buscar', bg=RESALTO, bd=0,command=FieldFrameAdministrar.ordenar()).grid(row=1, column=2, padx=15, pady=0, sticky='w')
+
+    @staticmethod
+    def ordenar(frame,lista:list[str],fila):
+        #crear un combobox para elegir como ordenar y su boton de accion
+        tk.Label(frame,text='Ordenar',font=('Arial', 11, 'bold'),bg=FONDO).grid(row=fila, column=0, padx=15, pady=0, sticky='e')
+        ordenarDefecto = tk.StringVar(value=' -------- ')
+        combobox_ordenar = ttk.Combobox(frame,values=lista,textvariable=ordenarDefecto)
+        combobox_ordenar.grid(row=fila,column= 1,padx=5,pady=0, sticky='we')
+        tk.Button(frame,text='Buscar',bg=RESALTO,bd=0)
 
 
-
+    @staticmethod
+    def crear_etiquetas(frame:FieldFrame,etiquetas,lista:list[Producto]):
+        # Obtener el número ingresado por el usuario
+        # Limpiar etiquetas anteriores
+        for label in etiquetas:
+            label.destroy()
+        p = 0
+        # Crear las nuevas etiquetas
+        for i in lista:
+            etiqueta = tk.Label(frame, text=f"COD: {i.getId()} | Nombre: {i.getNombre()} | Cantidad: {i.getCantidad()} | Precio: {i.getPrecio()}")
+            etiqueta.grid(row=p + 1, column=0, pady=2)
+            etiquetas.append(etiqueta)
+            p+=1
 
     def eleccion(self,opcion):
         for widget in self.subframe1.grid_slaves(row=1):
