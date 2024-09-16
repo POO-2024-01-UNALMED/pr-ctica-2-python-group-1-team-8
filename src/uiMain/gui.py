@@ -1,6 +1,5 @@
 import tkinter as tk
 import tkinter.messagebox as messagebox
-from random import uniform
 from tkinter import ttk
 
 from PIL import Image, ImageTk
@@ -535,6 +534,7 @@ class FieldFrameProducto(tk.Frame):
 
 class FieldFrameAdministrar(tk.Frame):
     tienda_actual:Tienda = None
+    etiquetas = []
     def __init__(self,ventana,tienda_actual:Tienda):
         super().__init__(ventana,bg=FONDO)
 
@@ -545,7 +545,7 @@ class FieldFrameAdministrar(tk.Frame):
         self.framemain.rowconfigure(0,weight=1,uniform='a')
         self.framemain.columnconfigure(0,weight=1,uniform='b')
 
-        self.subframe1 = tk.Frame(self.framemain,bg=FONDO,bd=0)
+        self.subframe1 = tk.Frame(self.framemain,bg=POWER,bd=0)
         self.subframe1.grid(row=0,column=0,sticky='nswe')
         self.subframe1.rowconfigure((0,5),weight=3,uniform='aa')
         self.subframe1.rowconfigure((1,2,3,4),weight=2,uniform='aa')
@@ -564,27 +564,53 @@ class FieldFrameAdministrar(tk.Frame):
 
     def revisar_producto(self):
         self.limpiar_frame(self.subframe1)
+        self.framemain.rowconfigure((0, 2), weight=1, uniform='a')
+        self.framemain.rowconfigure(1, weight=5, uniform='a')
+        #parte de arriba
+        self.subframe1 = tk.Frame(self.framemain, bg=FONDO, bd=0)
         self.subframe1.grid(row=0, column=0, sticky='nswe')
-        self.subframe1.rowconfigure((0, 3), weight=3, uniform='aa')
-        self.subframe1.columnconfigure((0, 1), weight=1, uniform='bb')
-        tk.Label(self.subframe1, text='Revisar', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, padx=15, pady=15, sticky='e')
+        self.subframe1.rowconfigure((0,1), weight=1, uniform='aa')
+        self.subframe1.columnconfigure((0,1,2), weight=1, uniform='bb')
+        tk.Label(self.subframe1, text='Revisar', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, padx=15, pady=0, sticky='e')
 
-        revisar_default = tk.StringVar(value=' - ')
+        revisar_default = tk.StringVar(value=' ------- ')
         self.combobox_eleccion = ttk.Combobox(self.subframe1, values=['Todos', 'Tipo'], textvariable=revisar_default)
-        self.combobox_eleccion.grid(row=0, column=1, padx=15, pady=15, sticky='nswe')
-        tk.Button(self.subframe1, text='Buscar', bg=DETALLES, bd=0,command=lambda:self.eleccion(self.combobox_eleccion.get())).grid(row=0, column=2, padx=15, pady=15, sticky='w')
-    def eleccion(self,opcion):
+        self.combobox_eleccion.grid(row=0, column=1, padx=5, pady=0, sticky='we')
+        tk.Button(self.subframe1, text='Buscar', bg=RESALTO, bd=0, command=lambda: self.categoria(self.combobox_eleccion.get()) if self.combobox_eleccion.get() == 'Tipo' else self.eleccion(self.combobox_eleccion.get())).grid(row=0, column=2, padx=15, pady=0, sticky='w')
 
+    def categoria(self,cat):
+        for widget in self.subframe1.grid_slaves(row=1):
+            widget.destroy()
+        tk.Label(self.subframe1, text='Categoria', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=1, column=0, padx=15, pady=0, sticky='e')
+        categoriaDefault = tk.StringVar(value=' ------- ')
+        self.combobox_categoria = ttk.Combobox(self.subframe1, values=['Consola', 'Juego', 'Accesorio'], textvariable=categoriaDefault)
+        self.combobox_categoria.grid(row=1, column=1, padx=5, pady=0, sticky='we')
+        tk.Button(self.subframe1, text='Buscar', bg=RESALTO, bd=0,command=lambda: self.ordenar(self.combobox_categoria.get())).grid(row=1, column=2, padx=15, pady=0, sticky='w')
+    def ordenar(self):
+
+
+
+
+    def eleccion(self,opcion):
+        for widget in self.subframe1.grid_slaves(row=1):
+            widget.destroy()
+        subframe2 = tk.Frame(self.framemain, bg=FONDO, bd=0)
+        self.limpiar_frame(subframe2)
         if opcion == 'Todos':
-            self.subframe2 = tk.Frame(self.framemain, bg=FONDO, bd=0)
+            subframe2.grid(row=1,column=0,sticky='nswe',)
+            subframe2.rowconfigure(0, weight=1, uniform='aa')
+            subframe2.columnconfigure(0, weight=1, uniform='bb')
 
         elif opcion == 'Tipo':
-            self.revisar_tipo()
 
-
+            subframe2.grid(row=1,sticky='nswe',column=0)
+            subframe2.rowconfigure(0, weight=1, uniform='aa')
+            subframe2.columnconfigure(0, weight=1, uniform='bb')
 
 
     def modificar_producto(self):
+        subframe2 = tk.Frame(self.subframe1, bg=botoncito, bd=0)
+        self.limpiar_frame(self)
         self.limpiar_frame(self.subframe1)
 
     def revisar_prioridad(self):
