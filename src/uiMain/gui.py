@@ -6,32 +6,37 @@ from tkinter import ttk
 from PIL import Image, ImageTk
 from src.uiMain.colores import *  # Importar colores
 
-import sys
-import os
-import pickle
-
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-sys.path.append(project_root)
-
 from src.gestorAplicacion.manejoLocal.Fecha import Fecha
 from src.gestorAplicacion.manejoLocal.Tienda import Tienda
 from src.gestorAplicacion.personas.Cliente import Cliente
 
-temp_dir = os.path.join(os.path.dirname(__file__), '..', 'temp')
-locales_path = os.path.join(temp_dir, 'locales.txt')
-clientes_path = os.path.join(temp_dir, 'clientes.txt')
+import sys
+import os
+import pickle
 
-try:
-    deserializarLocales = open(locales_path, "rb")
-    locales = pickle.load(deserializarLocales)
-    deserializarClientes = open(clientes_path, "rb")
-    Cliente.clientes = pickle.load(deserializarClientes)
 
-except FileNotFoundError as e:
-    print(f"No se encontro el archivo: {e.filename}")
-except Exception as e:
-    print(f"Hubo un error: {str(e)}")
+# TODO hacer que la serializacion funcione para ejecutable con pyinstaller
+# try:
+#     path_locales = os.path.realpath('src\\temp\\locales.txt')
+#     with open(path_locales, 'rb') as file:
+#         Tienda.set_locales(pickle.load(file))
+#
+#     path_clientes = os.path.realpath('src\\temp\\clientes.txt')
+#     with open(path_clientes, 'rb') as file:
+#         Cliente.clientes = pickle.load(file)
+#
+# except:
+#     deserializarLocales = open("../temp/locales.txt", "rb")
+#     locales = pickle.load(deserializarLocales)
+#     deserializarClientes = open("../temp/clientes.txt", "rb")
+#     Cliente.clientes = pickle.load(deserializarClientes)
 
+deserializarLocales = open("../temp/locales.txt", "rb")
+locales = pickle.load(deserializarLocales)
+deserializarClientes = open("../temp/clientes.txt", "rb")
+Cliente.clientes = pickle.load(deserializarClientes)
+
+locales = Tienda.get_locales()
 
 class VentanaPrincipal:
     # Atributos de clase

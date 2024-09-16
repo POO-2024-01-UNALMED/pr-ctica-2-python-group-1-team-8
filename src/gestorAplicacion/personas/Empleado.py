@@ -1,4 +1,5 @@
 from src.gestorAplicacion.personas.Persona import Persona
+from src.gestorAplicacion.personas.Meta import Meta
 
 class Empleado(Persona):
     def __init__(self, cedula, nombre, correo, telefono, salario, salario_porcentual, acumulado_mensual, dias_laborales, tienda):

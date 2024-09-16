@@ -1,5 +1,6 @@
 from src.gestorAplicacion.informacionVenta.Transaccion import Transaccion
 from src.gestorAplicacion.productos.Juego import Juego
+from src.gestorAplicacion.personas.Empleado import Empleado
 
 class Tienda:
     # Constructor
