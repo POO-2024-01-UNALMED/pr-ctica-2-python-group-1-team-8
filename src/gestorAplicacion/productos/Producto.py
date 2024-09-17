@@ -48,10 +48,10 @@ class Producto(ABC, Identificable):
     # Metodo toString...?
     @abstractmethod
     def __str__(self):
-        return f"ID: {self.id}, Nombre: {self._nombre}, Precio: {self._precio}, Cantidad: {self._cantidad}, Condicion: {self._condicion}, Fecha de Lanzamiento: {self._fecha_lanzamiento}"
+        return f"ID: {self._id}, Nombre: {self._nombre}, Precio: {self._precio}, Cantidad: {self._cantidad}, Condicion: {self._condicion}, Fecha de Lanzamiento: {self._fecha_lanzamiento}"
     @abstractmethod
     def __repr__(self):
-        return f"ID: {self.id}, Nombre: {self._nombre}, Precio: {self._precio}, Cantidad: {self._cantidad}, Condicion: {self._condicion}, Fecha de Lanzamiento: {self._fecha_lanzamiento}"
+        return f"ID: {self._id}, Nombre: {self._nombre}, Precio: {self._precio}, Cantidad: {self._cantidad}, Condicion: {self._condicion}, Fecha de Lanzamiento: {self._fecha_lanzamiento}"
 
 
 
