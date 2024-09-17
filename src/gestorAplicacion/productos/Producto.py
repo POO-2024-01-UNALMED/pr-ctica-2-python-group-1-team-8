@@ -42,10 +42,6 @@ class Producto(ABC, Identificable):
             prio = {"prioridad muy alta": 1, "prioridad alta": 2, "prioridad media": 3, "prioridad baja": 4}
             lista.sort(key=lambda x:prio[x.getPrioridad()])
 
-
-    # TODO metodo para clonar producto
-
-    # Metodo toString...?
     @abstractmethod
     def __str__(self):
         return f"ID: {self._id}, Nombre: {self._nombre}"
