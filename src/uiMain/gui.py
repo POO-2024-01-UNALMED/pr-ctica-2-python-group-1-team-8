@@ -949,7 +949,7 @@ class FieldFrameProducto(tk.Frame):
 
             # fieldframe para creacion
             criterios_cliente = ['Identificacion', 'Nombre', 'Correo', 'Telefono']
-            FieldFrame(mainframe_cliente, 'Dato', criterios_cliente, 'Valor', None, None, aceptar_callback=al_crear_cliente_callback, tipos_esperados=['int', 'str', 'str', 'str']).grid(row=0, column=0, rowspan=2, columnspan=2)
+            FieldFrame(mainframe_cliente, 'Dato', criterios_cliente, 'Valor', None, None, aceptar_callback=al_crear_cliente_callback, tipos_esperados=['int', 'str', 'str', 'int']).grid(row=0, column=0, rowspan=2, columnspan=2)
 
         tk.Label(mainframe_cliente, text='¿El cliente esta registrado o es nuevo?', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, columnspan=2, padx=15, pady=9, ipadx=30)
         # Botones
