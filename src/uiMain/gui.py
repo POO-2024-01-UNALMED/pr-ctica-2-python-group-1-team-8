@@ -16,6 +16,7 @@ import sys
 import os
 import pickle
 
+from src.uiMain.funcionalidad4 import gestionarMeta, verRendimiento, ampliarMeta, compararRendimiento
 
 # TODO hacer que la serializacion funcione para ejecutable con pyinstaller
 # try:
@@ -387,7 +388,7 @@ class VentanaSecundaria:
             pantalla_subasta.grid(row=0, column=0, sticky='nswe', padx=40, pady=40)
 
         def llamar_empleado():
-            prueba_subfieldframe = FieldFrameEmpleado(self.root, local)
+            prueba_subfieldframe = FieldFrameEmpleado(self.root, local, fecha)
             prueba_subfieldframe.grid(row=0, column=0, sticky='nswe', padx=40, pady=40)
 
         def revisar_producto():
@@ -1345,11 +1346,20 @@ class FieldFrameAdministrar(tk.Frame):
 
 # Gestionar empleados
 class FieldFrameEmpleado(tk.Frame):
-    def __init__(self, ventana, tienda_actual):
+    def __init__(self, ventana, tienda_actual, fecha_actual):
         super().__init__(ventana, bg=FONDO)
+
+        self.empleado_actual = None
+        self.tienda_actual = tienda_actual
+        self.fecha_actual = fecha_actual
 
         self.framemain = tk.Frame(ventana, bg=FONDO)
         self.framemain.grid(row=0, column=0, sticky='nswe')
+
+        self.identidicar_empleado()
+
+    #pantalla identificar empleado
+    def identidicar_empleado(self):
         self.framemain.rowconfigure((0, 2), weight=1, uniform='a')
         self.framemain.rowconfigure(1, weight=4, uniform='a')
         self.framemain.columnconfigure(0, weight=1, uniform='b')
@@ -1365,51 +1375,268 @@ class FieldFrameEmpleado(tk.Frame):
         # Comboboxes
 
         def identificar_categoria_nombres():
-            return list(map(lambda empleado: empleado.get_nombre(), tienda_actual.get_empleados()))
+            return list(map(lambda empleado: empleado.get_nombre(), self.tienda_actual.get_empleados()))
 
         self.listado_empleados = []
         self.combobox_empleado = ttk.Combobox(self.subframe1)
 
-        def crear_listado(frame):
+        def crear_listado_empleados(frame):
             listado_default = tk.StringVar(value='Elige un empleado')
             listado_nombres = identificar_categoria_nombres()
-            self.listado_empleados = tienda_actual.get_empleados()
+            self.listado_empleados = self.tienda_actual.get_empleados()
 
             self.combobox_empleado.config(values=listado_nombres, textvariable=listado_default)
             self.combobox_empleado.grid(row=0, column=1, padx=15, pady=15)
 
-        crear_listado(self.subframe1)
+        crear_listado_empleados(self.subframe1)
 
         # Insertar empleado seleccionado
-        self.empleado_actual = self.listado_empleados[self.combobox_empleado.current()]
-        def identificar_empleado(empleado_actual):
+        self.empleado_actual = None
+        def insertar_empleado():
+            self.empleado_actual = self.listado_empleados[self.combobox_empleado.current()]
             # Espacio del FieldFrame
 
             def identificar_meta_codigo():
-                return list(map(lambda meta: meta.get_codigo(), empleado_actual.get_metas()))
+                return list(map(lambda meta: meta.get_codigo(), self.empleado_actual.get_metas()))
 
             criterios = identificar_meta_codigo()
 
+            def calcular_porcentaje(meta):
+                porcentaje = meta.get_acumulado() / meta.get_valor_alcanzar() * 100
+                return str(porcentaje)
+
             def identificar_meta_porcentaje():
-                return list(map(lambda meta: meta., empleado_actual.get_metas()))
+                return list(map(calcular_porcentaje, self.empleado_actual.get_metas()))
 
-            valores = []
+            valores = identificar_meta_porcentaje()
 
-            cri_habilitados = [False, False, False, False, False]
+            cri_habilitados = []
+            for i in range(len(valores)):
+                cri_habilitados.append(False)
 
             def al_aceptar_callback(resultado):
-                print("Acepted values:", resultado)
-                FieldFrameProducto.carrito.extend(resultado)
+                self.pantalla_metas_alcanzadas()
 
             self.subframe2 = tk.Frame(self.framemain, bg=FONDO, bd=0)
             self.subframe2.grid(row=1, column=0)
             (FieldFrame(self.subframe2, 'Codigo', criterios, 'Porcentaje de progreso', valores, cri_habilitados, aceptar_callback=al_aceptar_callback)
                         .grid(row=0, column=0, padx=15, pady=15))
-            # TODO que fieldframe tambien reciba el comando de aceptar para que se pueda hacer la modificacion, o que aceptar devuelva los valores y asi agregarlos al carrito en fieldframeproducto
+
 
         # Boton para insertar empleado seleccionado
-        self.boton_empleado = tk.Button(self.subframe1, text='Insertar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=lambda: identificar_empleado())
+        self.boton_empleado = tk.Button(self.subframe1, text='Insertar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=lambda: insertar_empleado())
         self.boton_empleado.grid(row=0, column=2, padx=15, pady=15, sticky='w')
+
+        # metodo que limpia por completo el interior de el frame que reciba
+
+    @staticmethod
+    def limpiar_frame(frame):
+        for widget in frame.winfo_children():
+            widget.destroy()
+
+    def pantalla_metas_alcanzadas(self):
+        self.limpiar_frame(self.framemain)
+
+        self.framemain.rowconfigure((0, 2), weight=1, uniform='a')
+        self.framemain.rowconfigure(1, weight=4, uniform='a')
+        self.framemain.columnconfigure(0, weight=1, uniform='b')
+
+        self.subframe = tk.Frame(self.framemain, bg=FONDO, bd=0)
+        self.subframe.grid(row=0, column=0, sticky='s')
+        self.subframe.rowconfigure(0, weight=1, uniform='aa')
+        self.subframe.columnconfigure(0, weight=1, uniform='bb')
+
+        gestionarMeta(self.empleado_actual, self.fecha_actual)
+
+        # Titulos
+        tk.Label(self.subframe, text='Códigos de metas alcanzadas', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, padx=15, pady=15, sticky='e')
+
+        # Comboboxes
+
+        def identificar_metas_alcanzadas():
+            return list(map(lambda meta: meta.get_codigo(), self.empleado_actual.get_metas_alcanzadas()))
+
+        self.listado_metas_alcanzadas = []
+
+
+        listado_default = tk.StringVar(value='Elige una meta alcanzada')
+        listado_nombres = identificar_metas_alcanzadas()
+        listado_metas_alcanzadas = self.empleado_actual.get_metas_alcanzadas()
+
+        combobox_meta_alcanzada = ttk.Combobox(self.subframe, values=listado_nombres, textvariable=listado_default)
+        combobox_meta_alcanzada.grid(row=0, column=1, padx=15, pady=15)
+
+        if listado_metas_alcanzadas == []:
+            messagebox.showinfo('No hay metas alcanzadas', 'No hay metas alcanzadas para este empleado')
+            self.pantalla_metas_caducadas()
+            return
+
+        # Insertar meta seleccionada
+        self.meta_alcanzada_actual = None
+        def insertar_meta():
+            self.meta_alcanzada_actual = self.listado_metas_alcanzadas[combobox_meta_alcanzada.current()]
+
+            # Espacio del FieldFrame
+            criterios = ['Codigo', 'Fecha', 'Valor a alcanzar', 'Valor bonificacion']
+            valores = [str(self.meta_alcanzada_actual.get_codigo()), str(self.meta_alcanzada_actual.get_fecha()), str(self.meta_alcanzada_actual.get_valor_alcanzar()), str(self.meta_alcanzada_actual.get_valor_bonificacion())]
+            cri_habilitados = [False, False, False, False]
+
+            def al_aceptar_callback(resultado):
+                self.pantalla_metas_caducadas()
+
+            self.subframe2 = tk.Frame(self.framemain, bg=FONDO, bd=0)
+            self.subframe2.grid(row=1, column=0)
+            (FieldFrame(self.subframe2, 'Dato', criterios, 'Valor', valores, cri_habilitados, aceptar_callback=al_aceptar_callback)
+                        .grid(row=0, column=0, padx=15, pady=15))
+
+        #Boton para insertar meta seleccionada
+        self.boton_meta_alcanzada = tk.Button(self.subframe, text='Mostrar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=lambda: insertar_meta())
+        self.boton_meta_alcanzada.grid(row=0, column=2, padx=15, pady=15, sticky='w')
+
+    def pantalla_metas_caducadas(self):
+        self.limpiar_frame(self.framemain)
+
+        self.framemain.rowconfigure((0, 2), weight=1, uniform='a')
+        self.framemain.rowconfigure(1, weight=4, uniform='a')
+        self.framemain.columnconfigure(0, weight=1, uniform='b')
+
+        self.subframe = tk.Frame(self.framemain, bg=FONDO, bd=0)
+        self.subframe.grid(row=0, column=0, sticky='s')
+        self.subframe.rowconfigure(0, weight=1, uniform='aa')
+        self.subframe.columnconfigure(0, weight=1, uniform='bb')
+
+        gestionarMeta(self.empleado_actual, self.fecha_actual)
+
+        # Titulos
+        tk.Label(self.subframe, text='Códigos de metas caducadas', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, padx=15, pady=15, sticky='e')
+
+        # Comboboxes
+
+        def identificar_metas_caducadas():
+            return list(map(lambda meta: meta.get_codigo(), self.empleado_actual.get_metas_caducadas()))
+
+        self.listado_metas_caducadas = []
+        self.combobox_meta_caducada = ttk.Combobox(self.subframe)
+
+        def crear_listado_metas(frame):
+            listado_default = tk.StringVar(value='Elige una meta caducada')
+            listado_nombres = identificar_metas_caducadas()
+            self.listado_metas_caducadas = self.empleado_actual.get_metas_caducadas()
+
+            self.combobox_meta_caducada.config(values=listado_nombres, textvariable=listado_default)
+            self.combobox_meta_caducada.grid(row=0, column=1, padx=15, pady=15)
+
+            if self.listado_metas_caducadas == []:
+                self.pantalla_rendimiento()
+                messagebox.showinfo('No hay metas caducadas', 'No hay metas caducadas para este empleado')
+                return
+
+        crear_listado_metas(self.subframe)
+
+        # Insertar meta seleccionada
+        self.meta_caducada_actual = None
+        def insertar_meta_caducada():
+            self.meta_caducada_actual = self.listado_metas_caducadas[self.combobox_meta_caducada.current()]
+
+            # Espacio del FieldFrame
+            criterios = ['Codigo', 'Fecha', 'Valor a alcanzar', 'Valor bonificacion']
+            valores = [str(self.meta_caducada_actual.get_codigo()), str(self.meta_caducada_actual.get_fecha()), str(self.meta_caducada_actual.get_valor_alcanzar()), str(self.meta_caducada_actual.get_valor_bonificacion())]
+            cri_habilitados = [False, False, False, False]
+
+            def al_aceptar_callback(resultado):
+                criterios = ['Ingrese el año en el que desea ampliar la meta', 'Ingrese el mes en el que desea ampliar la meta', 'Ingrese el día en el que desea ampliar la meta']
+                valores = None
+                cri_habilitados = [True, True, True]
+
+                def al_aceptar_callback(resultado):
+                    messagebox.showinfo('Meta actualizada', 'La meta ha sido actualizada con exito')
+                    ampliarMeta(self.empleado_actual, self.meta_caducada_actual, self.fecha_actual, int(resultado[0]), int(resultado[1]), int(resultado[2]))
+
+                self.subframe2.destroy()
+                self.subframe3 = tk.Frame(self.framemain, bg=FONDO, bd=0)
+                self.subframe3.grid(row=1, column=0)
+                (FieldFrame(self.subframe3, 'Dato', criterios, 'Valor', valores, cri_habilitados, aceptar_callback=al_aceptar_callback)
+                            .grid(row=0, column=0, padx=15, pady=15))
+
+            self.subframe2 = tk.Frame(self.framemain, bg=FONDO, bd=0)
+            self.subframe2.grid(row=1, column=0)
+            (FieldFrame(self.subframe2, 'Dato', criterios, 'Valor', valores, cri_habilitados, aceptar_callback=al_aceptar_callback)
+                        .grid(row=0, column=0, padx=15, pady=15))
+
+        #Boton para insertar meta seleccionada
+        self.boton_meta_caducada = tk.Button(self.subframe, text='Mostrar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=lambda: insertar_meta_caducada())
+        self.boton_meta_caducada.grid(row=0, column=2, padx=15, pady=15, sticky='w')
+
+        self.total_metas()
+
+    def total_metas(self):
+        subframe3 = tk.Frame(self.framemain, bg=FONDO, bd=0)
+        subframe3.grid(row=2, column=0)
+        subframe3.columnconfigure((0, 1), weight=1, uniform='a')
+        subframe3.rowconfigure((0, 1), weight=1, uniform='b')
+
+        tk.Button(subframe3, text='Continuar a rendimiento', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=self.pantalla_rendimiento).grid(row=0, column=0, padx=15, pady=15, sticky='e')
+
+
+    def pantalla_rendimiento(self):
+        self.limpiar_frame(self.framemain)
+
+        self.framemain.rowconfigure((0, 2), weight=1, uniform='a')
+        self.framemain.rowconfigure(1, weight=4, uniform='a')
+        self.framemain.columnconfigure(0, weight=1, uniform='b')
+
+        self.subframe = tk.Frame(self.framemain, bg=FONDO, bd=0)
+        self.subframe.grid(row=0, column=0, sticky='s')
+        self.subframe.rowconfigure(0, weight=1, uniform='aa')
+        self.subframe.columnconfigure(0, weight=1, uniform='bb')
+
+        #Titulos
+        tk.Label(self.subframe, text='Rendimiento', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, padx=15, pady=15, sticky='e')
+
+        #Comboboxes
+        redimientos = ['Semanal', 'Mensual', 'Anual']
+
+        categoria_default = tk.StringVar(value='Elige un rendimiento')
+        self.combobox_rendimiento = ttk.Combobox(self.subframe, values=redimientos, textvariable=categoria_default)
+        self.combobox_rendimiento.grid(row=0, column=1, padx=15, pady=15)
+
+        def insertar_rendimiento():
+            self.rendimiento_actual = self.combobox_rendimiento.get()
+            rendimiento = verRendimiento(self.empleado_actual, self.fecha_actual, self.combobox_rendimiento.get())
+
+            # Espacio del FieldFrame
+            criterios = ['Rendimiento']
+            valores = [rendimiento]
+            cri_habilitados = [False]
+
+            def al_aceptar_callback(resultado):
+                criterios = ['Rendimiento en período anterior', 'Rendimiento en período actual']
+                rendimiento_pasado = compararRendimiento(self.empleado_actual, self.fecha_actual, self.rendimiento_actual)
+                valores = [resultado[0], rendimiento_pasado]
+                cri_habilitados = [False, False]
+
+                def al_aceptar_callback(resultado):
+                    self.pantalla_modificar_salario()
+
+                self.subframe2.destroy()
+                self.subframe3 = tk.Frame(self.framemain, bg=FONDO, bd=0)
+                self.subframe3.grid(row=1, column=0)
+                (FieldFrame(self.subframe3, 'Dato', criterios, 'Valor', valores, cri_habilitados, aceptar_callback=al_aceptar_callback)
+                            .grid(row=0, column=0, padx=15, pady=15))
+
+            self.subframe2 = tk.Frame(self.framemain, bg=FONDO, bd=0)
+            self.subframe2.grid(row=1, column=0)
+            (FieldFrame(self.subframe2, 'Dato', criterios, 'Valor', valores, cri_habilitados, aceptar_callback=al_aceptar_callback)
+                        .grid(row=0, column=0, padx=15, pady=15))
+
+        #Boton para insertar rendimiento
+        self.boton_rendimiento = tk.Button(self.subframe, text='Insertar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=lambda: insertar_rendimiento())
+        self.boton_rendimiento.grid(row=0, column=2, padx=15, pady=15, sticky='w')
+
+    def pantalla_modificar_salario(self):
+        pass
+
+
 
 # Subastar
 class FieldFrameSubasta(tk.Frame):
