@@ -676,6 +676,7 @@ class FieldFrameProducto(tk.Frame):
         # Crear combobox con listado de productos segun la categoria ingresada
         def identificar_categoria_nombres(cat:str):
             return list(map(lambda producto: producto.__str__(), self.tienda_actual.get_productos_categoria_inventario(cat)))
+        # ^ Ligadura dinámica
 
         self.listado_productos = []
         self.combobox_producto = ttk.Combobox(self.subframe1)
