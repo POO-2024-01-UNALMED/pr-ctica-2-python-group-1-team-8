@@ -212,6 +212,35 @@ if __name__ == "__main__":
     tienda3.agregar_producto(Accesorio("Control Polystation 5", 50, 60, 60, False, 5, Fecha(11, 11, 2021), 0, 0, "Sony", "Polystation 5"))
     tienda3.agregar_producto(Accesorio("Control Xbox 720", 55, 30, 50, False, 5, Fecha(14, 11, 2021), 0, 0, "Microsoft", "Xbox 720"))
 
+    # Objetos para prestamo
+    tienda3.agregar_producto(Consola("Polystation 3", 180, 10, 10, True, 4, Fecha(13, 11, 2006), 0, 0, "Sony"))
+    tienda3.agregar_producto(Consola("Xbox 360", 200, 10, 10, True, 4, Fecha(15, 12, 2005), 10, 30, "Microsoft"))
+    tienda3.agregar_producto(Consola("Polystation 4", 280, 5, 5, True, 4, Fecha(12, 12, 2013), 5, 15, "Sony"))
+    tienda3.agregar_producto(Consola("Xbox 720", 350, 3, 3, True, 4, Fecha(12, 12, 2013), 7, 15, "Microsoft"))
+    # juegos
+    tienda3.agregar_producto(Juego("Ronaldinho Soccer", 40, 10, 10, True, 4, Fecha(15, 8, 2020), 0, 0, "Deportes", "Polystation 5"))
+    tienda3.agregar_producto(Juego("Carlos Duty", 30, 10, 20, True, 4, Fecha(10, 7, 2018), 5, 15, "FPS", "Xbox 360"))
+    # accesorios
+    tienda3.agregar_producto(Accesorio("Control Polystation 5", 50, 70, 70, True, 4, Fecha(11, 11, 2021), 5, 50, "Sony", "Polystation 5"))
+    tienda3.agregar_producto(Accesorio("Control Xbox 720", 55, 30, 50, True, 4, Fecha(14, 11, 2021), 0, 0, "Microsoft", "Xbox 720"))
+
+    # objetos usados
+    # consolas
+    tienda3.agregar_producto(Consola("Polystation 2", 50, 5, 5, False, 3, Fecha(11, 10, 2000), 0, 0, "Sony"))
+    tienda3.agregar_producto(Consola("Polystation 3", 150, 8, 8, False, 3, Fecha(13, 11, 2006), 0, 0, "Sony"))
+    tienda3.agregar_producto(Consola("Polystation 4", 200, 3, 5, False, 3, Fecha(12, 12, 2013), 10, 25, "Sony"))
+    tienda3.agregar_producto(Consola("Xbox 360", 130, 5, 5, False, 3, Fecha(15, 12, 2005), 5, 15, "Microsoft"))
+    # juegos
+    tienda3.agregar_producto(Juego("Ronaldinho Soccer 2010", 10, 10, 10, False, 3, Fecha(15, 6, 2010), 0, 0, "Deportes", "Polystation 3"))
+    tienda3.agregar_producto(Juego("Carlos Duty 0.5", 10, 10, 10, False, 3, Fecha(20, 10, 2019), 10, 20, "FPS", "Xbox 360"))
+    tienda3.agregar_producto(Juego("Carlos Duty 2, Ahora es personal", 30, 10, 10, False, 3, Fecha(20, 10, 2024), 0, 0, "FPS", "Xbox 720"))
+    # accesorios
+    tienda3.agregar_producto(Accesorio("Control Polystation 3", 20, 10, 10, False, 3, Fecha(13, 11, 2006), 0, 0, "Sony", "Polystation 3"))
+    tienda3.agregar_producto(Accesorio("Control Xbox 360", 35, 10, 10, False, 3, Fecha(15, 12, 2005), 7, 16, "Microsoft", "Xbox 360"))
+    tienda3.agregar_producto(Accesorio("Control Polystation 4", 30, 10, 10, False, 3, Fecha(12, 12, 2013), 0, 0, "Sony", "Polystation 4"))
+    tienda3.agregar_producto(Accesorio("Control Magnavox Odyssey", 50, 1, 1, False, 3, Fecha(27, 8, 1972), 10, 40, "Magnavox", "Magnavox Odyssey"))
+
+
     empleado3_1 =   Empleado(3001, "Jhorman", "jhorman@example.com", 3444406, 1200, 8,  6,10, tienda3)
     empleado3_2 =   Empleado(3002, "Sebastian", "sebastian@example.com", 3444407, 1300, 9,  6,12, tienda3)
 
