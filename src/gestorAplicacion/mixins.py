@@ -3,7 +3,7 @@ class Identificable:
     def __init__(self):
         if not hasattr(self.__class__, 'ultimo_id'): # si no tiene el ultimo_id definido
             self.__class__.ultimo_id = 1
-        self.id = self.__class__.ultimo_id
+        self._id = self.__class__.ultimo_id
         self.__class__.ultimo_id += 1
 
 # mixin para clases que puedan registrar una fecha en la que fueron creadas

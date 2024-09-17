@@ -1,10 +1,9 @@
+# En esta clase ocurre toda la creacion de ventanas y escenas necesarias para llevar a cabo las funcionalidades del programa
+
 import copy
 import tkinter as tk
 import tkinter.messagebox as messagebox
-from random import uniform
 from tkinter import ttk, Frame
-
-# TODO interface de IDS
 
 from PIL import Image, ImageTk
 from src.uiMain.colores import *  # Importar colores
@@ -32,7 +31,7 @@ class VentanaPrincipal:
     num_imagen_local = 0
     num_imagen_integrante = 0
     saludo = 'Hola, bienvenido a Villajuegos. Aqui podras encontrar los mejores juegos para ti y tus amigos.'
-    descripcion = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cr'
+    descripcion = 'Villajuegos es un programa que permite gestionar transacciones tales como compras, prestamos y subastas asi como gestionar su inventario y empleados y sin dejar de lado la posibilidad de analizar su rendimiento'
 
     # Obtener la carpeta actual
     current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -83,7 +82,7 @@ class VentanaPrincipal:
         self.root = tk.Tk()
         self.root.title("Inicio")
 
-        self.root.geometry("540x540")
+        self.root.geometry("640x640")
         self.root.configure(bg=FONDO)
 
         # Configuracion de las filas y columnas
@@ -250,7 +249,7 @@ class VentanaPrincipal:
         # Hoja de vida TODO: Quitar texto placeholder
         hv_villa = """villavillavillavillavillavillavillavillavillavillavilla"""
         hv_seba = """sebasebasebasebasebasebasebasebasebasebasebasebaseba"""
-        hv_andres = """aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"""
+        hv_andres = """Santiago Garces. 19 años. Estudiante de Ingenieria de Sistemas e informatica. Tiene conocimientos basicos en programacion orientada a objetos con Java, Python y Rust asi como muchos errores en sus programas (tambien tiene 6 loros)."""
         hojas_vida = [hv_villa, hv_seba, hv_andres]
 
         self.text.config(state=tk.NORMAL)
@@ -487,22 +486,6 @@ class VentanaSecundaria:
             prueba_subfieldframe = FieldFrameEmpleado(subframe_func, local)
             prueba_subfieldframe.grid(row=0, column=0, sticky='nswe', padx=40, pady=40)
 
-        def revisar_producto():
-            self.subframe2 = tk.Frame(self.framemain,bg=FONDO,bd=0)
-            self.subframe2.grid(row=1,column=0)
-            (FieldFrame(self.subframe2,'Dato',['ID','Nombre','Precio','Cantidad','Fecha de lanzamiento'],'Valor',['1','Juego1','10000','10','01/01/2021'])
-             .grid(row=0,column=0,padx=15,pady=15))
-        def modificar_producto():
-            self.subframe2 = tk.Frame(self.framemain,bg=FONDO,bd=0)
-            self.subframe2.grid(row=1,column=0)
-            (FieldFrame(self.subframe2,'Dato',['ID','Nombre','Precio','Cantidad','Fecha de lanzamiento'],'Valor',['1','Juego1','10000','10','01/01/2021'])
-             .grid(row=0,column=0,padx=15,pady=15))
-        def revisar_prioridad():
-            self.subframe2 = tk.Frame(self.framemain,bg=FONDO,bd=0)
-            self.subframe2.grid(row=1,column=0)
-            (FieldFrame(self.subframe2,'Dato',['ID','Nombre','Precio','Cantidad','Fecha de lanzamiento'],'Valor',['1','Juego1','10000','10','01/01/2021'])
-             .grid(row=0,column=0,padx=15,pady=15))
-
         # Menubar
         menubar = tk.Menu(self.root)
 
@@ -680,7 +663,7 @@ class FieldFrameProducto(tk.Frame):
 
         categoria_default = tk.StringVar(value='Elige una categoria')
         self.combobox_categoria = ttk.Combobox(self.subframe1, values=categorias, textvariable=categoria_default)
-        self.combobox_categoria.grid(row=0, column=1, padx=15, pady=15)
+        self.combobox_categoria.grid(row=0, column=1, padx=15, pady=9)
 
         # Crear combobox con listado de productos segun la categoria ingresada
         def identificar_categoria_nombres(cat:str):
@@ -695,11 +678,11 @@ class FieldFrameProducto(tk.Frame):
             self.listado_productos = self.tienda_actual.get_productos_categoria_inventario(self.combobox_categoria.get())
 
             self.combobox_producto.config(values=listado_nombres, textvariable=listado_default)
-            self.combobox_producto.grid(row=1, column=1, padx=15, pady=15)
+            self.combobox_producto.grid(row=1, column=1, padx=15, pady=9)
 
         # Boton para crear combobox listado
-        self.boton_listado = tk.Button(self.subframe1, text='Buscar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=lambda: crear_listado(self.subframe1))
-        self.boton_listado.grid(row=0, column=2, padx=15, pady=15, sticky='w')
+        self.boton_listado = tk.Button(self.subframe1, text='Buscar', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0, command=lambda: crear_listado(self.subframe1))
+        self.boton_listado.grid(row=0, column=2, padx=15, pady=9, sticky='w')
 
         # Insertar producto seleccionado
         self.producto_actual = None
@@ -749,11 +732,11 @@ class FieldFrameProducto(tk.Frame):
             self.subframe2 = tk.Frame(self.framemain, bg=FONDO, bd=0)
             self.subframe2.grid(row=1, column=0)
             (FieldFrame(self.subframe2, 'Dato', criterios, 'Valor', valores, cri_habilitados, aceptar_callback=al_aceptar_callback)
-                        .grid(row=0, column=0, padx=15, pady=15))
+                        .grid(row=0, column=0, padx=15, pady=9))
 
         # Boton para insertar producto seleccionado
-        self.boton_producto = tk.Button(self.subframe1, text='Insertar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=lambda: insertar_producto())
-        self.boton_producto.grid(row=1, column=2, padx=15, pady=15, sticky='w')
+        self.boton_producto = tk.Button(self.subframe1, text='Insertar', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0, command=lambda: insertar_producto())
+        self.boton_producto.grid(row=1, column=2, padx=15, pady=9, sticky='w')
 
         self.total_carrito()
 
@@ -764,9 +747,9 @@ class FieldFrameProducto(tk.Frame):
         subframe3.columnconfigure((0,1), weight=1, uniform='a')
         subframe3.rowconfigure((0, 1), weight=1, uniform='b')
 
-        tk.Label(subframe3, text='Total', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, padx=15, pady=15, sticky='e')
+        tk.Label(subframe3, text='Total', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, padx=15, pady=9, sticky='e')
         self.entry_total_carrito = tk.Entry(subframe3, state='disabled')
-        self.entry_total_carrito.grid(row=0, column=1, padx=15, pady=15, sticky='w')
+        self.entry_total_carrito.grid(row=0, column=1, padx=15, pady=9, sticky='w')
 
         def limpiar_carrito():
             self.carrito = []
@@ -775,8 +758,8 @@ class FieldFrameProducto(tk.Frame):
             self.entry_total_carrito.insert(0, '0')
             self.entry_total_carrito.config(state='disabled')
 
-        tk.Button(subframe3, text='Comprar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=self.pantalla_pago).grid(row=1, column=0, padx=15, pady=15, sticky='e')
-        tk.Button(subframe3, text='Limpiar carrito', font=('Arial', 7, 'bold'), bg=POWER, bd=0, command=limpiar_carrito).grid(row=1, column=1, padx=15, pady=15, sticky='w')
+        tk.Button(subframe3, text='Comprar', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0, command=self.pantalla_pago).grid(row=1, column=0, padx=15, pady=9, sticky='e')
+        tk.Button(subframe3, text='Limpiar carrito', font=('Arial', 9, 'bold'), bg=POWER, bd=0, command=limpiar_carrito).grid(row=1, column=1, padx=15, pady=9, sticky='w')
 
     # metodo que limpia por completo el interior de el frame que reciba
     @staticmethod
@@ -870,7 +853,7 @@ class FieldFrameProducto(tk.Frame):
                 total_entry.config(state='disabled')
 
                 # Boton para completar la compra
-                (tk.Button(subframe, text='Completar compra', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=lambda: confirmacion_pago(self.carrito, pago_total, puntos_usados, empleado_encontrado))
+                (tk.Button(subframe, text='Completar compra', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0, command=lambda: confirmacion_pago(self.carrito, pago_total, puntos_usados, empleado_encontrado))
                             .grid(row=2, column=0, padx=15, pady=5))
 
             except ExceptionNoEncontrado:
@@ -885,23 +868,23 @@ class FieldFrameProducto(tk.Frame):
         subframe_subtotal_empleado.rowconfigure((0, 1, 2), weight=1, uniform='b')
 
         # Subtotal
-        tk.Label(subframe_subtotal_empleado, text='Subtotal', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, padx=15, pady=15, sticky='e')
+        tk.Label(subframe_subtotal_empleado, text='Subtotal', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, padx=15, pady=9, sticky='e')
         entry_subtotal = tk.Entry(subframe_subtotal_empleado)
         entry_subtotal.insert(0, str(subtotal))
         entry_subtotal.config(state='disabled')
-        entry_subtotal.grid(row=0, column=1, padx=15, pady=15, sticky='w')
+        entry_subtotal.grid(row=0, column=1, padx=15, pady=9, sticky='w')
 
         # Empleado
-        tk.Label(subframe_subtotal_empleado, text='Empleado', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=1, column=0, padx=15, pady=15, sticky='e')
+        tk.Label(subframe_subtotal_empleado, text='Empleado', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=1, column=0, padx=15, pady=9, sticky='e')
 
         values_empleados = []
         for empleado in self.tienda_actual.get_empleados():
             values_empleados.append(str(empleado.get_cedula()) + ' - ' + empleado.get_nombre())
         combobox_empleado = ttk.Combobox(subframe_subtotal_empleado, values=values_empleados)
-        combobox_empleado.grid(row=1, column=1, padx=15, pady=15, sticky='w')
+        combobox_empleado.grid(row=1, column=1, padx=15, pady=9, sticky='w')
 
         # Boton para confirmar empleado
-        tk.Button(subframe_subtotal_empleado, text='Confirmar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=al_confirmar_personal).grid(row=2, column=0, columnspan=2, padx=15, pady=15)
+        tk.Button(subframe_subtotal_empleado, text='Confirmar', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0, command=al_confirmar_personal).grid(row=2, column=0, columnspan=2, padx=15, pady=9)
 
     # metodo que genera temporalmente un frame para la creacion de un cliente
     def identificar_cliente(self, frame_c):
@@ -960,10 +943,10 @@ class FieldFrameProducto(tk.Frame):
             criterios_cliente = ['Identificacion', 'Nombre', 'Correo', 'Telefono']
             FieldFrame(mainframe_cliente, 'Dato', criterios_cliente, 'Valor', None, None, aceptar_callback=al_crear_cliente_callback, tipos_esperados=['int', 'str', 'str', 'str']).grid(row=0, column=0, rowspan=2, columnspan=2)
 
-        tk.Label(mainframe_cliente, text='¿El cliente esta registrado o es nuevo?', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, columnspan=2, padx=15, pady=15, ipadx=30)
+        tk.Label(mainframe_cliente, text='¿El cliente esta registrado o es nuevo?', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, columnspan=2, padx=15, pady=9, ipadx=30)
         # Botones
-        tk.Button(mainframe_cliente, text='Registrado', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=cliente_existente).grid(row=1, column=0, padx=15, pady=15, sticky='e')
-        tk.Button(mainframe_cliente, text='Nuevo', font=('Arial', 7, 'bold'), bg=POWER, bd=0, command=crear_cliente).grid(row=1, column=1, padx=15, pady=15, sticky='w')
+        tk.Button(mainframe_cliente, text='Registrado', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0, command=cliente_existente).grid(row=1, column=0, padx=15, pady=9, sticky='e')
+        tk.Button(mainframe_cliente, text='Nuevo', font=('Arial', 9, 'bold'), bg=POWER, bd=0, command=crear_cliente).grid(row=1, column=1, padx=15, pady=9, sticky='w')
 
 # Prestamo
 class FieldFramePrestamo(FieldFrameProducto):
@@ -1010,7 +993,7 @@ class FieldFramePrestamo(FieldFrameProducto):
             self.combobox_producto.grid(row=1, column=1, padx=15, pady=15)
 
         # Boton para crear combobox listado
-        self.boton_listado = tk.Button(self.subframe1, text='Buscar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=lambda: crear_listado(self.subframe1))
+        self.boton_listado = tk.Button(self.subframe1, text='Buscar', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0, command=lambda: crear_listado(self.subframe1))
         self.boton_listado.grid(row=0, column=2, padx=15, pady=15, sticky='w')
 
         # Insertar producto seleccionado
@@ -1064,7 +1047,7 @@ class FieldFramePrestamo(FieldFrameProducto):
                         .grid(row=0, column=0, padx=15, pady=15))
 
         # Boton para insertar producto seleccionado
-        self.boton_producto = tk.Button(self.subframe1, text='Insertar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=lambda: insertar_producto())
+        self.boton_producto = tk.Button(self.subframe1, text='Insertar', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0, command=lambda: insertar_producto())
         self.boton_producto.grid(row=1, column=2, padx=15, pady=15, sticky='w')
 
         self.total_carrito()
@@ -1130,7 +1113,7 @@ class FieldFramePrestamo(FieldFrameProducto):
                 total_entry.config(state='disabled')
 
                 # Boton para completar la compra
-                (tk.Button(subframe, text='Completar compra', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=lambda: confirmacion_pago(valor_total, dias))
+                (tk.Button(subframe, text='Completar compra', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0, command=lambda: confirmacion_pago(valor_total, dias))
                             .grid(row=2, column=0, padx=15, pady=5))
 
             except ExceptionCampos: #TODO AQUI PUEDE HABER LIGADURA
@@ -1159,7 +1142,7 @@ class FieldFramePrestamo(FieldFrameProducto):
         combobox_plazo.grid(row=1, column=1, padx=15, pady=15, sticky='w')
 
         # Boton para confirmar prestamo
-        tk.Button(subframe_subtotal_empleado, text='Confirmar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=al_confirmar_prest).grid(row=2, column=0, columnspan=2, padx=15, pady=15)
+        tk.Button(subframe_subtotal_empleado, text='Confirmar', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0, command=al_confirmar_prest).grid(row=2, column=0, columnspan=2, padx=15, pady=15)
 
     # genera temporalmente un frame para la creacion de un cliente
     def identificar_cliente(self, frame_c):
@@ -1190,8 +1173,11 @@ class FieldFramePrestamo(FieldFrameProducto):
                     # Comprobacion de prestamos vencidos
                     self.hay_vencidos = False
                     for prestamo in self.cliente_actual.get_prestamos():
-                        if prestamo.get_fecha_fin().get_total_dias() < self.fecha_actual.get_total_dias():
+                        if prestamo.get_fecha_fin().get_total_dias() < self.fecha_actual.get_total_dias() and prestamo.get_estado() == 'Activo':
                             prestamo.set_estado('Vencido')
+                            self.hay_vencidos = True
+
+                        elif prestamo.get_estado() == 'Vencido':
                             self.hay_vencidos = True
 
                     # Elegir entre devolver o realizar prestamo
@@ -1228,8 +1214,8 @@ class FieldFramePrestamo(FieldFrameProducto):
 
         tk.Label(mainframe_cliente, text='¿El cliente esta registrado o es nuevo?', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, columnspan=2, padx=15, pady=15, ipadx=30)
         # Botones
-        tk.Button(mainframe_cliente, text='Registrado', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=cliente_existente).grid(row=1, column=0, padx=15, pady=15, sticky='e')
-        tk.Button(mainframe_cliente, text='Nuevo', font=('Arial', 7, 'bold'), bg=POWER, bd=0, command=crear_cliente).grid(row=1, column=1, padx=15, pady=15, sticky='w')
+        tk.Button(mainframe_cliente, text='Registrado', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0, command=cliente_existente).grid(row=1, column=0, padx=15, pady=15, sticky='e')
+        tk.Button(mainframe_cliente, text='Nuevo', font=('Arial', 9, 'bold'), bg=POWER, bd=0, command=crear_cliente).grid(row=1, column=1, padx=15, pady=15, sticky='w')
 
     # pantalla para escoger entre prestar o devolver una vez ya este seleccionado el cliente
     def elegir_prestar_devolver(self):
@@ -1244,11 +1230,21 @@ class FieldFramePrestamo(FieldFrameProducto):
         subframe1.columnconfigure((0, 1), weight=1, uniform='b')
 
         tk.Label(subframe1, text='¿Desea prestar o devolver un producto?', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, columnspan=2, padx=15, pady=15, ipadx=30)
-        tk.Button(subframe1, text='Prestar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=self.prestar).grid(row=1, column=0, padx=15, pady=15, sticky='e')
-        tk.Button(subframe1, text='Devolver', font=('Arial', 7, 'bold'), bg=POWER, bd=0, command=self.devolver).grid(row=1, column=1, padx=15, pady=15, sticky='w')
+        tk.Button(subframe1, text='Prestar', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0, command=self.prestar).grid(row=1, column=0, padx=15, pady=15, sticky='e')
+        tk.Button(subframe1, text='Devolver', font=('Arial', 9, 'bold'), bg=POWER, bd=0, command=self.devolver).grid(row=1, column=1, padx=15, pady=15, sticky='w')
 
     # metodo que llama a la pantalla para seleccion de productos para el prestamo. No se ejecuta si hay prestamos vencidos para el cliente
     def prestar(self):
+        # Comprobacion de prestamos vencidos
+        self.hay_vencidos = False
+        for prestamo in self.cliente_actual.get_prestamos():
+            if prestamo.get_fecha_fin().get_total_dias() < self.fecha_actual.get_total_dias() and prestamo.get_estado() == 'Activo':
+                prestamo.set_estado('Vencido')
+                self.hay_vencidos = True
+
+            elif prestamo.get_estado() == 'Vencido':
+                self.hay_vencidos = True
+
         if self.hay_vencidos:
             messagebox.showinfo('Prestamo no disponible', 'No se puede realizar prestamo, el cliente tiene prestamos vencidos')
             return
@@ -1269,7 +1265,6 @@ class FieldFramePrestamo(FieldFrameProducto):
             return
 
         self.limpiar_frame(self.framemain)
-
         subframe1 = tk.Frame(self.framemain, bg=FONDO, bd=0)
         subframe1.grid(row=0, column=0,sticky='nswe')
         subframe1.columnconfigure((0,1), weight=1, uniform='a')
@@ -1277,12 +1272,16 @@ class FieldFramePrestamo(FieldFrameProducto):
         subframe1.rowconfigure(1, weight=4, uniform='b')
         #filas: seleccionar prestamo - boton confirmar prestamo -> dibujar:  mostrar total dias - mostrar total a pagar - mostrar productos en combobox - boton confirmar
 
+        self.ids_prestamos = []
+
         def actualizar_prestamos_activos():
             values_prestamos = []
+            self.ids_prestamos = []
             for prestamo in self.cliente_actual.get_prestamos():
                 if prestamo.get_estado() == 'Activo' or prestamo.get_estado() == 'Vencido':
                     values_prestamos.append('ID: ' + str(prestamo.get_id()) + ' | Fecha fin: ' + str(
                         prestamo.get_fecha_fin()) + ' | ' + prestamo.get_estado())
+                    self.ids_prestamos.append(prestamo.get_id())
 
             return values_prestamos
 
@@ -1292,7 +1291,7 @@ class FieldFramePrestamo(FieldFrameProducto):
                 if self.combobox_prestamo_selec.get() == 'Elige un prestamo' or self.combobox_prestamo_selec.get() == '':
                     raise ExceptionCampoVacio([self.combobox_prestamo_selec], ['Prestamo'])
 
-                id_prestamo = int(self.combobox_prestamo_selec.get().split(' | ')[0])
+                id_prestamo = self.ids_prestamos[self.combobox_prestamo_selec.current()]
                 prestamo_seleccionado = None
                 for prestamo in self.cliente_actual.get_prestamos():
                     if prestamo.get_id() == id_prestamo:
@@ -1346,7 +1345,7 @@ class FieldFramePrestamo(FieldFrameProducto):
                     self.elegir_prestar_devolver()
 
                 # boton para confirmar devolucion
-                tk.Button(subframe2, text='Confirmar devolucion', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=confirmar_devolucion).grid(row=3, column=0, rowspan=2, columnspan=2, padx=15, pady=15)
+                tk.Button(subframe2, text='Confirmar devolucion', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0, command=confirmar_devolucion).grid(row=3, column=0, rowspan=2, columnspan=2, padx=15, pady=15)
 
 
             except ExceptionNoEncontrado:
@@ -1360,8 +1359,8 @@ class FieldFramePrestamo(FieldFrameProducto):
         self.combobox_prestamo_selec = ttk.Combobox(subframe1, values=actualizar_prestamos_activos(), textvariable=valor_defecto)
         self.combobox_prestamo_selec.grid(row=0, column=0, padx=15, pady=15, ipadx=60, sticky='e')
 
-        tk.Button(subframe1, text='Confirmar prestamo', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=confirmar_prestamo_seleccionado).grid(row=0, column=1, padx=15, pady=15, ipadx=60, sticky='w')
-        tk.Button(subframe1, text='Volver', font=('Arial', 7, 'bold'), bg=POWER, bd=0, command=self.elegir_prestar_devolver).grid(row=2, column=0, columnspan=2, padx=15, pady=15, ipadx=60)
+        tk.Button(subframe1, text='Confirmar prestamo', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0, command=confirmar_prestamo_seleccionado).grid(row=0, column=1, padx=15, pady=15, ipadx=60, sticky='w')
+        tk.Button(subframe1, text='Volver', font=('Arial', 9, 'bold'), bg=POWER, bd=0, command=self.elegir_prestar_devolver).grid(row=2, column=0, columnspan=2, padx=15, pady=15, ipadx=60)
 
 # Administrar inventario
 class FieldFrameAdministrar(tk.Frame):
@@ -1632,7 +1631,7 @@ class FieldFrameEmpleado(tk.Frame):
                         .grid(row=0, column=0, padx=15, pady=15))
 
         # Boton para insertar empleado seleccionado
-        self.boton_empleado = tk.Button(self.subframe1, text='Insertar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=lambda: identificar_empleado())
+        self.boton_empleado = tk.Button(self.subframe1, text='Insertar', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0, command=lambda: identificar_empleado())
         self.boton_empleado.grid(row=0, column=2, padx=15, pady=15, sticky='w')
 
 # Subastar
@@ -1721,7 +1720,7 @@ class FieldFrameSubasta(tk.Frame):
                 self.combobox_producto.grid(row=1, column=1, padx=15, pady=15)
 
             # Boton para crear combobox listado
-            self.boton_listado = tk.Button(self.subframe1, text='Buscar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0,
+            self.boton_listado = tk.Button(self.subframe1, text='Buscar', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0,
                                            command=lambda: crear_listado(self.subframe1))
             self.boton_listado.grid(row=0, column=2, padx=15, pady=15, sticky='w')
 
@@ -1779,7 +1778,7 @@ class FieldFrameSubasta(tk.Frame):
                  .grid(row=0, column=0, padx=15, pady=15))
 
             # Boton para insertar producto seleccionado
-            self.boton_producto = tk.Button(self.subframe1, text='Insertar', font=('Arial', 7, 'bold'), bg=RESALTO,
+            self.boton_producto = tk.Button(self.subframe1, text='Insertar', font=('Arial', 9, 'bold'), bg=RESALTO,
                                             bd=0, command=lambda: insertar_producto())
             self.boton_producto.grid(row=1, column=2, padx=15, pady=15, sticky='w')
 
@@ -1810,9 +1809,9 @@ class FieldFrameSubasta(tk.Frame):
             frame_ident_producto.destroy()
             self.pantalla_tipo_subasta()
 
-        tk.Button(subframe3, text='Comprar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0,
+        tk.Button(subframe3, text='Comprar', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0,
                   command=commando_llamar_pantalla_tipo_sub).grid(row=1, column=0, padx=15, pady=15, sticky='e')
-        tk.Button(subframe3, text='Limpiar carrito', font=('Arial', 7, 'bold'), bg=POWER, bd=0, command=limpiar_carrito).grid(row=1, column=1,padx=15, pady=15,sticky='w')
+        tk.Button(subframe3, text='Limpiar carrito', font=('Arial', 9, 'bold'), bg=POWER, bd=0, command=limpiar_carrito).grid(row=1, column=1,padx=15, pady=15,sticky='w')
 
     def pantalla_tipo_subasta(self):
         self.reiniciar_frame()
