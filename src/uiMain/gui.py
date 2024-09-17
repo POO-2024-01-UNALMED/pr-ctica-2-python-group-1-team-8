@@ -385,9 +385,8 @@ class VentanaSecundaria:
             pantalla_subasta.grid(row=0, column=0, sticky='nswe', padx=40, pady=40)
 
         def llamar_empleado():
-            # prueba_subfieldframe = FieldFrameEmpleado(self.root, local)
-            # prueba_subfieldframe.grid(row=0, column=0, sticky='nswe', padx=40, pady=40)
-            pass
+            prueba_subfieldframe = FieldFrameEmpleado(self.root, local)
+            prueba_subfieldframe.grid(row=0, column=0, sticky='nswe', padx=40, pady=40)
 
         def revisar_producto():
             self.subframe2 = tk.Frame(self.framemain,bg=FONDO,bd=0)
@@ -1231,19 +1230,17 @@ class FieldFramePrestamo(FieldFrameProducto):
 
 # Administrar inventario
 class FieldFrameAdministrar(tk.Frame):
-    tienda_actual:Tienda = None
     etiquetas = []
     def __init__(self,ventana,tienda_actual:Tienda):
         super().__init__(ventana,bg=FONDO)
-
-        tienda_actual = tienda_actual
+        self.tienda_actual = tienda_actual
 
         self.framemain = tk.Frame(ventana,bg=FONDO)
         self.framemain.grid(row=0,column=0,sticky='nswe')
         self.framemain.rowconfigure(0,weight=1,uniform='a')
         self.framemain.columnconfigure(0,weight=1,uniform='b')
 
-        self.subframe1 = tk.Frame(self.framemain,bg=POWER,bd=0)
+        self.subframe1 = tk.Frame(self.framemain,bg=FONDO,bd=0)
         self.subframe1.grid(row=0,column=0,sticky='nswe')
         self.subframe1.rowconfigure((0,5),weight=3,uniform='aa')
         self.subframe1.rowconfigure((1,2,3,4),weight=2,uniform='aa')
@@ -1271,33 +1268,48 @@ class FieldFrameAdministrar(tk.Frame):
         self.subframe1.columnconfigure((0,1,2), weight=1, uniform='bb')
         tk.Label(self.subframe1, text='Revisar', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, padx=15, pady=0, sticky='e')
 
-        revisar_default = tk.StringVar(value=' ------- ')
-        self.combobox_eleccion = ttk.Combobox(self.subframe1, values=['Todos', 'Tipo'], textvariable=revisar_default)
-        self.combobox_eleccion.grid(row=0, column=1, padx=5, pady=0, sticky='we')
-        tk.Button(self.subframe1, text='Buscar', bg=RESALTO, bd=0, command=lambda: self.categoria(self.combobox_eleccion.get()) if self.combobox_eleccion.get() == 'Tipo' else self.eleccion(self.combobox_eleccion.get())).grid(row=0, column=2, padx=15, pady=0, sticky='w')
-    @staticmethod
-    def categoria(frame:Frame,cat):
+        revisar_default = tk.StringVar(value=' ---- ')
+        combobox_eleccion = ttk.Combobox(self.subframe1, values=['Todos', 'Tipo'], textvariable=revisar_default)
+        combobox_eleccion.grid(row=0, column=1, padx=5, pady=0, sticky='we')
+        def llamareleccion(elec):
+            if elec == 'Todos':
+                self.ordenar(["Nombre","Ventas","Precio"],2)
+            elif elec == 'Tipo':
+                self.categoria()
+        tk.Button(self.subframe1, text='Buscar', bg=RESALTO, bd=0, command=lambda: llamareleccion(combobox_eleccion.get())).grid(row=0, column=2, padx=15, pady=0, sticky='w')
+
+    def categoria(self):
         #Crear un combobox para elegir categoria y su boton de acción
-        for widget in frame.grid_slaves(row=1):
+        for widget in self.subframe1.grid_slaves(row=1):
             widget.destroy()
-        tk.Label(frame, text='Categoria', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=1, column=0, padx=15, pady=0, sticky='e')
-        categoriaDefault = tk.StringVar(value='INgrese una categoria')
-        combobox_categoria = ttk.Combobox(frame, values=['Consola', 'Juego', 'Accesorio'], textvariable=categoriaDefault)
+        for widget in self.subframe1.grid_slaves(row=2):
+            widget.destroy()
+        tk.Label(self.subframe1, text='Categoria', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=1, column=0, padx=15, pady=0, sticky='e')
+        categoriaDefault = tk.StringVar(value='-------')
+        combobox_categoria = ttk.Combobox(self.subframe1, values=['Consola', 'Juego', 'Accesorio'], textvariable=categoriaDefault)
         combobox_categoria.grid(row=1, column=1, padx=5, pady=0, sticky='we')
-        tk.Button(frame, text='Buscar', bg=RESALTO, bd=0,command= FieldFrameAdministrar.ordenar(frame,FieldFrameAdministrar.tienda_actual.get_productos_categoria(combobox_categoria.get()),2)).grid(row=1, column=2, padx=15, pady=0, sticky='w')
+        tk.Button(self.subframe1, text='Buscar', bg=RESALTO, bd=0,command= self.ordenar(["Nombre","Ventas","Precio"],2,combobox_categoria.get())).grid(row=1, column=2, padx=15, pady=0, sticky='w')
 
-    @staticmethod
-    def ordenar(frame:Frame,lista:list[str],fila):
+    def ordenar(self,lista:list[str],fila,cat=None):
+        if cat not in ['Consola','Juego','Accesorio']:
+            cat = None
+
         #crear un combobox para elegir como ordenar y su boton de accion
-        tk.Label(frame,text='Ordenar',font=('Arial', 11, 'bold'),bg=FONDO).grid(row=fila, column=0, padx=15, pady=0, sticky='e')
+        tk.Label(self.subframe1,text='Ordenar',font=('Arial', 11, 'bold'),bg=FONDO).grid(row=fila, column=0, padx=15, pady=0, sticky='e')
         ordenarDefecto = tk.StringVar(value=' -------- ')
-        combobox_ordenar = ttk.Combobox(frame,values=lista,textvariable=ordenarDefecto)
+        #crear combobox
+        combobox_ordenar = ttk.Combobox(self.subframe1,values=lista,textvariable=ordenarDefecto)
         combobox_ordenar.grid(row=fila,column= 1,padx=5,pady=0, sticky='we')
-        tk.Button(frame,text='Buscar',bg=RESALTO,bd=0)
-
+        if cat is not None:
+            listaObjetos = self.tienda_actual.get_productos_categoria_inventario(cat)
+        else:
+            listaObjetos = self.tienda_actual.get_inventario()
+        Producto.ordenar(combobox_ordenar.get(), listaObjetos)
+        #Boton para buscar
+        tk.Button(self.subframe1,text='Buscar',bg=RESALTO,bd=0,command=self.eleccion(listaObjetos)).grid(row=fila,column=2,padx=15,pady=0,sticky='w')
 
     @staticmethod
-    def crear_etiquetas(frame:FieldFrame,etiquetas,lista:list[Producto]):
+    def crear_etiquetas(frame:Frame,etiquetas,lista:list[Producto]):
         # Obtener el número ingresado por el usuario
         # Limpiar etiquetas anteriores
         for label in etiquetas:
@@ -1305,27 +1317,24 @@ class FieldFrameAdministrar(tk.Frame):
         p = 0
         # Crear las nuevas etiquetas
         for i in lista:
-            etiqueta = tk.Label(frame, text=f"COD: {i.getId()} | Nombre: {i.getNombre()} | Cantidad: {i.getCantidad()} | Precio: {i.getPrecio()}")
+            etiqueta = tk.Label(frame, text=f"COD: {i.getId()} | Nombre: {i.getNombre()} | Cantidad: {i.getCantidad()} | Precio: {i.getPrecio()}", font=('Arial', 11), bg=FONDO)
             etiqueta.grid(row=p + 1, column=0, pady=2)
-            etiquetas.append(etiqueta)
             p+=1
 
-    def eleccion(self,opcion):
-        for widget in self.subframe1.grid_slaves(row=1):
-            widget.destroy()
+    def eleccion(self,lista:list[Producto],cat=None):
         subframe2 = tk.Frame(self.framemain, bg=FONDO, bd=0)
         self.limpiar_frame(subframe2)
-        if opcion == 'Todos':
-            subframe2.grid(row=1,column=0,sticky='nswe',)
+        if cat is None:
+            subframe2.grid(row=1,column=0,sticky='nswe')
             subframe2.rowconfigure(0, weight=1, uniform='aa')
             subframe2.columnconfigure(0, weight=1, uniform='bb')
+            self.crear_etiquetas(subframe2, subframe2.grid_slaves(column=0), lista)
 
-        elif opcion == 'Tipo':
-
+        else:
             subframe2.grid(row=1,sticky='nswe',column=0)
             subframe2.rowconfigure(0, weight=1, uniform='aa')
             subframe2.columnconfigure(0, weight=1, uniform='bb')
-
+            self.crear_etiquetas(subframe2, subframe2.grid_slaves(column=0), lista)
     def modificar_producto(self):
         subframe2 = tk.Frame(self.subframe1, bg=botoncito, bd=0)
         self.limpiar_frame(self)
@@ -1343,72 +1352,72 @@ class FieldFrameAdministrar(tk.Frame):
             widget.destroy()
 
 # Gestionar empleados
-# class FieldFrameEmpleado(tk.Frame):
-#     def __init__(self, ventana, tienda_actual):
-#         super().__init__(ventana, bg=FONDO)
-#
-#         self.framemain = tk.Frame(ventana, bg=FONDO)
-#         self.framemain.grid(row=0, column=0, sticky='nswe')
-#         self.framemain.rowconfigure((0, 2), weight=1, uniform='a')
-#         self.framemain.rowconfigure(1, weight=4, uniform='a')
-#         self.framemain.columnconfigure(0, weight=1, uniform='b')
-#
-#         self.subframe1 = tk.Frame(self.framemain, bg=FONDO, bd=0)
-#         self.subframe1.grid(row=0, column=0, sticky='s')
-#         self.subframe1.rowconfigure((0, 1), weight=1, uniform='aa')
-#         self.subframe1.columnconfigure((0, 1, 2), weight=1, uniform='bb')
-#
-#         # Titulos
-#         tk.Label(self.subframe1, text='Empleados', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, padx=15, sticky='e')
-#
-#         # Comboboxes
-#
-#         def identificar_categoria_nombres():
-#             return list(map(lambda empleado: empleado.get_nombre(), tienda_actual.get_empleados()))
-#
-#         self.listado_empleados = []
-#         self.combobox_empleado = ttk.Combobox(self.subframe1)
-#
-#         def crear_listado(frame):
-#             listado_default = tk.StringVar(value='Elige un empleado')
-#             listado_nombres = identificar_categoria_nombres()
-#             self.listado_empleados = tienda_actual.get_empleados()
-#
-#             self.combobox_empleado.config(values=listado_nombres, textvariable=listado_default)
-#             self.combobox_empleado.grid(row=0, column=1, padx=15, pady=15)
-#
-#         crear_listado(self.subframe1)
-#
-#         # Insertar empleado seleccionado
-#         self.empleado_actual = self.listado_empleados[self.combobox_empleado.current()]
-#         def identificar_empleado(empleado_actual):
-#             # Espacio del FieldFrame
-#
-#             def identificar_meta_codigo():
-#                 return list(map(lambda meta: meta.get_codigo(), empleado_actual.get_metas()))
-#
-#             criterios = identificar_meta_codigo()
-#
-#             def identificar_meta_porcentaje():
-#                 return list(map(lambda meta: meta., empleado_actual.get_metas()))
-#
-#             valores = []
-#
-#             cri_habilitados = [False, False, False, False, False]
-#
-#             def al_aceptar_callback(resultado):
-#                 print("Acepted values:", resultado)
-#                 FieldFrameProducto.carrito.extend(resultado)
-#
-#             self.subframe2 = tk.Frame(self.framemain, bg=FONDO, bd=0)
-#             self.subframe2.grid(row=1, column=0)
-#             (FieldFrame(self.subframe2, 'Codigo', criterios, 'Porcentaje de progreso', valores, cri_habilitados, aceptar_callback=al_aceptar_callback)
-#                         .grid(row=0, column=0, padx=15, pady=15))
-#             # TODO que fieldframe tambien reciba el comando de aceptar para que se pueda hacer la modificacion, o que aceptar devuelva los valores y asi agregarlos al carrito en fieldframeproducto
-#
-#         # Boton para insertar empleado seleccionado
-#         self.boton_empleado = tk.Button(self.subframe1, text='Insertar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=lambda: identificar_empleado())
-#         self.boton_empleado.grid(row=0, column=2, padx=15, pady=15, sticky='w')
+class FieldFrameEmpleado(tk.Frame):
+    def __init__(self, ventana, tienda_actual):
+        super().__init__(ventana, bg=FONDO)
+
+        self.framemain = tk.Frame(ventana, bg=FONDO)
+        self.framemain.grid(row=0, column=0, sticky='nswe')
+        self.framemain.rowconfigure((0, 2), weight=1, uniform='a')
+        self.framemain.rowconfigure(1, weight=4, uniform='a')
+        self.framemain.columnconfigure(0, weight=1, uniform='b')
+
+        self.subframe1 = tk.Frame(self.framemain, bg=FONDO, bd=0)
+        self.subframe1.grid(row=0, column=0, sticky='s')
+        self.subframe1.rowconfigure((0, 1), weight=1, uniform='aa')
+        self.subframe1.columnconfigure((0, 1, 2), weight=1, uniform='bb')
+
+        # Titulos
+        tk.Label(self.subframe1, text='Empleados', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, padx=15, sticky='e')
+
+        # Comboboxes
+
+        def identificar_categoria_nombres():
+            return list(map(lambda empleado: empleado.get_nombre(), tienda_actual.get_empleados()))
+
+        self.listado_empleados = []
+        self.combobox_empleado = ttk.Combobox(self.subframe1)
+
+        def crear_listado(frame):
+            listado_default = tk.StringVar(value='Elige un empleado')
+            listado_nombres = identificar_categoria_nombres()
+            self.listado_empleados = tienda_actual.get_empleados()
+
+            self.combobox_empleado.config(values=listado_nombres, textvariable=listado_default)
+            self.combobox_empleado.grid(row=0, column=1, padx=15, pady=15)
+
+        crear_listado(self.subframe1)
+
+        # Insertar empleado seleccionado
+        self.empleado_actual = self.listado_empleados[self.combobox_empleado.current()]
+        def identificar_empleado(empleado_actual):
+            # Espacio del FieldFrame
+
+            def identificar_meta_codigo():
+                return list(map(lambda meta: meta.get_codigo(), empleado_actual.get_metas()))
+
+            criterios = identificar_meta_codigo()
+
+            def identificar_meta_porcentaje():
+                return list(map(lambda meta: meta.get_estado(), empleado_actual.get_metas()))
+
+            valores = []
+
+            cri_habilitados = [False, False, False, False, False]
+
+            def al_aceptar_callback(resultado):
+                print("Acepted values:", resultado)
+                FieldFrameProducto.carrito.extend(resultado)
+
+            self.subframe2 = tk.Frame(self.framemain, bg=FONDO, bd=0)
+            self.subframe2.grid(row=1, column=0)
+            (FieldFrame(self.subframe2, 'Codigo', criterios, 'Porcentaje de progreso', valores, cri_habilitados, aceptar_callback=al_aceptar_callback)
+                        .grid(row=0, column=0, padx=15, pady=15))
+            # TODO que fieldframe tambien reciba el comando de aceptar para que se pueda hacer la modificacion, o que aceptar devuelva los valores y asi agregarlos al carrito en fieldframeproducto
+
+        # Boton para insertar empleado seleccionado
+        self.boton_empleado = tk.Button(self.subframe1, text='Insertar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=lambda: identificar_empleado())
+        self.boton_empleado.grid(row=0, column=2, padx=15, pady=15, sticky='w')
 
 # Subastar
 class FieldFrameSubasta(tk.Frame):

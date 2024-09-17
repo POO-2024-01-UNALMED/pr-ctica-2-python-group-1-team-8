@@ -30,7 +30,7 @@ class Producto(ABC):
 
     # TODO metodos para ordenar productos por defecto
     @classmethod
-    def ordenar(cls, parametro:str, lista, ):
+    def ordenar(cls, parametro:str, lista):
         if parametro.lower() == "nombre":
             sorted(lista,key=lambda x:x.get_nombre())
             return lista
