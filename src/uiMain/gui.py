@@ -839,6 +839,13 @@ class FieldFrameProducto(tk.Frame):
 
             # Limpiar carrito
             messagebox.showinfo('Compra realizada', f'Compra realizada con exito\nTotal: {total}\nPuntos usados: {puntos}\nPuntos obtenidos: {puntos_obtenidos}\nEmpleado: {empleado.get_nombre()}')
+
+            # Hallar total sin descuentos
+            total_sin_descuentos = sum(map(lambda prod: prod.getPrecio() * prod.getCantidad(), carrito))
+
+            from src.gestorAplicacion.informacionVenta.Transaccion import Transaccion
+            Transaccion(self.cliente_actual, empleado, self.tienda_actual, self.carrito, total_sin_descuentos, total)
+
             self.limpiar_frame(self.framemain)
             self.framemain.destroy()
             self.destroy()

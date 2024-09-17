@@ -1,15 +1,14 @@
 from abc import ABC, abstractmethod
-from audioop import reverse
 
 from src.gestorAplicacion.manejoLocal.Fecha import Fecha
-class Producto(ABC):
-    ultimoId = 1
+from src.gestorAplicacion.mixins import Identificable
 
+
+class Producto(ABC, Identificable):
     # Constructores
     # Constructor con todos los atributos menos Id
     def __init__(self, nombre:str, precio:float, cantidad:int, cantidadInicial:int, prestable:bool, condicion:int, fechaLanzamiento:Fecha, descuento:float, puntosRequeridos:int):
-        self.id = Producto.ultimoId
-        Producto.ultimoId += 1
+        super().__init__()
         self._nombre = nombre
         self._precio = precio
         self._cantidad = cantidad

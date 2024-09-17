@@ -1,10 +1,9 @@
-class Transaccion:
-    ultimo_id = 1
+from src.gestorAplicacion.mixins import Identificable
 
-    def __init__(self, fecha, cliente, empleado, local, productos, valor_sin_descuento, valor_final):
-        self._id = Transaccion.ultimo_id
-        Transaccion.ultimo_id += 1
-        self._fecha = fecha
+
+class Transaccion(Identificable):
+    def __init__(self, cliente, empleado, local, productos, valor_sin_descuento, valor_final):
+        super().__init__()
         self._cliente = cliente
         self._empleado = empleado
         self._local = local
