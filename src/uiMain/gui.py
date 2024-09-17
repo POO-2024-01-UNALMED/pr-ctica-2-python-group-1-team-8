@@ -12,29 +12,12 @@ from src.gestorAplicacion.personas.Cliente import Cliente
 from src.gestorAplicacion.productos.Producto import Producto
 
 import os
-import pickle
-
 
 # TODO hacer que la serializacion funcione para ejecutable con pyinstaller y moverla a baseDatos
-# try:
-#     path_locales = os.path.realpath('src\\baseDatos\\temp\\locales.txt')
-#     with open(path_locales, 'rb') as file:
-#         Tienda.set_locales(pickle.load(file))
-#
-#     path_clientes = os.path.realpath('src\\baseDatos\\temp\\clientes.txt')
-#     with open(path_clientes, 'rb') as file:
-#         Cliente.clientes = pickle.load(file)
-#
-# except:
-#     deserializarLocales = open("../temp/locales.txt", "rb")
-#     locales = pickle.load(deserializarLocales)
-#     deserializarClientes = open("../temp/clientes.txt", "rb")
-#     Cliente.clientes = pickle.load(deserializarClientes)
 
-deserializarLocales = open("../baseDatos/temp/locales.txt", "rb")
-Tienda.set_locales(pickle.load(deserializarLocales))
-deserializarClientes = open("../baseDatos/temp/clientes.txt", "rb")
-Cliente.clientes = pickle.load(deserializarClientes)
+from src.baseDatos.deserializador import Deserializador
+Deserializador.deserializar_locales()
+Deserializador.deserializar_clientes()
 
 locales = Tienda.get_locales()
 
@@ -341,8 +324,6 @@ class VentanaPrincipal:
 
                 # Destruir esta ventana y llamar la siguiente
                 VentanaSecundaria(self.root, local_actual, fecha_ingreso)
-                emergente.destroy()
-                self.root.destroy()
 
         # botones
         tk.Button(emergente, text='Aceptar', background=RESALTO, bd=0, command=aceptar).grid(row=2, column=0, padx=3, pady=2)
