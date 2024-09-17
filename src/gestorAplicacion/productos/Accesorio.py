@@ -19,5 +19,5 @@ class Accesorio(Producto):
     def setConsola(self, consola):
         self._consola = consola
 
-    def metodo_abstracto(self):
-        pass
+    def __repr__(self):
+        return f"COD: {self.getId()} |Nombre: {self.getNombre()} | Precio: {self.getPrecio()} | Consola: {self.getConsola()}"

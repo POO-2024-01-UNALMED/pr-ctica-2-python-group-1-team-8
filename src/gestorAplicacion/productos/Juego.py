@@ -19,5 +19,5 @@ class Juego(Producto):
     def setGenero(self, genero):
         self._genero = genero
 
-    def metodo_abstracto(self):
-        pass
+    def __repr__(self):
+        return f"COD: {self.getId()} |Nombre: {self.getNombre()} | Precio: {self.getPrecio()} | Plataforma: {self.getPlataforma()}"
