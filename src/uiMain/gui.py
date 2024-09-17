@@ -832,10 +832,12 @@ class FieldFrameProducto(tk.Frame):
             # Puntos gastados
             self.cliente_actual.set_puntos_fidelidad(self.cliente_actual.get_puntos_fidelidad() - puntos)
 
-            # TODO tambien otorgarle puntos
+            # Puntos obtenidos
+            puntos_obtenidos = int(total * 0.15)
+            self.cliente_actual.set_puntos_fidelidad(self.cliente_actual.get_puntos_fidelidad() + puntos_obtenidos)
 
             # Limpiar carrito
-            messagebox.showinfo('Compra realizada', f'Compra realizada con exito\nTotal: {total}\nPuntos usados: {puntos}\nEmpleado: {empleado.get_nombre()}')
+            messagebox.showinfo('Compra realizada', f'Compra realizada con exito\nTotal: {total}\nPuntos usados: {puntos}\nPuntos obtenidos: {puntos_obtenidos}\nEmpleado: {empleado.get_nombre()}')
             self.limpiar_frame(self.framemain)
             self.framemain.destroy()
             self.destroy()
@@ -2021,6 +2023,7 @@ class FieldFrameSubasta(tk.Frame):
 
         if len(subastas_desc) == 0:
             messagebox.showinfo('Subastas descendentes', 'No hay subastas descendentes activas')
+            self.seleccion_accion()
             return
 
         subframe_actualizar = tk.Frame(self.framemain, bg=FONDO, bd=0)
@@ -2078,9 +2081,6 @@ class FieldFrameSubasta(tk.Frame):
 
     # metodo que comprueba que hayan subastas finalizadas, avisa mediante messageboxes y actualiza su estado segun corresponda
     def comprobar_subastas_finalizadas(self):
-        print('comprobando subastas')
-        # TODO arreglar comprobacion de subastas
-        print(self.tienda_actual.get_subastas())
         for subasta in self.tienda_actual.get_subastas():
             if subasta.get_estado() == 'Activa' and int(subasta.get_fecha_fin().get_total_dias()) < int(self.fecha_actual.get_total_dias()):
                 # Si no hubo ofertas mirando la lista de ofertas
@@ -2088,10 +2088,10 @@ class FieldFrameSubasta(tk.Frame):
                     messagebox.showinfo('Subasta extendida', subasta.extender_subasta(self.fecha_actual))
                 # Si hubo ofertas
                 else:
-                    if subasta.get_tipo == 'Ascendente':
+                    if subasta.get_tipo() == 'Ascendente':
                         ganador = subasta.finalizar_subasta()
                         messagebox.showinfo('Subasta finalizada', 'La subasta ' + str(subasta.get_id()) + ' ha finalizado.\nEl ganador es ' + ganador.get_nombre() + ' con cedula ' + str(ganador.get_cedula()) + ' por una oferta de ' + str(subasta.get_oferta_mayor()))
-                    elif subasta.get_tipo == 'Anonima':
+                    elif subasta.get_tipo() == 'Anonima':
                         ganador = subasta.finalizar_subasta_anonima()
                         messagebox.showinfo('Subasta finalizada', 'La subasta ' + str(subasta.get_id()) + ' ha finalizado.\nEl ganador es ' + ganador.get_nombre() + ' con cedula ' + str(ganador.get_cedula()) + ' por una oferta de ' + str(subasta.get_oferta_mayor()))
 
