@@ -248,7 +248,7 @@ class VentanaPrincipal:
         if self.__class__.num_imagen_integrante > 2:
             self.__class__.num_imagen_integrante = 0
 
-        hv_villa = """David Villa Alzate. 19 años. Estudiante de Ingenieria de Sistemas e informatica. Solo bacaneria. """
+        hv_villa = """David Villa. 19 años. Estudiante de Ingeniería en Sistemas, le gusta andar en moto, la gente chevere y programar con sus amigos."""
         hv_seba = """Sebastian Cepeda Jaimes, 18 años. Estudiante de Ingenieria de Sistemas e informatica. Platinado el Forager y Celeste. Le gustan los animales y no sabe programar interfaces. """
         hv_andres = """Santiago Garces. 19 años. Estudiante de Ingenieria de Sistemas e informatica. Tiene conocimientos basicos en programacion orientada a objetos con Java, Python y Rust. Tiene tantos loros como errores en sus programas (muchos)."""
         hojas_vida = [hv_villa, hv_seba, hv_andres]
