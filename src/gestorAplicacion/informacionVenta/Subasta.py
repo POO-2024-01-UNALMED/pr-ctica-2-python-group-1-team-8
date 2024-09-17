@@ -52,7 +52,7 @@ class Subasta:
         self._estado = "Finalizada"
 
         # Actualizar puntos del ganador
-        cliente.set_puntos(cliente.get_puntos() + self._oferta_mayor)
+        cliente.set_puntos(cliente.get_puntos() - self._oferta_mayor)
 
     # ~~ Finalizar subastas ~~
     # Finalizar subasta ascendente o descendente. Retorna al ganador

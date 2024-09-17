@@ -1,7 +1,6 @@
 import copy
 import tkinter as tk
 import tkinter.messagebox as messagebox
-from operator import indexOf
 from tkinter import ttk, Frame
 
 from PIL import Image, ImageTk
@@ -12,12 +11,11 @@ from src.gestorAplicacion.manejoLocal.Tienda import Tienda
 from src.gestorAplicacion.personas.Cliente import Cliente
 from src.gestorAplicacion.productos.Producto import Producto
 
-import sys
 import os
 import pickle
 
 
-# TODO hacer que la serializacion funcione para ejecutable con pyinstaller
+# TODO hacer que la serializacion funcione para ejecutable con pyinstaller y moverla a baseDatos
 # try:
 #     path_locales = os.path.realpath('src\\temp\\locales.txt')
 #     with open(path_locales, 'rb') as file:
@@ -387,8 +385,9 @@ class VentanaSecundaria:
             pantalla_subasta.grid(row=0, column=0, sticky='nswe', padx=40, pady=40)
 
         def llamar_empleado():
-            prueba_subfieldframe = FieldFrameEmpleado(self.root, local)
-            prueba_subfieldframe.grid(row=0, column=0, sticky='nswe', padx=40, pady=40)
+            # prueba_subfieldframe = FieldFrameEmpleado(self.root, local)
+            # prueba_subfieldframe.grid(row=0, column=0, sticky='nswe', padx=40, pady=40)
+            pass
 
         def revisar_producto():
             self.subframe2 = tk.Frame(self.framemain,bg=FONDO,bd=0)
@@ -1344,72 +1343,72 @@ class FieldFrameAdministrar(tk.Frame):
             widget.destroy()
 
 # Gestionar empleados
-class FieldFrameEmpleado(tk.Frame):
-    def __init__(self, ventana, tienda_actual):
-        super().__init__(ventana, bg=FONDO)
-
-        self.framemain = tk.Frame(ventana, bg=FONDO)
-        self.framemain.grid(row=0, column=0, sticky='nswe')
-        self.framemain.rowconfigure((0, 2), weight=1, uniform='a')
-        self.framemain.rowconfigure(1, weight=4, uniform='a')
-        self.framemain.columnconfigure(0, weight=1, uniform='b')
-
-        self.subframe1 = tk.Frame(self.framemain, bg=FONDO, bd=0)
-        self.subframe1.grid(row=0, column=0, sticky='s')
-        self.subframe1.rowconfigure((0, 1), weight=1, uniform='aa')
-        self.subframe1.columnconfigure((0, 1, 2), weight=1, uniform='bb')
-
-        # Titulos
-        tk.Label(self.subframe1, text='Empleados', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, padx=15, sticky='e')
-
-        # Comboboxes
-
-        def identificar_categoria_nombres():
-            return list(map(lambda empleado: empleado.get_nombre(), tienda_actual.get_empleados()))
-
-        self.listado_empleados = []
-        self.combobox_empleado = ttk.Combobox(self.subframe1)
-
-        def crear_listado(frame):
-            listado_default = tk.StringVar(value='Elige un empleado')
-            listado_nombres = identificar_categoria_nombres()
-            self.listado_empleados = tienda_actual.get_empleados()
-
-            self.combobox_empleado.config(values=listado_nombres, textvariable=listado_default)
-            self.combobox_empleado.grid(row=0, column=1, padx=15, pady=15)
-
-        crear_listado(self.subframe1)
-
-        # Insertar empleado seleccionado
-        self.empleado_actual = self.listado_empleados[self.combobox_empleado.current()]
-        def identificar_empleado(empleado_actual):
-            # Espacio del FieldFrame
-
-            def identificar_meta_codigo():
-                return list(map(lambda meta: meta.get_codigo(), empleado_actual.get_metas()))
-
-            criterios = identificar_meta_codigo()
-
-            def identificar_meta_porcentaje():
-                return list(map(lambda meta: meta., empleado_actual.get_metas()))
-
-            valores = []
-
-            cri_habilitados = [False, False, False, False, False]
-
-            def al_aceptar_callback(resultado):
-                print("Acepted values:", resultado)
-                FieldFrameProducto.carrito.extend(resultado)
-
-            self.subframe2 = tk.Frame(self.framemain, bg=FONDO, bd=0)
-            self.subframe2.grid(row=1, column=0)
-            (FieldFrame(self.subframe2, 'Codigo', criterios, 'Porcentaje de progreso', valores, cri_habilitados, aceptar_callback=al_aceptar_callback)
-                        .grid(row=0, column=0, padx=15, pady=15))
-            # TODO que fieldframe tambien reciba el comando de aceptar para que se pueda hacer la modificacion, o que aceptar devuelva los valores y asi agregarlos al carrito en fieldframeproducto
-
-        # Boton para insertar empleado seleccionado
-        self.boton_empleado = tk.Button(self.subframe1, text='Insertar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=lambda: identificar_empleado())
-        self.boton_empleado.grid(row=0, column=2, padx=15, pady=15, sticky='w')
+# class FieldFrameEmpleado(tk.Frame):
+#     def __init__(self, ventana, tienda_actual):
+#         super().__init__(ventana, bg=FONDO)
+#
+#         self.framemain = tk.Frame(ventana, bg=FONDO)
+#         self.framemain.grid(row=0, column=0, sticky='nswe')
+#         self.framemain.rowconfigure((0, 2), weight=1, uniform='a')
+#         self.framemain.rowconfigure(1, weight=4, uniform='a')
+#         self.framemain.columnconfigure(0, weight=1, uniform='b')
+#
+#         self.subframe1 = tk.Frame(self.framemain, bg=FONDO, bd=0)
+#         self.subframe1.grid(row=0, column=0, sticky='s')
+#         self.subframe1.rowconfigure((0, 1), weight=1, uniform='aa')
+#         self.subframe1.columnconfigure((0, 1, 2), weight=1, uniform='bb')
+#
+#         # Titulos
+#         tk.Label(self.subframe1, text='Empleados', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, padx=15, sticky='e')
+#
+#         # Comboboxes
+#
+#         def identificar_categoria_nombres():
+#             return list(map(lambda empleado: empleado.get_nombre(), tienda_actual.get_empleados()))
+#
+#         self.listado_empleados = []
+#         self.combobox_empleado = ttk.Combobox(self.subframe1)
+#
+#         def crear_listado(frame):
+#             listado_default = tk.StringVar(value='Elige un empleado')
+#             listado_nombres = identificar_categoria_nombres()
+#             self.listado_empleados = tienda_actual.get_empleados()
+#
+#             self.combobox_empleado.config(values=listado_nombres, textvariable=listado_default)
+#             self.combobox_empleado.grid(row=0, column=1, padx=15, pady=15)
+#
+#         crear_listado(self.subframe1)
+#
+#         # Insertar empleado seleccionado
+#         self.empleado_actual = self.listado_empleados[self.combobox_empleado.current()]
+#         def identificar_empleado(empleado_actual):
+#             # Espacio del FieldFrame
+#
+#             def identificar_meta_codigo():
+#                 return list(map(lambda meta: meta.get_codigo(), empleado_actual.get_metas()))
+#
+#             criterios = identificar_meta_codigo()
+#
+#             def identificar_meta_porcentaje():
+#                 return list(map(lambda meta: meta., empleado_actual.get_metas()))
+#
+#             valores = []
+#
+#             cri_habilitados = [False, False, False, False, False]
+#
+#             def al_aceptar_callback(resultado):
+#                 print("Acepted values:", resultado)
+#                 FieldFrameProducto.carrito.extend(resultado)
+#
+#             self.subframe2 = tk.Frame(self.framemain, bg=FONDO, bd=0)
+#             self.subframe2.grid(row=1, column=0)
+#             (FieldFrame(self.subframe2, 'Codigo', criterios, 'Porcentaje de progreso', valores, cri_habilitados, aceptar_callback=al_aceptar_callback)
+#                         .grid(row=0, column=0, padx=15, pady=15))
+#             # TODO que fieldframe tambien reciba el comando de aceptar para que se pueda hacer la modificacion, o que aceptar devuelva los valores y asi agregarlos al carrito en fieldframeproducto
+#
+#         # Boton para insertar empleado seleccionado
+#         self.boton_empleado = tk.Button(self.subframe1, text='Insertar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=lambda: identificar_empleado())
+#         self.boton_empleado.grid(row=0, column=2, padx=15, pady=15, sticky='w')
 
 # Subastar
 class FieldFrameSubasta(tk.Frame):
@@ -1440,13 +1439,13 @@ class FieldFrameSubasta(tk.Frame):
         self.subframe_selec.rowconfigure((0,1,2), weight=1, uniform='b')
 
         # subastar
-        tk.Button(self.subframe_selec, text='Subastar', font=('Arial', 10, 'bold'), bg=RESALTO, bd=0, command=self.subastar).grid(row=0, column=0, padx=15, pady=15, sticky='s')
+        tk.Button(self.subframe_selec, text='Subastar', font=('Arial', 17, 'bold'), bg=RESALTO, bd=0, command=self.subastar).grid(row=0, column=0, padx=15, pady=15, sticky='s')
 
         # ofertar
-        tk.Button(self.subframe_selec, text='Ofertar', font=('Arial', 10, 'bold'), bg=POWER, bd=0, command=self.ofertar).grid(row=1, column=0, padx=15, pady=15)
+        tk.Button(self.subframe_selec, text='Ofertar', font=('Arial', 17, 'bold'), bg=POWER, bd=0, command=self.ofertar).grid(row=1, column=0, padx=15, pady=15)
 
         # terminar subasta
-        tk.Button(self.subframe_selec, text='Terminar subasta', font=('Arial', 10, 'bold'), bg=RESALTO, bd=0, command=self.terminar_subasta).grid(row=2, column=0, padx=15, pady=15, sticky='n')
+        tk.Button(self.subframe_selec, text='Terminar subasta', font=('Arial', 17, 'bold'), bg=RESALTO, bd=0, command=self.terminar_subasta).grid(row=2, column=0, padx=15, pady=15, sticky='n')
 
     def subastar(self):
         self.reiniciar_frame()
@@ -1673,8 +1672,166 @@ class FieldFrameSubasta(tk.Frame):
 
         tk.Button(subframe_tipo_s, text='Obtener oferta inicial recomendada', font=('Arial', 11, 'bold'), bg=RESALTO, bd=0, command=al_obtener_oferta_inicial).grid(row=3, column=0, columnspan=2, padx=15, ipadx=30, pady=15)
 
+
     def ofertar(self):
-        pass
+        self.reiniciar_frame()
+
+        #ASCENDENTE seleccion subasta - boton confirmacion - ingreso cliente - ultima oferta - cantidad a ofertar - boton para ofertar
+        #DESCENDENTE seleccion subasta - boton confirmacion - ingreso cliente - oferta actual (disabled) - boton para ofertar
+        #ANONIMA seleccion subasta - boton confirmacion - ingreso cliente - cantidad a ofertar - boton para ofertar
+        subframe_oferta = tk.Frame(self.framemain, bg=FONDO, bd=0)
+        subframe_oferta.grid(row=0, column=0, sticky='nswe')
+        subframe_oferta.columnconfigure((0, 1), weight=1, uniform='a')
+        subframe_oferta.rowconfigure((0, 1), weight=1, uniform='b')
+        subframe_oferta.rowconfigure(2, weight=5, uniform='b')
+
+        subframe_opciones_oferta = tk.Frame(subframe_oferta, bg=FONDO, bd=0)
+        subframe_opciones_oferta.grid(row=2, column=0, columnspan=2, sticky='nswe')
+        subframe_opciones_oferta.columnconfigure((0, 1), weight=1, uniform='a')
+        subframe_opciones_oferta.rowconfigure((0,1,2,3), weight=1, uniform='b')
+
+        # seleccion subasta
+        tk.Label(subframe_oferta, text='Subasta', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, padx=15, pady=15, sticky='e')
+        values_subastas = []
+        for subasta in self.tienda_actual.get_subastas():
+            if subasta.get_estado() == 'Activa':
+                values_subastas.append('ID: ' + str(subasta.get_id()) + ' | Tipo: ' + subasta.get_tipo() +  ' | Finaliza en: ' + subasta.get_fecha_fin().__str__())
+
+        combobox_selec_subasta = ttk.Combobox(subframe_oferta, values=values_subastas, state='readonly')
+        combobox_selec_subasta.grid(row=0, column=1, padx=15, pady=15, sticky='w')
+
+        # boton confirmacion
+        def confirmar_subasta():
+            self.limpiar_frame(subframe_opciones_oferta)
+            # opciones subasta ascendente
+            def subasta_ascendente(subasta):
+                def aceptar_oferta_callback(resultado):
+                    try:
+                        # Chequear cedula del cliente
+                        cliente_encontrado = Cliente.buscar_cliente(int(resultado[0]))
+                        if cliente_encontrado is None:
+                            raise ExceptionNoEncontrado('Cliente')
+
+                        self.cliente_actual = cliente_encontrado
+
+                        # Chequear cantidad a ofertar
+                        oferta = int(resultado[2])
+                        if oferta <= subasta.get_oferta_mayor():
+                            raise ExceptionLogica('El monto a ofertar debe ser mayor a la ultima oferta')
+
+                        # Revisar puntos de cliente
+                        puntos_cliente = cliente_encontrado.get_puntos_fidelidad()
+                        if puntos_cliente < oferta:
+                            raise ExceptionLogica('El cliente no tiene suficientes puntos para ofertar')
+
+                        # Registrar oferta
+                        subasta.agregar_oferta(oferta, cliente_encontrado)
+                        messagebox.showinfo('Oferta realizada', 'Oferta realizada con exito a nombre de ' + str(cliente_encontrado.get_nombre()))
+                        self.seleccion_accion()
+
+                    except ExceptionNoEncontrado:
+                        pass
+                    except ExceptionLogica:
+                        pass
+
+                criterios = ['Cedula cliente', 'Ultima oferta', 'Cantidad a ofertar']
+                valores = [None, str(subasta.get_oferta_mayor()), None]
+                ff_opciones_ascendente = FieldFrame(subframe_opciones_oferta, 'Dato', criterios, 'Valor', valores, [True, False, True], aceptar_callback=aceptar_oferta_callback)
+                ff_opciones_ascendente.grid(row=0, column=0, rowspan=4, columnspan=2, padx=15, pady=15)
+
+            # opciones subasta descendente
+            def subasta_descendente(subasta):
+                def aceptar_oferta_callback(resultado):
+                    try:
+                        # Chequear cedula del cliente
+                        cliente_encontrado = Cliente.buscar_cliente(int(resultado[0]))
+                        if cliente_encontrado is None:
+                            raise ExceptionNoEncontrado('Cliente')
+
+                        self.cliente_actual = cliente_encontrado
+
+                        # Chequear saldo de puntos de cliente que va a tomar la oferta actual de la subasta
+                        puntos_cliente = cliente_encontrado.get_puntos_fidelidad()
+                        if puntos_cliente < subasta.get_oferta_mayor():
+                            raise ExceptionLogica('El cliente no tiene suficientes puntos para tomar la oferta actual')
+
+                        # Registrar oferta
+                        subasta.agregar_oferta(cliente_encontrado)
+                        messagebox.showinfo('Subasta terminada', 'El cliente ' + str(cliente_encontrado.get_nombre()) + ' ha tomado la oferta actual de esta subasta')
+                        self.seleccion_accion()
+
+                    except ExceptionNoEncontrado:
+                        pass
+                    except ExceptionLogica:
+                        pass
+
+                criterios = ['Cedula cliente', 'Oferta actual']
+                valores = [None, str(subasta.get_oferta_mayor())]
+                ff_opciones_descendente = FieldFrame(subframe_opciones_oferta, 'Dato', criterios, 'Valor', valores, [True, False], aceptar_callback=aceptar_oferta_callback)
+                ff_opciones_descendente.grid(row=0, column=0, rowspan=4, columnspan=2, padx=15, pady=15)
+
+            # opciones subasta anonima
+            def subasta_anonima(subasta):
+                def aceptar_oferta_callback(resultado):
+                    try:
+                        # Chequear cedula del cliente
+                        cliente_encontrado = Cliente.buscar_cliente(int(resultado[0]))
+                        if cliente_encontrado is None:
+                            raise ExceptionNoEncontrado('Cliente')
+
+                        self.cliente_actual = cliente_encontrado
+
+                        # Chequear cantidad a ofertar
+                        oferta = int(resultado[2])
+
+                        # Revisar puntos de cliente
+                        puntos_cliente = cliente_encontrado.get_puntos_fidelidad()
+                        if puntos_cliente < oferta:
+                            raise ExceptionLogica('El cliente no tiene suficientes puntos para realizar esta oferta')
+
+                        # Registrar oferta
+                        subasta.agregar_oferta(oferta, cliente_encontrado)
+                        messagebox.showinfo('Oferta realizada', 'Oferta realizada con exito a nombre de ' + str(cliente_encontrado.get_nombre())) #TODO posible ligadura dinamica aqui
+                        self.seleccion_accion()
+
+                    except ExceptionNoEncontrado:
+                        pass
+                    except ExceptionLogica:
+                        pass
+
+                criterios = ['Cedula cliente', 'Cantidad a ofertar']
+                ff_opciones_anonima = FieldFrame(subframe_opciones_oferta, 'Dato', criterios, 'Valor', None, None, aceptar_callback=aceptar_oferta_callback)
+                ff_opciones_anonima.grid(row=0, column=0, rowspan=4, columnspan=2, padx=15, pady=15)
+
+            try:
+                # Buscar campo vacio
+                if combobox_selec_subasta.get() == '':
+                    raise ExceptionCampoVacio([combobox_selec_subasta], ['Subasta'])
+
+                # Identificar tipo de subasta
+                id_subasta_selec = combobox_selec_subasta.get().split(' | ')
+                id_subasta_selec = int(id_subasta_selec[0].split(': ')[1])
+
+                subasta_selec = None
+
+                for subast in self.tienda_actual.get_subastas():
+                    if subast.get_id() == id_subasta_selec:
+                        subasta_selec = subast
+                        break
+
+                if subasta_selec.get_tipo() == 'Ascendente':
+                    subasta_ascendente(subasta_selec)
+                elif subasta_selec.get_tipo() == 'Descendente':
+                    subasta_descendente(subasta_selec)
+                elif subasta_selec.get_tipo() == 'Anonima':
+                    subasta_anonima(subasta_selec)
+
+            except ExceptionCampoVacio:
+                pass
+
+
+        tk.Button(subframe_oferta, text='Confirmar', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0, command=confirmar_subasta).grid(row=1, column=0, columnspan=2, padx=15, pady=15)
+
 
     def terminar_subasta(self):
         pass
