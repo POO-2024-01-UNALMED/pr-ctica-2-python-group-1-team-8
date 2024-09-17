@@ -14,7 +14,6 @@ from src.gestorAplicacion.personas.Cliente import Cliente
 from src.gestorAplicacion.productos.Producto import Producto
 
 import os
-import pickle
 
 from src.uiMain.funcionalidad4 import gestionarMeta, verRendimiento, ampliarMeta, compararRendimiento
 
@@ -311,11 +310,16 @@ class VentanaPrincipal:
         self.entry_fecha.grid(row=1, column=1, padx=3, pady=2)
 
         def aceptar():
-            # Convertir la fecha ingresada a un objeto Fecha
-            fecha_ingreso = self.entry_fecha.get().split('/')
-            fecha_ingreso = Fecha(int(fecha_ingreso[0]), int(fecha_ingreso[1]), int(fecha_ingreso[2]))
-
             try:
+                # Convertir la fecha ingresada a un objeto Fecha
+                fecha_ingreso = self.entry_fecha.get().split('/')
+
+                    # Buscar correcto formateo de fecha
+                if len(fecha_ingreso) != 3:
+                    raise ExceptionFormatoFecha()
+
+                fecha_ingreso = Fecha(int(fecha_ingreso[0]), int(fecha_ingreso[1]), int(fecha_ingreso[2]))
+
                 # Buscar si hay algun campo vacio
                 if self.combobox.get() == '' or self.entry_fecha.get() == '':
                     raise ExceptionCampoVacio([self.combobox, self.entry_fecha], ['Local', 'Fecha'])
@@ -330,6 +334,8 @@ class VentanaPrincipal:
             except ExceptionCampoVacio:
                 pass
             except ExceptionFechaInvalida:
+                pass
+            except ExceptionFormatoFecha:
                 pass
             else:
                 # Actualizar fecha y local actuales
@@ -2445,6 +2451,10 @@ class ExceptionTipoInvalido(ExceptionCampos):
                         self.campos_invalidos.append(criterios[entries_val.index(entry)])
 
         return('Campos con tipo invalidos: ' + ', '.join(self.campos_invalidos))
+
+class ExceptionFormatoFecha(ExceptionCampos):
+    def __init__(self):
+        super().__init__('Error en el formato de la fecha. Recuerde que debe ser DD/MM/AAAA')
 
 class ExceptionCampoVacio(ExceptionCampos):
     def __init__(self, entries_val, criterios):
