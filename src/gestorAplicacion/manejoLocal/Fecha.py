@@ -1,6 +1,8 @@
 from multimethod import multimethod
 
 class Fecha:
+    ultima_fecha_acceso = None
+
     @multimethod
     def __init__(self, dia:int, mes:int, year:int):
         self._dia = dia

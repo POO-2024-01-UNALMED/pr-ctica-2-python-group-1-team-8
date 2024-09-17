@@ -10,8 +10,6 @@ class Deserializador:
             with open(path_locales, 'rb') as file:
                 Tienda.set_locales(pickle.load(file))
 
-
-
         except Exception:
             deserializarLocales = open("../baseDatos/temp/locales.txt", "rb")
             Tienda.set_locales(pickle.load(deserializarLocales))
@@ -27,3 +25,15 @@ class Deserializador:
         except Exception:
             deserializarClientes = open("../baseDatos/temp/clientes.txt", "rb")
             Cliente.clientes = pickle.load(deserializarClientes)
+
+    @staticmethod
+    def deserializar_fecha():
+        from src.gestorAplicacion.manejoLocal.Fecha import Fecha
+        try:
+            import os
+            path_fecha = os.path.realpath('src\\baseDatos\\temp\\fecha.txt')
+            with open(path_fecha, 'rb') as file:
+                Fecha.ultima_fecha_acceso = pickle.load(file)
+        except Exception:
+            deserializarFecha = open("../baseDatos/temp/fecha.txt", "rb")
+            Fecha.ultima_fecha_acceso = pickle.load(deserializarFecha)

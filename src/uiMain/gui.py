@@ -18,13 +18,14 @@ import os
 from src.baseDatos.deserializador import Deserializador
 Deserializador.deserializar_locales()
 Deserializador.deserializar_clientes()
+Deserializador.deserializar_fecha()
 
 locales = Tienda.get_locales()
 
 class VentanaPrincipal:
     # Atributos de clase
 
-    ultima_fecha = Fecha(1, 1, 2021)
+    ultima_fecha = Fecha.ultima_fecha_acceso
 
     # estos atributos son con el fin de permitir la funcion de metodos en la clase
     num_imagen_local = 0
@@ -164,13 +165,21 @@ class VentanaPrincipal:
         menubar = tk.Menu(self.root)
         iniciomenu = tk.Menu(menubar, tearoff=0)
         iniciomenu.add_command(label="Descripcion", command=lambda: self.alternar_saludo())
-        iniciomenu.add_command(label="Salir", command=self.root.destroy)
+        iniciomenu.add_command(label="Salir", command=self.salir_y_serializar)
         menubar.add_cascade(label="Inicio", menu=iniciomenu)
 
         self.root.config(menu=menubar)
 
         self.root.bind("<Configure>", self.resizer)
         self.root.mainloop()
+
+    def salir_y_serializar(self):
+        # Serializar locales y clientes
+        from src.baseDatos.serializador import Serializador
+        Serializador.serializar_todo(Tienda.get_locales(), Cliente.clientes, self.__class__.ultima_fecha)
+
+        self.root.destroy()
+
 
     def resizer(self, event):
         # CANVAS 1 (izquierda)
