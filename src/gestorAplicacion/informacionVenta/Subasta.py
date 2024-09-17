@@ -19,22 +19,23 @@ class Subasta:
     # Sumarle 7 dias a la fecha de fin de la subasta y decrementar su oferta inicial
     def extender_subasta(self, fecha_actual):
         from src.gestorAplicacion.manejoLocal.Fecha import Fecha
-        self._fecha_fin = Fecha(fecha_actual.get_total_dias() + 7)
+        self._fecha_fin = Fecha(int(fecha_actual.get_total_dias()) + 7)
 
         if (self._tipo == 'Ascendente' or self._tipo == 'Descendente') and self._oferta_mayor > 0:
             oferta_mayor_anterior = self._oferta_mayor
             oferta_mayor_nueva = int(self._oferta_mayor * 0.8)
             self._oferta_mayor = oferta_mayor_nueva
 
-            return 'Se ha extendido la subasta por 7 dias y se ha decrementado la oferta mayor de ' + str(oferta_mayor_anterior) + ' a ' + str(oferta_mayor_nueva)
+            return 'Se ha extendido la subasta # ' + str(self.get_id()) + ' por 7 dias y se ha decrementado la oferta mayor de ' + str(oferta_mayor_anterior) + ' a ' + str(oferta_mayor_nueva)
+        else:
+            return 'Se ha extendido la subasta # ' + str(self.get_id()) + ' por 7 dias'
 
     # ~~ Agregar subastas ~~
     # Metodo para agregar una oferta a una subasta ascendente
     def agregar_oferta(self, oferta, cliente):
-        if oferta > self._oferta_mayor:
-            self._ofertas.append(oferta)
-            self._ofertantes.append(cliente)
-            self._oferta_mayor = oferta
+        self._ofertas.append(oferta)
+        self._ofertantes.append(cliente)
+        self._oferta_mayor = oferta
 
     # Metodo para agregar oferta a una subasta anonima
     def agregar_oferta_anonima(self, oferta, cliente):

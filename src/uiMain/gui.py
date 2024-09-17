@@ -1601,6 +1601,9 @@ class FieldFrameSubasta(tk.Frame):
     # pantalla para seleccionar entre subastar, ofertar o terminar una subasta
     def seleccion_accion(self):
         self.reiniciar_frame()
+        self.carrito = []
+
+        self.comprobar_subastas_finalizadas()
 
         self.subframe_selec = tk.Frame(self.framemain, bg=FONDO)
         self.subframe_selec.grid(row=0, column=0, sticky='nswe')
@@ -1831,6 +1834,12 @@ class FieldFrameSubasta(tk.Frame):
                         from src.gestorAplicacion.informacionVenta.Subasta import Subasta
                         Subasta(self.fecha_actual, fecha_fin, self.carrito, int(entry_oferta_inicial.get()), self.tienda_actual, combobox_tipo_subasta.get())
 
+                        # Reflejar en inventario que los productos han sido puestos en subasta
+
+                        for prod_carro in self.carrito:
+                            prod_invent = self.tienda_actual.buscar_producto_id(prod_carro.getId(), 'usado')
+                            prod_invent.setCantidad(prod_invent.getCantidad() - prod_carro.getCantidad())
+
                         messagebox.showinfo('Subasta creada', 'Subasta creada con exito. Finaliza en ' + str(fecha_fin))
                         self.seleccion_accion()
                         pass
@@ -1867,7 +1876,7 @@ class FieldFrameSubasta(tk.Frame):
                 values_subastas.append('ID: ' + str(subasta.get_id()) + ' | Tipo: ' + subasta.get_tipo() +  ' | Finaliza en: ' + subasta.get_fecha_fin().__str__())
 
         combobox_selec_subasta = ttk.Combobox(subframe_oferta, values=values_subastas, state='readonly')
-        combobox_selec_subasta.grid(row=0, column=1, padx=15, pady=15, sticky='w')
+        combobox_selec_subasta.grid(row=0, column=1, padx=15, pady=15, ipadx=60, sticky='w')
 
         # boton confirmacion
         def confirmar_subasta():
@@ -2019,9 +2028,77 @@ class FieldFrameSubasta(tk.Frame):
         subframe_actualizar.columnconfigure((0, 1), weight=1, uniform='a')
         subframe_actualizar.rowconfigure((0, 1, 2, 3, 4), weight=1, uniform='b')
 
-        # TODO combobox para seleccionar subasta - boton para confirmar - entry para nuevo valor - boton para confirmar
+        # seleccion subasta
+        tk.Label(subframe_actualizar, text='Subasta', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, padx=15, pady=15, sticky='e')
+        values_subastas = []
+        for subasta in subastas_desc:
+            values_subastas.append('ID: ' + str(subasta.get_id()) + ' | Ultimo valor: ' + str(subasta.get_oferta_mayor()) + ' | Finaliza en: ' + subasta.get_fecha_fin().__str__())
 
-        # TODO Ventanas emergente que avisen que una subasta ha acabado
+        combobox_selec_subasta = ttk.Combobox(subframe_actualizar, values=values_subastas, state='readonly')
+        combobox_selec_subasta.grid(row=0, column=1, padx=15, pady=15, ipadx=50, sticky='w')
+
+        # boton confirmacion
+        def selec_subasta():
+            subasta_selec = None
+            for subasta in subastas_desc:
+                if combobox_selec_subasta.get().split(' | ')[0] == 'ID: ' + str(subasta.get_id()):
+                    subasta_selec = subasta
+                    break
+
+            # entry para nuevo valor
+            tk.Label(subframe_actualizar, text='Nuevo valor', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=2, column=0, padx=15, pady=15, sticky='e')
+            entry_nuevo_valor = tk.Entry(subframe_actualizar)
+            entry_nuevo_valor.grid(row=2, column=1, padx=15, pady=15, sticky='w')
+
+            # boton para confirmar
+            def confirmar_actualizacion():
+                try:
+                    # Buscar campo vacio
+                    if combobox_selec_subasta.get() == '' or entry_nuevo_valor.get() == '':
+                        raise ExceptionCampoVacio([combobox_selec_subasta, entry_nuevo_valor], ['Subasta', 'Nuevo valor'])
+
+                    # Comprobar reduccion de valor
+                    if int(entry_nuevo_valor.get()) >= subasta_selec.get_oferta_mayor():
+                        raise ExceptionLogica('El nuevo valor debe ser menor a la ultima oferta')
+
+                    # Actualizar subasta
+                    subasta_selec.set_oferta_mayor(int(entry_nuevo_valor.get()))
+                    messagebox.showinfo('Subasta actualizada', 'Subasta actualizada con exito. Nuevo valor: ' + entry_nuevo_valor.get())
+
+                    self.seleccion_accion()
+                except ExceptionCampoVacio:
+                    pass
+                except ExceptionLogica:
+                    pass
+
+            tk.Button(subframe_actualizar, text='Confirmar decremento', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0, command=confirmar_actualizacion).grid(row=3, column=0, columnspan=2, padx=15, pady=15)
+
+        tk.Button(subframe_actualizar, text='Seleccionar', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0, command=selec_subasta).grid(row=1, column=0, columnspan=1, padx=15, pady=15, sticky='e')
+        tk.Button(subframe_actualizar, text='Volver', font=('Arial', 9, 'bold'), bg=POWER, bd=0, command=self.seleccion_accion).grid(row=1, column=1, columnspan=1, padx=15, pady=15, sticky='w')
+
+    # metodo que comprueba que hayan subastas finalizadas, avisa mediante messageboxes y actualiza su estado segun corresponda
+    def comprobar_subastas_finalizadas(self):
+        print('comprobando subastas')
+        # TODO arreglar comprobacion de subastas
+        print(self.tienda_actual.get_subastas())
+        for subasta in self.tienda_actual.get_subastas():
+            if subasta.get_estado() == 'Activa' and int(subasta.get_fecha_fin().get_total_dias()) < int(self.fecha_actual.get_total_dias()):
+                # Si no hubo ofertas mirando la lista de ofertas
+                if subasta.get_ofertas() == []:
+                    messagebox.showinfo('Subasta extendida', subasta.extender_subasta(self.fecha_actual))
+                # Si hubo ofertas
+                else:
+                    if subasta.get_tipo == 'Ascendente':
+                        ganador = subasta.finalizar_subasta()
+                        messagebox.showinfo('Subasta finalizada', 'La subasta ' + str(subasta.get_id()) + ' ha finalizado.\nEl ganador es ' + ganador.get_nombre() + ' con cedula ' + str(ganador.get_cedula()) + ' por una oferta de ' + str(subasta.get_oferta_mayor()))
+                    elif subasta.get_tipo == 'Anonima':
+                        ganador = subasta.finalizar_subasta_anonima()
+                        messagebox.showinfo('Subasta finalizada', 'La subasta ' + str(subasta.get_id()) + ' ha finalizado.\nEl ganador es ' + ganador.get_nombre() + ' con cedula ' + str(ganador.get_cedula()) + ' por una oferta de ' + str(subasta.get_oferta_mayor()))
+
+
+
+
+
 
     # metodo que limpia por completo el interior de el frame que reciba
     @staticmethod
