@@ -353,27 +353,134 @@ class VentanaSecundaria:
         # Filas
         self.root.rowconfigure(0, weight=1, uniform='b')
 
-        # prueba_fieldframe = FieldFrame(self.root, "Criterios", ["nombre", "precio", "cantidad", "plataforma", "genero", "descripcion", "fecha_lanzamiento", "desarrolladora", "distribuidora"], "Valores")
-        # prueba_fieldframe.grid(row=0,column=0,sticky='nswe', padx=40,pady=40)
+        self.master_frame = tk.Frame(self.root, bg=FONDO)
+        self.master_frame.grid(row=0, column=0, sticky='nswe')
+        self.master_frame.columnconfigure(0, weight=1, uniform='a')
+        self.master_frame.rowconfigure(0, weight=2, uniform='b')
+        self.master_frame.rowconfigure(1, weight=11, uniform='b')
 
         def llamar_compra():
-            prueba_subfieldframe = FieldFrameProducto(self.root, local)
-            prueba_subfieldframe.grid(row=0, column=0, sticky='nswe', padx=40, pady=40)
+            self.limpiar_frame(self.master_frame)
+
+            titulo_func = 'Registrar compra'
+            descripcion_func = 'Esta funcionalidad permite registrar una compra en el local seleccionado de un conjunto de productos almacenados en un carrito.'
+
+            subframe_descripcion = tk.Frame(self.master_frame, bg=FONDO)
+            subframe_descripcion.grid(row=0, column=0, sticky='nswe', padx=20, ipady=20)
+            subframe_descripcion.rowconfigure(0, weight=1, uniform='a')
+            subframe_descripcion.rowconfigure(1, weight = 2, uniform='a')
+            subframe_descripcion.columnconfigure(0, weight=1, uniform='a')
+
+            tk.Label(subframe_descripcion, text=titulo_func, font=('Arial', 12, 'bold'), bg=FONDO).grid(row=0, column=0, padx=5, pady=5)
+            descrp_func_widget = tk.Text(subframe_descripcion, bg=FONDO_2, font=('Arial', 9), wrap='word', bd=0)
+            descrp_func_widget.insert(tk.END, descripcion_func)
+            descrp_func_widget.grid(row=1, column=0, padx=5, pady=5)
+
+            subframe_func = tk.Frame(self.master_frame, bg=FONDO, highlightbackground=DETALLES)
+            subframe_func.grid(row=1, column=0, sticky='nswe')
+            subframe_func.columnconfigure(0, weight=1, uniform='a')
+            subframe_func.rowconfigure(0, weight=1, uniform='b')
+            prueba_subfieldframe = FieldFrameProducto(subframe_func, local)
+            prueba_subfieldframe.grid(row=1, column=0, sticky='nswe', padx=40, pady=40)
 
         def llamar_prestamo():
-            prueba_subfieldframe = FieldFramePrestamo(self.root, local, fecha)
+            self.limpiar_frame(self.master_frame)
+
+            titulo_func = 'Registrar prestamo'
+            descripcion_func = 'Desde aqui puedes gestionar todo lo relacionado a prestamos, desde su creacion hasta su devolucion y cobro de multas'
+
+            subframe_descripcion = tk.Frame(self.master_frame, bg=FONDO)
+            subframe_descripcion.grid(row=0, column=0, sticky='nswe', padx=20, ipady=20)
+            subframe_descripcion.rowconfigure(0, weight=1, uniform='a')
+            subframe_descripcion.rowconfigure(1, weight = 2, uniform='a')
+            subframe_descripcion.columnconfigure(0, weight=1, uniform='a')
+
+            tk.Label(subframe_descripcion, text=titulo_func, font=('Arial', 12, 'bold'), bg=FONDO).grid(row=0, column=0, padx=5, pady=5)
+            descrp_func_widget = tk.Text(subframe_descripcion, bg=FONDO_2, font=('Arial', 9), wrap='word', bd=0)
+            descrp_func_widget.insert(tk.END, descripcion_func)
+            descrp_func_widget.grid(row=1, column=0, padx=5, pady=5)
+
+            subframe_func = tk.Frame(self.master_frame, bg=FONDO, highlightbackground=DETALLES)
+            subframe_func.grid(row=1, column=0, sticky='nswe')
+            subframe_func.columnconfigure(0, weight=1, uniform='a')
+            subframe_func.rowconfigure(0, weight=1, uniform='b')
+
+            prueba_subfieldframe = FieldFramePrestamo(subframe_func, local, fecha)
             prueba_subfieldframe.grid(row=0, column=0, sticky='nswe', padx=40, pady=40)
 
         def llamar_administrar():
-            prueba_subfieldframe = FieldFrameAdministrar(self.root, local)
+            self.limpiar_frame(self.master_frame)
+
+            titulo_func = 'Administrar inventario '
+            descripcion_func = 'Esta funcionalidad da la posibilidad de revisar el inventario de la tienda elegida, analizar sus estadisticas de venta o bien ordenar reabastecimientos entre locales.'
+
+            subframe_descripcion = tk.Frame(self.master_frame, bg=FONDO)
+            subframe_descripcion.grid(row=0, column=0, sticky='nswe', padx=20, ipady=20)
+            subframe_descripcion.rowconfigure(0, weight=1, uniform='a')
+            subframe_descripcion.rowconfigure(1, weight = 2, uniform='a')
+            subframe_descripcion.columnconfigure(0, weight=1, uniform='a')
+
+            tk.Label(subframe_descripcion, text=titulo_func, font=('Arial', 12, 'bold'), bg=FONDO).grid(row=0, column=0, padx=5, pady=5)
+            descrp_func_widget = tk.Text(subframe_descripcion, bg=FONDO_2, font=('Arial', 9), wrap='word', bd=0)
+            descrp_func_widget.insert(tk.END, descripcion_func)
+            descrp_func_widget.grid(row=1, column=0, padx=5, pady=5)
+
+            subframe_func = tk.Frame(self.master_frame, bg=FONDO, highlightbackground=DETALLES)
+            subframe_func.grid(row=1, column=0, sticky='nswe')
+            subframe_func.columnconfigure(0, weight=1, uniform='a')
+            subframe_func.rowconfigure(0, weight=1, uniform='b')
+
+            prueba_subfieldframe = FieldFrameAdministrar(subframe_func, local)
             prueba_subfieldframe.grid(row=0, column=0, sticky='nswe', padx=40, pady=40)
 
         def llamar_subasta():
-            pantalla_subasta = FieldFrameSubasta(self.root, local, fecha)
+            self.limpiar_frame(self.master_frame)
+
+            titulo_func = 'Subastar'
+            descripcion_func = 'Con esta funcionalidad es posible llevar a cabo subastas asi como su respectivo sistema de ofertado y designacion de ganadores.'
+
+            subframe_descripcion = tk.Frame(self.master_frame, bg=FONDO)
+            subframe_descripcion.grid(row=0, column=0, sticky='nswe', padx=20, ipady=20)
+            subframe_descripcion.rowconfigure(0, weight=1, uniform='a')
+            subframe_descripcion.rowconfigure(1, weight = 2, uniform='a')
+            subframe_descripcion.columnconfigure(0, weight=1, uniform='a')
+
+            tk.Label(subframe_descripcion, text=titulo_func, font=('Arial', 12, 'bold'), bg=FONDO).grid(row=0, column=0, padx=5, pady=5)
+            descrp_func_widget = tk.Text(subframe_descripcion, bg=FONDO_2, font=('Arial', 9), wrap='word', bd=0)
+            descrp_func_widget.insert(tk.END, descripcion_func)
+            descrp_func_widget.grid(row=1, column=0, padx=5, pady=5)
+
+            subframe_func = tk.Frame(self.master_frame, bg=FONDO, highlightbackground=DETALLES)
+            subframe_func.grid(row=1, column=0, sticky='nswe')
+            subframe_func.columnconfigure(0, weight=1, uniform='a')
+            subframe_func.rowconfigure(0, weight=1, uniform='b')
+
+            pantalla_subasta = FieldFrameSubasta(subframe_func, local, fecha)
             pantalla_subasta.grid(row=0, column=0, sticky='nswe', padx=40, pady=40)
 
         def llamar_empleado():
-            prueba_subfieldframe = FieldFrameEmpleado(self.root, local)
+            self.limpiar_frame(self.master_frame)
+
+            titulo_func = 'Gestionar empleado'
+            descripcion_func = 'Mediante esta funcionalidad es posible analizar el rendimiento de los empleados del local y asignarles incentivos segun su rendimiento.'
+
+            subframe_descripcion = tk.Frame(self.master_frame, bg=FONDO)
+            subframe_descripcion.grid(row=0, column=0, sticky='nswe', padx=20, ipady=20)
+            subframe_descripcion.rowconfigure(0, weight=1, uniform='a')
+            subframe_descripcion.rowconfigure(1, weight = 2, uniform='a')
+            subframe_descripcion.columnconfigure(0, weight=1, uniform='a')
+
+            tk.Label(subframe_descripcion, text=titulo_func, font=('Arial', 12, 'bold'), bg=FONDO).grid(row=0, column=0, padx=5, pady=5)
+            descrp_func_widget = tk.Text(subframe_descripcion, bg=FONDO_2, font=('Arial', 9), wrap='word', bd=0)
+            descrp_func_widget.insert(tk.END, descripcion_func)
+            descrp_func_widget.grid(row=1, column=0, padx=5, pady=5)
+
+            subframe_func = tk.Frame(self.master_frame, bg=FONDO, highlightbackground=DETALLES)
+            subframe_func.grid(row=1, column=0, sticky='nswe')
+            subframe_func.columnconfigure(0, weight=1, uniform='a')
+            subframe_func.rowconfigure(0, weight=1, uniform='b')
+
+            prueba_subfieldframe = FieldFrameEmpleado(subframe_func, local)
             prueba_subfieldframe.grid(row=0, column=0, sticky='nswe', padx=40, pady=40)
 
         def revisar_producto():
@@ -420,6 +527,11 @@ class VentanaSecundaria:
         self.root.config(menu=menubar)
 
         self.root.mainloop()
+
+    @staticmethod
+    def limpiar_frame(frame):
+        for widget in frame.winfo_children():
+            widget.destroy()
 
 class FieldFrame(tk.Frame):
     def __init__(self, ventana, titulo_criterios, criterios, titulo_valores, valores=None, habilitados=None, aceptar_callback=None, tipos_esperados=None):

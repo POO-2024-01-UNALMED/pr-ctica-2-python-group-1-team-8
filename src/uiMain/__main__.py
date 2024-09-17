@@ -1,3 +1,5 @@
+# Este script solo se corre para volver a serializar todos los objetos de prueba de cero
+
 from gui import VentanaPrincipal
 import pickle
 

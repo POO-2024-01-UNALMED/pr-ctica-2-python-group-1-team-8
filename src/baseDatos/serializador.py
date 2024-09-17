@@ -18,5 +18,3 @@ class Serializador:
         pickle.dump(ultima_fecha, serializar2)
         serializar2.close()
         print("Serializado con exito")
-
-    #TODO añadir empleados a Robledo
