@@ -2,9 +2,9 @@ from re import match
 
 from src.gestorAplicacion.personas.Meta import Meta
 
-totalVentasSemanaActual = 0
-totalVentasMesActual = 0
-totalVentasYearActual = 0
+total_ventas_semana_actual = 0
+total_ventas_mes_actual = 0
+total_ventas_year_actual = 0
 
 def inspeccionEmpleado(local, fecha_actual):
     total_ventas_semana_actual = 0
@@ -72,15 +72,9 @@ def inspeccionEmpleado(local, fecha_actual):
         if decision == 1:
             modificarSalario(empleado)
 
-
-
-
-
-
 def siNo(pregunta):
     respuesta = input(pregunta + " (S/n)")
     return False if respuesta == 'n' or  'N' else True
-
 
 #Elegir con que empleado se desea usar la funcionalidad
 def indentificarEmpleado(local):
@@ -117,19 +111,19 @@ def gestionarMeta(empleado, fecha_actual):
         porcentajeProgreso = m.get_acumulado() * 100 / m.get_valor_alcanzar()
         print(f"* Codigo: {m.get_codigo()} - Porcentaje de progreso: {porcentajeProgreso}%")
 
-        if porcentajeProgreso >= 100 and fecha_actual.get_totalDias() <= m.get_fecha().get_totalDias(): #Si la meta se ha cumplido
+        if porcentajeProgreso >= 100 and fecha_actual.get_total_dias() <= m.get_fecha().get_total_dias(): #Si la meta se ha cumplido
             metasARemover.append(m)
             empleado.ingresar_meta_alcanzada(m)
             m.set_estado("Meta Cumplida")
             empleado.set_acumulado_mensual(empleado.get_acumulado_mensual() + m.get_valor_bonificacion())
 
-        elif fecha_actual.get_totalDias() > m.get_fecha().get_totalDias(): #Si la meta ha caducado
+        elif fecha_actual.get_total_dias() > m.get_fecha().get_total_dias(): #Si la meta ha caducado
             metasARemover.append(m)
             empleado.ingresar_meta_caducada(m)
             m.set_estado("Meta Caducada")
 
-        for m in metasARemover:
-            empleado.get_metas().remove(m)
+    for m in metasARemover:
+        empleado.get_metas().remove(m)
 
 def mostrarMetasAlcanzadas(empleado):
     if empleado.get_metas_alcanzadas() == []:
@@ -170,10 +164,10 @@ def revisarMetasCaducadas(empleado):
         if not siNo("El codigo ingresado no corresponde a ninguna meta. ¿Desea intentarlo de nuevo?"):
             return None
 
-def ampliarMeta(empleado, meta, fecha_actual):
+def ampliarMeta(empleado, meta, fecha_actual, year_ajuste1, mes_ajuste1, dia_ajuste1):
     while True:
         try:
-            year_ajuste = int(input("Ingrese el año en que desea ampliar la meta:"))
+            year_ajuste = year_ajuste1
 
         except ValueError:
             print("Ingrese un numero valido. Presione enter para volver a intentar")
@@ -183,7 +177,7 @@ def ampliarMeta(empleado, meta, fecha_actual):
         meta.get_fecha().set_year(year_ajuste)
 
         try:
-            mes_ajuste = int(input("Ingrese el mes en que desea ampliar la meta:"))
+            mes_ajuste = mes_ajuste1
 
         except ValueError:
             print("Ingrese un numero valido. Presione enter para volver a intentar")
@@ -193,7 +187,7 @@ def ampliarMeta(empleado, meta, fecha_actual):
         meta.get_fecha().set_mes(mes_ajuste)
 
         try:
-            dia_ajuste = int(input("Ingrese el dia en que desea ampliar la meta:"))
+            dia_ajuste = dia_ajuste1
 
         except ValueError:
             print("Ingrese un numero valido. Presione enter para volver a intentar")
@@ -202,10 +196,10 @@ def ampliarMeta(empleado, meta, fecha_actual):
 
         meta.get_fecha().set_dia(dia_ajuste)
 
-        meta.get_fecha().set_totalDias(0)
-        meta.get_fecha().set_totalDias(meta.get_fecha().fechaToDias(dia_ajuste, mes_ajuste, year_ajuste))
+        meta.get_fecha().set_total_dias(0)
+        meta.get_fecha().set_total_dias(meta.get_fecha().fecha_a_dias(dia_ajuste, mes_ajuste, year_ajuste))
 
-        if meta.get_fecha().get_totalDias() < fecha_actual.get_totalDias():
+        if meta.get_fecha().get_total_dias() < fecha_actual.get_total_dias():
             print("Fecha no valida. Presione enter para volver a intentar")
             input()
 
@@ -218,11 +212,11 @@ def ampliarMeta(empleado, meta, fecha_actual):
             input()
             break
 
-def verRendimiento(empleado, fecha_actual):
+def verRendimiento(empleado, fecha_actual, eleccion):
     global option
     while True:
         try:
-            option = int(input(f"Desea ver el rendimiento del empleado {empleado.get_nombre()} \n1. Semanal \n2. Mensual \n3. Anual"))
+            option = eleccion
 
         except ValueError:
             print("Ingrese un numero valido. Presione enter para volver a intentar")
@@ -230,30 +224,29 @@ def verRendimiento(empleado, fecha_actual):
             continue
 
         match option:
-            case 1:
+            case 'Semanal':
                 global total_ventas_semana_actual
                 for t in empleado.get_transacciones():
-                    if fecha_actual.get_totalDias - 7 <= t.get_fecha().get_totalDias():
+                    if fecha_actual.get_total_dias - 7 <= t.get_fecha().get_total_dias():
                         total_ventas_semana_actual += 1
-                print(f"El total de ventas semanales del empleado {empleado.get_nombre()} son {total_ventas_semana_actual}")
-                break
-            case 2:
+                return f"El total de ventas son {total_ventas_semana_actual}"
+
+            case 'Mensual':
                 global total_ventas_mes_actual
                 for t in empleado.get_transacciones():
-                    if fecha_actual.get_totalDias - 31 <= t.get_fecha().get_totalDias():
+                    if fecha_actual.get_total_dias - 31 <= t.get_fecha().get_total_dias():
                         total_ventas_mes_actual += 1
-                print(f"El total de ventas mensuales del empleado {empleado.get_nombre()} son {total_ventas_mes_actual}")
-                break
-            case 3:
+                return f"El total de ventas son {total_ventas_mes_actual}"
+
+            case 'Anual':
                 global total_ventas_year_actual
                 for t in empleado.get_transacciones():
-                    if fecha_actual.get_totalDias - 365 <= t.get_fecha().get_totalDias():
+                    if fecha_actual.get_total_dias - 365 <= t.get_fecha().get_total_dias():
                         total_ventas_year_actual += 1
-                print(f"El total de ventas anuales del empleado {empleado.get_nombre()} son {total_ventas_year_actual}")
-                break
+                return f"El total de ventas son {total_ventas_year_actual}"
+
             case _:
                 print("Ingrese una opcion valida. Presione enter para volver a intentar")
-                input()
                 break
 
         while True:
@@ -262,7 +255,6 @@ def verRendimiento(empleado, fecha_actual):
 
             except ValueError:
                 print("Ingrese un numero valido. Presione enter para volver a intentar")
-                input()
                 continue
 
             match decision:
@@ -278,15 +270,14 @@ def verRendimiento(empleado, fecha_actual):
 
 def compararRendimiento(empleado, fecha_actual, decision):
     match decision:
-        case 1:
+        case 'Semanal':
             total_semana = 0
             for t in empleado.get_transacciones():
-                if fecha_actual.get_totalDias - 14 <= t.get_fecha().get_totalDias() and fecha_actual.get_totalDias - 7 >= t.get_fecha().get_totalDias():
+                if fecha_actual.get_total_dias - 14 <= t.get_fecha().get_total_dias() and fecha_actual.get_total_dias - 7 >= t.get_fecha().get_total_dias():
                     total_semana += 1
 
             print(f"El total de ventas en la semana anterior del empleado {empleado.get_nombre()} fueron: {total_semana}")
             print("Presione enter para continuar.\n")
-            input()
 
             if total_semana < total_ventas_semana_actual:
                 calculo = ((total_ventas_semana_actual - total_semana) * 100) / total_semana
@@ -294,23 +285,20 @@ def compararRendimiento(empleado, fecha_actual, decision):
                 if calculo > 30:
                     print("El empleado tuvo un incremento en ventas mayor al 30%. El empleado debería tener una bonificacion remunerada")
                     print("Presione enter para continuar")
-                    input()
 
             elif total_semana == total_ventas_semana_actual:
                 print(f"El total de ventas fue igual al de la semana pasada {total_semana} ventas")
                 print("Presione enter para continuar")
-                input()
 
             else:
                 calculo = ((total_semana - total_ventas_semana_actual) * 100) / total_semana
                 print(f"El total de ventas en esta semana disminuyo en un {calculo}%")
                 print("Presione enter para continuar")
-                input()
 
-        case 2:
+        case 'Mensual':
             total_mes = 0
             for t in empleado.get_transacciones():
-                if fecha_actual.get_totalDias - 62 <= t.get_fecha().get_totalDias() and fecha_actual.get_totalDias - 31 >= t.get_fecha().get_totalDias():
+                if fecha_actual.get_total_dias - 62 <= t.get_fecha().get_total_dias() and fecha_actual.get_total_dias - 31 >= t.get_fecha().get_total_dias():
                     total_mes += 1
 
             if total_mes < total_ventas_mes_actual:
@@ -319,23 +307,20 @@ def compararRendimiento(empleado, fecha_actual, decision):
                 if calculo > 30:
                     print("El empleado tuvo un incremento en ventas mayor al 30%. El empleado debería tener una bonificacion remunerada")
                     print("Presione enter para continuar")
-                    input()
 
             elif total_mes == total_ventas_mes_actual:
                 print(f"El total de ventas fue igual al del mes pasado {total_mes} ventas")
                 print("Presione enter para continuar")
-                input()
 
             else:
                 calculo = ((total_mes - total_ventas_mes_actual) * 100) / total_mes
                 print(f"El total de ventas en este mes disminuyo en un {calculo}%")
                 print("Presione enter para continuar")
-                input()
 
-        case 3:
+        case 'Anual':
             total_year = 0
             for t in empleado.get_transacciones():
-                if fecha_actual.get_totalDias - 730 <= t.get_fecha().get_totalDias() and fecha_actual.get_totalDias - 365 >= t.get_fecha().get_totalDias():
+                if fecha_actual.get_total_dias - 730 <= t.get_fecha().get_total_dias() and fecha_actual.get_total_dias - 365 >= t.get_fecha().get_total_dias():
                     total_year += 1
 
             if total_year < total_ventas_year_actual:
@@ -344,22 +329,18 @@ def compararRendimiento(empleado, fecha_actual, decision):
                 if calculo > 30:
                     print("El empleado tuvo un incremento en ventas mayor al 30%. El empleado debería tener una bonificacion remunerada")
                     print("Presione enter para continuar")
-                    input()
 
             elif total_year == total_ventas_year_actual:
                 print(f"El total de ventas fue igual al del año pasado {total_year} ventas")
                 print("Presione enter para continuar")
-                input()
 
             else:
                 calculo = ((total_year - total_ventas_year_actual) * 100) / total_year
                 print(f"El total de ventas en este año disminuyo en un {calculo}%")
                 print("Presione enter para continuar")
-                input()
 
         case _:
             print("Ingrese una opcion valida. Presione enter para volver a intentar")
-            input()
 
 def modificarSalario(empleado):
     while True:
