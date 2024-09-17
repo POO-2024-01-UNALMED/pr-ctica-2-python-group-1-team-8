@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+from audioop import reverse
+
 from src.gestorAplicacion.manejoLocal.Fecha import Fecha
 class Producto(ABC):
     ultimoId = 1
@@ -32,18 +34,14 @@ class Producto(ABC):
     @classmethod
     def ordenar(cls, parametro:str, lista):
         if parametro.lower() == "nombre":
-            sorted(lista,key=lambda x:x.get_nombre())
-            return lista
+            lista.sort(key=lambda x:x.getNombre())
         elif parametro.lower() == "precio":
-            sorted(lista,key=lambda x:x.get_precio())
-            return lista
+            lista.sort(key=lambda x:x.getPrecio(),reverse=True)
         elif parametro.lower() == "ventas":
-            sorted(lista,key=lambda x:x.calcular_ventas())
-            return lista
+            lista.sort(key=lambda x:x.calcular_ventas(),reverse=True)
         elif parametro.lower() == "prioridad":
             prio = {"prioridad muy alta": 1, "prioridad alta": 2, "prioridad media": 3, "prioridad baja": 4}
-            sorted(lista, key=lambda x:prio[x.getPrioridad()])
-            return lista
+            lista.sort(key=lambda x:prio[x.getPrioridad()])
 
 
     # TODO metodo para clonar producto
@@ -95,3 +93,5 @@ class Producto(ABC):
         return self._puntosRequeridos
     def setPuntosRequeridos(self, puntosRequeridos):
         self._puntosRequeridos = puntosRequeridos
+
+

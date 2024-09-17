@@ -1,5 +1,6 @@
 from src.gestorAplicacion.productos.Producto import Producto
 from src.gestorAplicacion.manejoLocal.Fecha import Fecha
+from src.gestorAplicacion.productos.Juego import Juego
 
 
 class Consola(Producto):
