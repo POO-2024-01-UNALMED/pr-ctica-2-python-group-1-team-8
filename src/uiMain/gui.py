@@ -1,6 +1,7 @@
 import copy
 import tkinter as tk
 import tkinter.messagebox as messagebox
+from random import uniform
 from tkinter import ttk, Frame
 
 # TODO interface de IDS
@@ -1402,9 +1403,9 @@ class FieldFrameAdministrar(tk.Frame):
             self.subframe1.grid(row=0, column=0, sticky='nswe')
             self.subframe1.rowconfigure((0,1), weight=1, uniform='aa')
             self.subframe1.columnconfigure((0,1,2), weight=1, uniform='bb')
-            self.subframe2 = tk.Frame(self.framemain, bg=DETALLES, bd=0)
+            self.subframe2 = tk.Frame(self.framemain, bg=FONDO, bd=0)
             self.subframe2.grid(row=1, column=0, sticky='nswe')
-            self.subframe3 = tk.Frame(self.framemain, bg=POWER, bd=0)
+            self.subframe3 = tk.Frame(self.framemain, bg=FONDO, bd=0)
             self.subframe3.grid(row=2, column=0, sticky='nswe')
             self.subframe4 = tk.Frame(self.framemain, bg=FONDO, bd=0)
             self.subframe4.grid(row=3, column=0, sticky='nswe')
@@ -1434,9 +1435,31 @@ class FieldFrameAdministrar(tk.Frame):
             tk.Button(self.subframe5, text='Regresar', bg=RESALTO, bd=0, command=lambda: self.regreso()).grid(row=0, column=3, padx=15, pady=0, sticky='w')
 
         def modificar_producto():
-            subframe2 = tk.Frame(self.subframe1, bg=botoncito, bd=0)
             self.limpiar_frame(self)
             self.limpiar_frame(self.subframe1)
+            self.framemain.rowconfigure(0, weight=1, uniform='a')
+            self.framemain.rowconfigure((2,3),weight=1,uniform='a')
+            self.framemain.rowconfigure(1, weight=10,uniform='a')
+            self.subframe1 = tk.Frame(self.framemain,bg=FONDO,bd=0)
+            self.subframe2.grid(row=1,column=0,sticky='nswe')
+            self.subframe2.columnconfigure(0,weight=1,uniform='a')
+            self.subframe3.grid(row=2,column=0,sticky='nswe')
+            self.subframe3.columnconfigure((0,1,2),weight=1,uniform='a')
+            tk.Label(self.subframe3, text='Ingrese el código', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0,column=0, padx=15,pady=0,sticky='e')
+            codigo = tk.Entry(self.subframe3)
+            codigo.grid(row=0, column=1, padx=15, pady=0, sticky='we')
+            def comprobarCodigo(valor):
+                try:
+                    cod = eval(valor)
+                    producto = self.tienda_actual.buscar_producto_id(cod)
+                    if producto is None:
+                        raise ExceptionNoEncontrado('Producto')
+                    self.cambiarinfo(producto)
+                except ExceptionNoEncontrado:
+                    pass
+            tk.Button(self.subframe3, text='Buscar', bg=RESALTO, bd=0, command=lambda: comprobarCodigo(codigo.get())).grid(row=0,column=2,padx=15,pady=0,sticky='w')
+
+            self.categoria1()
 
         def revisar_prioridad():
             self.limpiar_frame(self.subframe1)
@@ -1456,6 +1479,29 @@ class FieldFrameAdministrar(tk.Frame):
         self.destroy()
         FieldFrameAdministrar(self.ventana,self.tienda_actual)
 
+    def categoria1(self):
+        # Crear un combobox para elegir categoria y su boton de acción
+        self.subframe1.grid(row=0, column=0, sticky='nswe')
+        self.subframe1.columnconfigure((0, 1, 2), weight=1, uniform='aa')
+        tk.Label(self.subframe1, text='Categoria', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, padx=15,
+                                                                                              pady=0, sticky='e')
+        categoriaDefault = tk.StringVar(value='-------')
+        combobox_categoria = ttk.Combobox(self.subframe1, values=['Consola', 'Juego', 'Accesorio'],
+                                          textvariable=categoriaDefault)
+        combobox_categoria.grid(row=0, column=1, padx=5, pady=0, sticky='we')
+        self.subframe2.grid(row=1, column=0, sticky='nswe')
+        def cosas():
+            self.subframe2.destroy()
+            self.subframe2 = tk.Frame(self.framemain, bg=FONDO, bd=0)
+            self.subframe2.grid(row=1, column=0, sticky='nswe')
+            self.subframe2.rowconfigure(0, weight=1, uniform='aa')
+            self.crear_etiquetas(self.subframe2,self.tienda_actual.get_productos_categoria_inventario(combobox_categoria.get()))
+        tk.Button(self.subframe1, text='Buscar', bg=RESALTO, bd=0,command=lambda: cosas()).grid(row=0,column=2,padx=15,pady=0,sticky='w')
+
+    def cambiarinfo(self,producto:Producto):
+        self.limpiar_frame(self.subframe2)
+        self.subframe2 = FieldFrame(self.subframe2, 'Cambiar', ['ID','Nuevo ID', 'Nombre','Nuevo Nombre' ,'Precio','Nuevo Precio' , 'Fecha de lanzamiento','Nueva Fecha'], 'Valor', [f'{producto.getId()}','',f'{producto.getNombre()}','',f'{producto.getPrecio()}','',f'{producto.getFechaLanzamiento()}',''], [False,True,False,True,False,True,False,True])
+        self.subframe2.grid(row=1,column=0,sticky='nswe')
     def categoria(self):
         #Crear un combobox para elegir categoria y su boton de acción
         self.subframe2.grid(row=1, column=0, sticky='nswe')
@@ -1499,7 +1545,7 @@ class FieldFrameAdministrar(tk.Frame):
         for i in lista:
             frame.rowconfigure(q + 1, weight=1, uniform='aa')
             etiqueta = tk.Label(frame, text=f"COD: {i.getId()} | Nombre: {i.getNombre()} | Ventas: {i.calcular_ventas()} | Precio: {i.getPrecio()}", font=('Arial', 11), bg=FONDO)
-            etiqueta.grid(row=p + 1, column=0, pady=2)
+            etiqueta.grid(row=p + 1, column=0, pady=2, sticky='nswe')
             p+=1
             q+=1
 
