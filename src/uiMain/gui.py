@@ -286,12 +286,13 @@ class VentanaPrincipal:
         emergente.configure(bg=FONDO)
         # columnas y filas
         emergente.columnconfigure((0,1), weight=1, uniform='f')
-        emergente.rowconfigure((0,1,2), weight=1, uniform='g')
-        # TODO que muestre tambien la ultima fecha de ingreso
+        emergente.rowconfigure((0,1,2,3), weight=1, uniform='g')
 
         # labels
         tk.Label(emergente, text='Local', font=('Arial', 10, 'bold'), bg=FONDO).grid(row=0, column=0, padx=3, pady=2)
         tk.Label(emergente, text='Fecha', font=('Arial', 10, 'bold'), bg=FONDO).grid(row=1, column=0, padx=3, pady=2)
+
+        tk.Label(emergente, text='Ultima fecha de ingreso: ' + str(self.__class__.ultima_fecha), font=('Arial', 10, 'bold'), bg=FONDO).grid(row=2, column=0, columnspan=2, padx=3, pady=2)
 
         # entries
         # local
@@ -335,8 +336,8 @@ class VentanaPrincipal:
                 VentanaSecundaria(self.root, local_actual, fecha_ingreso)
 
         # botones
-        tk.Button(emergente, text='Aceptar', background=RESALTO, bd=0, command=aceptar).grid(row=2, column=0, padx=3, pady=2)
-        tk.Button(emergente, text='Cancelar', background=POWER, bd=0).grid(row=2, column=1, padx=3, pady=2)
+        tk.Button(emergente, text='Aceptar', background=RESALTO, bd=0, command=aceptar).grid(row=3, column=0, padx=3, pady=2)
+        tk.Button(emergente, text='Cancelar', background=POWER, bd=0).grid(row=3, column=1, padx=3, pady=2)
 
         emergente.mainloop()
 
