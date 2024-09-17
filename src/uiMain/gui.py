@@ -1255,59 +1255,91 @@ class FieldFrameAdministrar(tk.Frame):
         self.subframe1.rowconfigure((1,2,3,4),weight=2,uniform='aa')
         self.subframe1.columnconfigure((0,2),weight=2,uniform='bb')
         self.subframe1.columnconfigure(1,weight=1,uniform='bb')
+        self.subframe2 = tk.Frame(self.framemain,bg=FONDO,bd=0)
+        self.subframe3 = tk.Frame(self.framemain,bg=FONDO,bd=0)
+        self.subframe4 = tk.Frame(self.framemain,bg=FONDO,bd=0)
+        self.subframe5 = tk.Frame(self.framemain,bg=FONDO,bd=0)
 
-        #titulos
+        #Metodos
 
-        #Botones
-        tk.Button(self.subframe1,text='Revisar productos',bg=botoncito,bd=0, command=lambda: self.revisar_producto()).grid(row=1,column=1,padx=15,pady=15,sticky='nswe')
-        tk.Button(self.subframe1, text='Modificar producto', bg=botoncito, bd=0, command= lambda: self.modificar_producto()).grid(row=2, column=1, padx=15, pady=15, sticky='nswe')
-        tk.Button(self.subframe1, text='Revisar prioridad', bg=botoncito, bd=0, command=lambda: self.revisar_prioridad()).grid(row=3, column=1, padx=15, pady=15, sticky='nswe')
-        tk.Button(self.subframe1, text='Regresar', bg=botoncito, bd=0).grid(row=4, column=1, padx=15, pady=15, sticky='nswe')
+        def revisar_producto():
+            self.limpiar_frame(self.subframe1)
+            self.framemain.rowconfigure((0,1,2), weight=1, uniform='a')
+            self.framemain.rowconfigure(3, weight=8, uniform='a')
+            self.framemain.rowconfigure(4, weight=2, uniform='a')
+            #parte de arriba
+            self.subframe1 = tk.Frame(self.framemain, bg=FONDO, bd=0)
+            self.subframe1.grid(row=0, column=0, sticky='nswe')
+            self.subframe1.rowconfigure((0,1), weight=1, uniform='aa')
+            self.subframe1.columnconfigure((0,1,2), weight=1, uniform='bb')
+            self.subframe2 = tk.Frame(self.framemain, bg=FONDO, bd=0)
+            self.subframe2.grid(row=1, column=0, sticky='nswe')
+            self.subframe3 = tk.Frame(self.framemain, bg=FONDO, bd=0)
+            self.subframe3.grid(row=2, column=0, sticky='nswe')
+            self.subframe4 = tk.Frame(self.framemain, bg=FONDO, bd=0)
+            self.subframe4.grid(row=3, column=0, sticky='nswe')
+            self.subframe5 = tk.Frame(self.framemain, bg=FONDO, bd=0)
+            self.subframe5.grid(row=4, column=0, sticky='nswe')
 
-           #Metodos
+            tk.Label(self.subframe1, text='Revisar', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, padx=15, pady=0, sticky='e')
 
-    def revisar_producto(self):
-        self.limpiar_frame(self.subframe1)
-        self.framemain.rowconfigure((0, 2), weight=1, uniform='a')
-        self.framemain.rowconfigure(1, weight=5, uniform='a')
-        #parte de arriba
-        self.subframe1 = tk.Frame(self.framemain, bg=FONDO, bd=0)
-        self.subframe1.grid(row=0, column=0, sticky='nswe')
-        self.subframe1.rowconfigure((0,1), weight=1, uniform='aa')
-        self.subframe1.columnconfigure((0,1,2), weight=1, uniform='bb')
-        tk.Label(self.subframe1, text='Revisar', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, padx=15, pady=0, sticky='e')
+            revisar_default = tk.StringVar(value=' ---- ')
+            combobox_eleccion = ttk.Combobox(self.subframe1, values=['Todos', 'Tipo'], textvariable=revisar_default)
+            combobox_eleccion.grid(row=0, column=1, padx=5, pady=0, sticky='we')
+            def llamareleccion(elec):
+                if elec == 'Todos':
+                    self.limpiar_frame(self.subframe2)
+                    self.limpiar_frame(self.subframe3)
+                    self.limpiar_frame(self.subframe4)
+                    self.limpiar_frame(self.subframe5)
+                    self.ordenar(["Nombre","Ventas","Precio"],2)
 
-        revisar_default = tk.StringVar(value=' ---- ')
-        combobox_eleccion = ttk.Combobox(self.subframe1, values=['Todos', 'Tipo'], textvariable=revisar_default)
-        combobox_eleccion.grid(row=0, column=1, padx=5, pady=0, sticky='we')
-        def llamareleccion(elec):
-            if elec == 'Todos':
-                self.ordenar(["Nombre","Ventas","Precio"],2)
-            elif elec == 'Tipo':
-                self.categoria()
-        tk.Button(self.subframe1, text='Buscar', bg=RESALTO, bd=0, command=lambda: llamareleccion(combobox_eleccion.get())).grid(row=0, column=2, padx=15, pady=0, sticky='w')
+                elif elec == 'Tipo':
+                    self.limpiar_frame(self.subframe2)
+                    self.limpiar_frame(self.subframe3)
+                    self.limpiar_frame(self.subframe4)
+                    self.limpiar_frame(self.subframe5)
+                    self.categoria()
+            tk.Button(self.subframe1, text='Buscar', bg=RESALTO, bd=0, command=lambda: llamareleccion(combobox_eleccion.get())).grid(row=0, column=2, padx=15, pady=0, sticky='w')
 
+        def modificar_producto():
+            subframe2 = tk.Frame(self.subframe1, bg=botoncito, bd=0)
+            self.limpiar_frame(self)
+            self.limpiar_frame(self.subframe1)
+
+        def revisar_prioridad():
+            self.limpiar_frame(self.subframe1)
+
+        def regresar():
+            self.limpiar_frame(self.framemain)
+
+        # Botones
+        tk.Button(self.subframe1, text='Revisar productos', bg=botoncito, bd=0,
+                  command=lambda: revisar_producto()).grid(row=1, column=1, padx=15, pady=15, sticky='nswe')
+        tk.Button(self.subframe1, text='Modificar producto', bg=botoncito, bd=0,
+                  command=lambda: modificar_producto()).grid(row=2, column=1, padx=15, pady=15, sticky='nswe')
+        tk.Button(self.subframe1, text='Revisar prioridad', bg=botoncito, bd=0,
+                  command=lambda: revisar_prioridad()).grid(row=3, column=1, padx=15, pady=15, sticky='nswe')
+        tk.Button(self.subframe1, text='Regresar', bg=botoncito, bd=0).grid(row=4, column=1, padx=15, pady=15,
+                                                                            sticky='nswe')
     def categoria(self):
         #Crear un combobox para elegir categoria y su boton de acción
-        for widget in self.subframe1.grid_slaves(row=1):
-            widget.destroy()
-        for widget in self.subframe1.grid_slaves(row=2):
-            widget.destroy()
-        tk.Label(self.subframe1, text='Categoria', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=1, column=0, padx=15, pady=0, sticky='e')
+        self.subframe2.grid(row=1, column=0, sticky='nswe')
+        tk.Label( self.subframe2,text='Categoria', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=1, column=0, padx=15, pady=0, sticky='e')
         categoriaDefault = tk.StringVar(value='-------')
-        combobox_categoria = ttk.Combobox(self.subframe1, values=['Consola', 'Juego', 'Accesorio'], textvariable=categoriaDefault)
+        combobox_categoria = ttk.Combobox(self.subframe2, values=['Consola', 'Juego', 'Accesorio'], textvariable=categoriaDefault)
         combobox_categoria.grid(row=1, column=1, padx=5, pady=0, sticky='we')
-        tk.Button(self.subframe1, text='Buscar', bg=RESALTO, bd=0,command= self.ordenar(["Nombre","Ventas","Precio"],2,combobox_categoria.get())).grid(row=1, column=2, padx=15, pady=0, sticky='w')
+        tk.Button(self.subframe2, text='Buscar', bg=RESALTO, bd=0,command=lambda: self.ordenar(["Nombre","Ventas","Precio"],2,combobox_categoria.get())).grid(row=1, column=2, padx=15, pady=0, sticky='w')
 
     def ordenar(self,lista:list[str],fila,cat=None):
         if cat not in ['Consola','Juego','Accesorio']:
             cat = None
-
+        self.subframe3.grid(row=2, column=0, sticky='nswe')
         #crear un combobox para elegir como ordenar y su boton de accion
-        tk.Label(self.subframe1,text='Ordenar',font=('Arial', 11, 'bold'),bg=FONDO).grid(row=fila, column=0, padx=15, pady=0, sticky='e')
+        tk.Label(self.subframe3,text='Ordenar',font=('Arial', 11, 'bold'),bg=FONDO).grid(row=fila, column=0, padx=15, pady=0, sticky='e')
         ordenarDefecto = tk.StringVar(value=' -------- ')
         #crear combobox
-        combobox_ordenar = ttk.Combobox(self.subframe1,values=lista,textvariable=ordenarDefecto)
+        combobox_ordenar = ttk.Combobox(self.subframe3,values=lista,textvariable=ordenarDefecto)
         combobox_ordenar.grid(row=fila,column= 1,padx=5,pady=0, sticky='we')
         if cat is not None:
             listaObjetos = self.tienda_actual.get_productos_categoria_inventario(cat)
@@ -1315,7 +1347,7 @@ class FieldFrameAdministrar(tk.Frame):
             listaObjetos = self.tienda_actual.get_inventario()
         Producto.ordenar(combobox_ordenar.get(), listaObjetos)
         #Boton para buscar
-        tk.Button(self.subframe1,text='Buscar',bg=RESALTO,bd=0,command=self.eleccion(listaObjetos)).grid(row=fila,column=2,padx=15,pady=0,sticky='w')
+        tk.Button(self.subframe3,text='Buscar',bg=RESALTO,bd=0,command=lambda:self.eleccion(listaObjetos)).grid(row=fila,column=2,padx=15,pady=0,sticky='w')
 
     @staticmethod
     def crear_etiquetas(frame:Frame,etiquetas,lista:list[Producto]):
@@ -1326,34 +1358,23 @@ class FieldFrameAdministrar(tk.Frame):
         p = 0
         # Crear las nuevas etiquetas
         for i in lista:
-            etiqueta = tk.Label(frame, text=f"COD: {i.getId()} | Nombre: {i.getNombre()} | Cantidad: {i.getCantidad()} | Precio: {i.getPrecio()}", font=('Arial', 11), bg=FONDO)
+            etiqueta = tk.Label(frame, text=f"COD: {i.getId()} | Nombre: {i.getNombre()} | Ventas: {i.calcular_ventas()} | Precio: {i.getPrecio()}", font=('Arial', 11), bg=FONDO)
             etiqueta.grid(row=p + 1, column=0, pady=2)
             p+=1
 
     def eleccion(self,lista:list[Producto],cat=None):
-        subframe2 = tk.Frame(self.framemain, bg=FONDO, bd=0)
-        self.limpiar_frame(subframe2)
+        self.limpiar_frame(self.subframe4)
         if cat is None:
-            subframe2.grid(row=1,column=0,sticky='nswe')
-            subframe2.rowconfigure(0, weight=1, uniform='aa')
-            subframe2.columnconfigure(0, weight=1, uniform='bb')
-            self.crear_etiquetas(subframe2, subframe2.grid_slaves(column=0), lista)
+            self.subframe4.grid(row=3,column=0,sticky='nswe')
+            self.subframe4.rowconfigure(0, weight=1, uniform='aa')
+            self.subframe4.columnconfigure(0, weight=1, uniform='bb')
+            self.crear_etiquetas(self.subframe4, self.subframe4.grid_slaves(column=0), lista)
 
         else:
-            subframe2.grid(row=1,sticky='nswe',column=0)
-            subframe2.rowconfigure(0, weight=1, uniform='aa')
-            subframe2.columnconfigure(0, weight=1, uniform='bb')
-            self.crear_etiquetas(subframe2, subframe2.grid_slaves(column=0), lista)
-    def modificar_producto(self):
-        subframe2 = tk.Frame(self.subframe1, bg=botoncito, bd=0)
-        self.limpiar_frame(self)
-        self.limpiar_frame(self.subframe1)
-
-    def revisar_prioridad(self):
-        self.limpiar_frame(self.subframe1)
-
-    def regresar(self):
-        self.limpiar_frame(self.framemain)
+            self.subframe4.grid(row=1,sticky='nswe',column=0)
+            self.subframe4.rowconfigure(0, weight=1, uniform='aa')
+            self.subframe4.columnconfigure(0, weight=1, uniform='bb')
+            self.crear_etiquetas(self.subframe4, self.subframe4.grid_slaves(column=0), lista)
 
     @staticmethod
     def limpiar_frame(frame):
