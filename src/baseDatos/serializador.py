@@ -17,4 +17,6 @@ class Serializador:
         serializar2 = open('../baseDatos/temp/fecha.txt', 'wb')
         pickle.dump(ultima_fecha, serializar2)
         serializar2.close()
-        print("Serializado fecha")
+        print("Serializado con exito")
+
+    #TODO añadir empleados a Robledo

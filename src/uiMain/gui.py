@@ -13,8 +13,6 @@ from src.gestorAplicacion.productos.Producto import Producto
 
 import os
 
-# TODO hacer que la serializacion funcione para ejecutable con pyinstaller y moverla a baseDatos
-
 from src.baseDatos.deserializador import Deserializador
 Deserializador.deserializar_locales()
 Deserializador.deserializar_clientes()
@@ -1872,7 +1870,7 @@ class FieldFrameSubasta(tk.Frame):
 
 
     def terminar_subasta(self):
-        pass
+        pass # TODO
 
     # metodo que limpia por completo el interior de el frame que reciba
     @staticmethod
