@@ -10,8 +10,8 @@ class Subasta(Identificable, MarcaTiempo):
         self._ofertantes = []
         self._oferta_mayor = oferta_mayor
         self._estado = "Activa"
-        self._tipo = tipo
-        self._local = local
+        self._TIPO = tipo
+        self._LOCAL = local
 
         local.agregarSubasta(self)
 
@@ -20,7 +20,7 @@ class Subasta(Identificable, MarcaTiempo):
         from src.gestorAplicacion.manejoLocal.Fecha import Fecha
         self._fecha_fin = Fecha(int(fecha_actual.get_total_dias()) + 7)
 
-        if (self._tipo == 'Ascendente' or self._tipo == 'Descendente') and self._oferta_mayor > 0:
+        if (self._TIPO == 'Ascendente' or self._TIPO == 'Descendente') and self._oferta_mayor > 0:
             oferta_mayor_anterior = self._oferta_mayor
             oferta_mayor_nueva = int(self._oferta_mayor * 0.8)
             self._oferta_mayor = oferta_mayor_nueva
@@ -139,10 +139,10 @@ class Subasta(Identificable, MarcaTiempo):
         return self._oferta_mayor
     def get_estado(self):
         return self._estado
-    def get_local(self):
-        return self._local
-    def get_tipo(self):
-        return self._tipo
+    def get_LOCAL(self):
+        return self._LOCAL
+    def get_TIPO(self):
+        return self._TIPO
 
     def set_id(self, id):
         self._id = id
@@ -160,7 +160,7 @@ class Subasta(Identificable, MarcaTiempo):
         self._oferta_mayor = oferta_mayor
     def set_estado(self, estado):
         self._estado = estado
-    def set_local(self, local):
-        self._local = local
-    def set_tipo(self, tipo):
-        self._tipo = tipo
+    def set_LOCAL(self, local):
+        self._LOCAL = local
+    def set_TIPO(self, tipo):
+        self._TIPO = tipo
