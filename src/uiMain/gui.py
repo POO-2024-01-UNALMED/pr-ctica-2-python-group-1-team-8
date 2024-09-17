@@ -671,11 +671,11 @@ class FieldFrameProducto(tk.Frame):
 
         categoria_default = tk.StringVar(value='Elige una categoria')
         self.combobox_categoria = ttk.Combobox(self.subframe1, values=categorias, textvariable=categoria_default)
-        self.combobox_categoria.grid(row=0, column=1, padx=15, pady=9)
+        self.combobox_categoria.grid(row=0, column=1, padx=15, ipadx=40, pady=9)
 
         # Crear combobox con listado de productos segun la categoria ingresada
         def identificar_categoria_nombres(cat:str):
-            return list(map(lambda producto: producto.get_nombre(), self.tienda_actual.get_productos_categoria_inventario(cat)))
+            return list(map(lambda producto: producto.__str__(), self.tienda_actual.get_productos_categoria_inventario(cat)))
 
         self.listado_productos = []
         self.combobox_producto = ttk.Combobox(self.subframe1)
@@ -686,7 +686,7 @@ class FieldFrameProducto(tk.Frame):
             self.listado_productos = self.tienda_actual.get_productos_categoria_inventario(self.combobox_categoria.get())
 
             self.combobox_producto.config(values=listado_nombres, textvariable=listado_default)
-            self.combobox_producto.grid(row=1, column=1, padx=15, pady=9)
+            self.combobox_producto.grid(row=1, column=1, padx=15, ipadx=40, pady=9)
 
         # Boton para crear combobox listado
         self.boton_listado = tk.Button(self.subframe1, text='Buscar', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0, command=lambda: crear_listado(self.subframe1))

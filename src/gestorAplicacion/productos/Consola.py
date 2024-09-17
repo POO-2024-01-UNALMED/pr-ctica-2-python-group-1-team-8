@@ -9,7 +9,7 @@ class Consola(Producto):
         self._marca = marca
 
     def __str__(self):
-        return f"Nombre: {self._nombre}\nPrecio: {self._precio}\nCantidad: {self._cantidad}\nMarca: {self._marca}"
+        return f"{self._id} | {self._nombre} | Marca: {self._marca}"
 
     def get_marca(self):
         return self._marca

@@ -7,7 +7,7 @@ class Juego(Producto):
         self._genero = genero
 
     def __str__(self):
-        return f"Nombre: {self._nombre}, Precio: {self._precio}, Cantidad: {self._cantidad}, Plataforma: {self._plataforma}"
+        return f"{self._id} | {self._nombre} | Plataforma: {self._plataforma}"
 
     # ~~~~~ Getters y Setters ~~~~~
     def get_plataforma(self):

@@ -7,7 +7,7 @@ class Accesorio(Producto):
         self._consola = consola
 
     def __str__(self):
-        return f"Nombre: {self._nombre} | Precio: {self._precio} | Marca: {self._marca} | Consola: {self._consola}"
+        return f"{self._id} | {self._nombre} | Marca: {self._marca}"
 
     # ~~~~~ Getters y Setters ~~~~~
     def get_marca(self):
