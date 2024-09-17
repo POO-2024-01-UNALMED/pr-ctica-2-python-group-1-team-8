@@ -16,5 +16,5 @@ class Consola(Producto):
     def setMarca(self, marca):
         self._marca = marca
 
-    def metodo_abstracto(self):
-        pass
+    def __repr__(self):
+        return f"COD: {self.getId()} |Nombre: {self.getNombre()} | Precio: {self.getPrecio()} | Marca: {self.getMarca()}"

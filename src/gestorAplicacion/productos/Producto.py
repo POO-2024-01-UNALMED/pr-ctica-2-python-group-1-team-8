@@ -46,12 +46,13 @@ class Producto(ABC, Identificable):
     # TODO metodo para clonar producto
 
     # Metodo toString...?
+    @abstractmethod
     def __str__(self):
         return f"ID: {self.id}, Nombre: {self._nombre}, Precio: {self._precio}, Cantidad: {self._cantidad}, Condicion: {self._condicion}, Fecha de Lanzamiento: {self._fechaLanzamiento}"
-
     @abstractmethod
-    def metodo_abstracto(self):
-        pass
+    def __repr__(self):
+        return f"ID: {self.id}, Nombre: {self._nombre}, Precio: {self._precio}, Cantidad: {self._cantidad}, Condicion: {self._condicion}, Fecha de Lanzamiento: {self._fechaLanzamiento}"
+
 
 
     # ~~~~~ Getters y Setters ~~~~~
