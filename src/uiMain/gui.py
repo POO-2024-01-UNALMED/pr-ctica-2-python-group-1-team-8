@@ -17,11 +17,11 @@ import pickle
 
 # TODO hacer que la serializacion funcione para ejecutable con pyinstaller y moverla a baseDatos
 # try:
-#     path_locales = os.path.realpath('src\\temp\\locales.txt')
+#     path_locales = os.path.realpath('src\\baseDatos\\temp\\locales.txt')
 #     with open(path_locales, 'rb') as file:
 #         Tienda.set_locales(pickle.load(file))
 #
-#     path_clientes = os.path.realpath('src\\temp\\clientes.txt')
+#     path_clientes = os.path.realpath('src\\baseDatos\\temp\\clientes.txt')
 #     with open(path_clientes, 'rb') as file:
 #         Cliente.clientes = pickle.load(file)
 #
@@ -434,12 +434,13 @@ class VentanaSecundaria:
         self.root.mainloop()
 
 class FieldFrame(tk.Frame):
-    def __init__(self, ventana, titulo_criterios, criterios, titulo_valores, valores=None, habilitados=None, aceptar_callback=None):
+    def __init__(self, ventana, titulo_criterios, criterios, titulo_valores, valores=None, habilitados=None, aceptar_callback=None, tipos_esperados=None):
         super().__init__(ventana, bg=FONDO, highlightbackground=DETALLES, highlightthickness=2)
 
         self.aceptar_callback = aceptar_callback
         self.criterios = criterios
         self.valores = criterios if valores is None else valores
+        self.tipos_esperados = tipos_esperados
 
         numeros_criterios = []
         for i in range(1, len(criterios) + 1): numeros_criterios.append(i)
@@ -498,17 +499,32 @@ class FieldFrame(tk.Frame):
 
     def aceptar(self):
         try:
-            # Buscar si hay algun campo vacio
             lista_values = []
+            # Buscar si hay algun campo vacio o de tipo invalido
             for cri in self.criterios:
-                if self.getValue(cri) == '': # Revisar si el campo esta vacio
+                valor = self.getValue(cri)
+                if valor == '': # Revisar si el campo esta vacio
                     raise ExceptionCampoVacio(self.entries_val, self.criterios)
-                else:
-                    lista_values.append(self.getValue(cri))
+
+                if self.tipos_esperados is not None:
+                    if self.tipos_esperados[self.criterios.index(cri)] == 'str': # Si el tipo esperado es str
+                        if valor.isdigit():
+                            raise ExceptionTipoInvalido(self.entries_val, self.criterios, self.tipos_esperados)
+
+                    if self.tipos_esperados[self.criterios.index(cri)] == 'int': # Si el tipo esperado es int
+                        if not valor.isdigit():
+                            raise ExceptionTipoInvalido(self.entries_val, self.criterios, self.tipos_esperados)
+
+                lista_values.append(self.getValue(cri))
+
             return lista_values
 
-        # TODO mas manejo de exepciones, como comprobacion de tipos
         except ExceptionCampoVacio:
+            # volver a colorear los campos invalidos una vez que se cierre la ventana emergente
+            for entry in self.entries_val:
+                entry.config(bg='white')
+
+        except ExceptionTipoInvalido:
             # volver a colorear los campos invalidos una vez que se cierre la ventana emergente
             for entry in self.entries_val:
                 entry.config(bg='white')
@@ -650,6 +666,10 @@ class FieldFrameProducto(tk.Frame):
 
         def limpiar_carrito():
             self.carrito = []
+            self.entry_total_carrito.config(state='normal')
+            self.entry_total_carrito.delete(0, tk.END)
+            self.entry_total_carrito.insert(0, '0')
+            self.entry_total_carrito.config(state='disabled')
 
         tk.Button(subframe3, text='Comprar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=self.pantalla_pago).grid(row=1, column=0, padx=15, pady=15, sticky='e')
         tk.Button(subframe3, text='Limpiar carrito', font=('Arial', 7, 'bold'), bg=POWER, bd=0, command=limpiar_carrito).grid(row=1, column=1, padx=15, pady=15, sticky='w')
@@ -800,7 +820,7 @@ class FieldFrameProducto(tk.Frame):
 
             # fieldframe para identificacion
             criterios_cliente = ['Identificacion']
-            FieldFrame(mainframe_cliente, 'Dato', criterios_cliente, 'Valor', None, None, aceptar_callback=al_cliente_existente_callback).grid(row=0, column=0, rowspan=2, columnspan=2)
+            FieldFrame(mainframe_cliente, 'Dato', criterios_cliente, 'Valor', None, None, aceptar_callback=al_cliente_existente_callback, tipos_esperados=['int']).grid(row=0, column=0, rowspan=2, columnspan=2)
 
         def crear_cliente():
             self.limpiar_frame(mainframe_cliente)
@@ -822,7 +842,7 @@ class FieldFrameProducto(tk.Frame):
 
             # fieldframe para creacion
             criterios_cliente = ['Identificacion', 'Nombre', 'Correo', 'Telefono']
-            FieldFrame(mainframe_cliente, 'Dato', criterios_cliente, 'Valor', None, None, aceptar_callback=al_crear_cliente_callback).grid(row=0, column=0, rowspan=2, columnspan=2)
+            FieldFrame(mainframe_cliente, 'Dato', criterios_cliente, 'Valor', None, None, aceptar_callback=al_crear_cliente_callback, tipos_esperados=['int', 'str', 'str', 'str']).grid(row=0, column=0, rowspan=2, columnspan=2)
 
         tk.Label(mainframe_cliente, text='¿El cliente esta registrado o es nuevo?', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, columnspan=2, padx=15, pady=15, ipadx=30)
         # Botones
@@ -1049,7 +1069,7 @@ class FieldFramePrestamo(FieldFrameProducto):
 
                     self.cliente_actual = cliente_encontrado
 
-                    messagebox.showinfo('Cliente encontrado', f'Cliente {cliente_encontrado.get_nombre()} identificado con exito\n') #TODO recomendaciones
+                    messagebox.showinfo('Cliente encontrado', f'Cliente {cliente_encontrado.get_nombre()} identificado con exito\n')
 
                     # Comprobacion de prestamos vencidos
                     self.hay_vencidos = False
@@ -1088,7 +1108,7 @@ class FieldFramePrestamo(FieldFrameProducto):
 
             # fieldframe para creacion
             criterios_cliente = ['Identificacion', 'Nombre', 'Correo', 'Telefono']
-            FieldFrame(mainframe_cliente, 'Dato', criterios_cliente, 'Valor', None, None, aceptar_callback=al_crear_cliente_callback).grid(row=0, column=0, rowspan=2, columnspan=2)
+            FieldFrame(mainframe_cliente, 'Dato', criterios_cliente, 'Valor', None, None, aceptar_callback=al_crear_cliente_callback, tipos_esperados=['int', 'str', 'str', 'int']).grid(row=0, column=0, rowspan=2, columnspan=2)
 
         tk.Label(mainframe_cliente, text='¿El cliente esta registrado o es nuevo?', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, columnspan=2, padx=15, pady=15, ipadx=30)
         # Botones
@@ -1119,7 +1139,6 @@ class FieldFramePrestamo(FieldFrameProducto):
 
         self.limpiar_frame(self.framemain)
         self.identificar_producto()
-        #TODO pantalla de identificacion de productos
 
     # pantalla para seleccion de prestamos activos o vencidos para devolver
     def devolver(self):
@@ -1413,7 +1432,6 @@ class FieldFrameEmpleado(tk.Frame):
             self.subframe2.grid(row=1, column=0)
             (FieldFrame(self.subframe2, 'Codigo', criterios, 'Porcentaje de progreso', valores, cri_habilitados, aceptar_callback=al_aceptar_callback)
                         .grid(row=0, column=0, padx=15, pady=15))
-            # TODO que fieldframe tambien reciba el comando de aceptar para que se pueda hacer la modificacion, o que aceptar devuelva los valores y asi agregarlos al carrito en fieldframeproducto
 
         # Boton para insertar empleado seleccionado
         self.boton_empleado = tk.Button(self.subframe1, text='Insertar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=lambda: identificar_empleado())
@@ -1592,8 +1610,8 @@ class FieldFrameSubasta(tk.Frame):
             self.pantalla_tipo_subasta()
 
         tk.Button(subframe3, text='Comprar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0,
-                  command=self.pantalla_tipo_subasta).grid(row=1, column=0, padx=15, pady=15, sticky='e')
-        tk.Button(subframe3, text='Limpiar carrito', font=('Arial', 7, 'bold'), bg=POWER, bd=0, command=commando_llamar_pantalla_tipo_sub).grid(row=1, column=1,padx=15, pady=15,sticky='w')
+                  command=commando_llamar_pantalla_tipo_sub).grid(row=1, column=0, padx=15, pady=15, sticky='e')
+        tk.Button(subframe3, text='Limpiar carrito', font=('Arial', 7, 'bold'), bg=POWER, bd=0, command=limpiar_carrito).grid(row=1, column=1,padx=15, pady=15,sticky='w')
 
     def pantalla_tipo_subasta(self):
         self.reiniciar_frame()
@@ -1745,7 +1763,7 @@ class FieldFrameSubasta(tk.Frame):
 
                 criterios = ['Cedula cliente', 'Ultima oferta', 'Cantidad a ofertar']
                 valores = [None, str(subasta.get_oferta_mayor()), None]
-                ff_opciones_ascendente = FieldFrame(subframe_opciones_oferta, 'Dato', criterios, 'Valor', valores, [True, False, True], aceptar_callback=aceptar_oferta_callback)
+                ff_opciones_ascendente = FieldFrame(subframe_opciones_oferta, 'Dato', criterios, 'Valor', valores, [True, False, True], aceptar_callback=aceptar_oferta_callback, tipos_esperados=['int', 'int', 'int'])
                 ff_opciones_ascendente.grid(row=0, column=0, rowspan=4, columnspan=2, padx=15, pady=15)
 
             # opciones subasta descendente
@@ -1809,7 +1827,7 @@ class FieldFrameSubasta(tk.Frame):
                         pass
 
                 criterios = ['Cedula cliente', 'Cantidad a ofertar']
-                ff_opciones_anonima = FieldFrame(subframe_opciones_oferta, 'Dato', criterios, 'Valor', None, None, aceptar_callback=aceptar_oferta_callback)
+                ff_opciones_anonima = FieldFrame(subframe_opciones_oferta, 'Dato', criterios, 'Valor', None, None, aceptar_callback=aceptar_oferta_callback, tipos_esperados=['int', 'int'])
                 ff_opciones_anonima.grid(row=0, column=0, rowspan=4, columnspan=2, padx=15, pady=15)
 
             try:
@@ -1885,12 +1903,28 @@ class ExceptionCampos(ErrorAplicacion):
     def __init__(self, mensaje):
         super().__init__('Error en los campos:\n' + mensaje)
 
-class ExceptionValorInvalido(ExceptionCampos):
-    def identificar_valor_invalido(self, entries_val, criterios):
-        self.valores_invalidos = []
+class ExceptionTipoInvalido(ExceptionCampos):
+    def __init__(self, entries_val, criterios, tipos_esperados):
+        super().__init__(self.identificar_tipo_invalido(entries_val, criterios, tipos_esperados))
+
+    def identificar_tipo_invalido(self, entries_val, criterios, tipos_esperados):
+        self.campos_invalidos = []
         self.mensaje = ''
 
-        #TODO encontrar una forma de hacer que se compruebe que el tipo de dato ingresado sea el esperado para cada fieldframe
+        for entry in entries_val:
+            if entry == '':  # Revisar si el campo esta vacio
+                raise ExceptionCampoVacio(entries_val, criterios)
+
+            elif tipos_esperados is not None:
+                if tipos_esperados[entries_val.index(entry)] == 'str':  # Si el tipo esperado es str
+                    if entry.get().isdigit():
+                        self.campos_invalidos.append(criterios[entries_val.index(entry)])
+
+                elif tipos_esperados[entries_val.index(entry)] == 'int':  # Si el tipo esperado es int
+                    if not entry.get().isdigit():
+                        self.campos_invalidos.append(criterios[entries_val.index(entry)])
+
+        return('Campos con tipo invalidos: ' + ', '.join(self.campos_invalidos))
 
 class ExceptionCampoVacio(ExceptionCampos):
     def __init__(self, entries_val, criterios):
