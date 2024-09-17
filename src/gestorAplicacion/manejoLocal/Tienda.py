@@ -1,3 +1,5 @@
+from multimethod import multimethod
+
 from src.gestorAplicacion.informacionVenta.Transaccion import Transaccion
 from src.gestorAplicacion.productos.Juego import Juego
 from src.gestorAplicacion.personas.Empleado import Empleado
@@ -100,11 +102,25 @@ class Tienda:
         if orden is not None:
             self._reabastecimientos.append(orden)
 
-    def get_productos_categoria_inventario(self, categoria, tipo_inventario=None):
+    # Metodo para obtener los productos de una categoria en el inventario de la tienda
+    @multimethod
+    def get_productos_categoria_inventario(self, categoria:str):
+        invent = self._inventario
+
+        if categoria == "Consola":
+            from src.gestorAplicacion.productos.Consola import Consola
+            return [p for p in invent if isinstance(p, Consola)]
+        elif categoria == "Juego":
+            return [p for p in invent if isinstance(p, Juego)]
+        elif categoria == "Accesorio":
+            from src.gestorAplicacion.productos.Accesorio import Accesorio
+            return [p for p in invent if isinstance(p, Accesorio)]
+
+    # Metodo para obtener los productos de una categoria en un inventario especifico
+    @multimethod
+    def get_productos_categoria_inventario(self, categoria:str, tipo_inventario:str):
         invent = []
         match tipo_inventario:
-            case None:
-                invent = self._inventario
             case "prestamo":
                 invent = self._inventarioPrestamo
             case "usado":
@@ -119,12 +135,10 @@ class Tienda:
             from src.gestorAplicacion.productos.Accesorio import Accesorio
             return [p for p in invent if isinstance(p, Accesorio)]
 
-    def buscar_producto_id(self, id, tipo_inventario=None):
-        if tipo_inventario is None:
-            for p in self._inventario:
-                if p.id == id:
-                    return p
-        elif tipo_inventario == "prestamo":
+    # Metodo para buscar un producto por su id en un inventario especifico
+    @multimethod
+    def buscar_producto_id(self, id:int, tipo_inventario:str):
+        if tipo_inventario == "prestamo":
             for p in self._inventarioPrestamo:
                 if p.id == id:
                     return p
@@ -132,6 +146,14 @@ class Tienda:
             for p in self._inventarioUsado:
                 if p.id == id:
                     return p
+        return None
+
+    # Metodo para buscar un producto por su id en el inventario de la tienda
+    @multimethod
+    def buscar_producto_id(self, id:int):
+        for p in self._inventario:
+            if p.id == id:
+                return p
         return None
 
 # Getters y setters
