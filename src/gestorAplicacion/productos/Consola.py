@@ -11,10 +11,10 @@ class Consola(Producto):
     def __str__(self):
         return f"Nombre: {self._nombre}\nPrecio: {self._precio}\nCantidad: {self._cantidad}\nMarca: {self._marca}"
 
-    def getMarca(self):
+    def get_marca(self):
         return self._marca
-    def setMarca(self, marca):
+    def set_marca(self, marca):
         self._marca = marca
 
     def __repr__(self):
-        return f"COD: {self.getId()} |Nombre: {self.getNombre()} | Precio: {self.getPrecio()} | Marca: {self.getMarca()}"
+        return f"COD: {self.get_id()} |Nombre: {self.get_nombre()} | Precio: {self.get_precio()} | Marca: {self.get_marca()}"

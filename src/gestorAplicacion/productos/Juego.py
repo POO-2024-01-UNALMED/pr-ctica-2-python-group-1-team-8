@@ -10,14 +10,14 @@ class Juego(Producto):
         return f"Nombre: {self._nombre}, Precio: {self._precio}, Cantidad: {self._cantidad}, Plataforma: {self._plataforma}"
 
     # ~~~~~ Getters y Setters ~~~~~
-    def getPlataforma(self):
+    def get_plataforma(self):
         return self._plataforma
-    def setPlataforma(self, plataforma):
+    def set_plataforma(self, plataforma):
         self._plataforma = plataforma
-    def getGenero(self):
+    def get_genero(self):
         return self._genero
-    def setGenero(self, genero):
+    def set_genero(self, genero):
         self._genero = genero
 
     def __repr__(self):
-        return f"COD: {self.getId()} |Nombre: {self.getNombre()} | Precio: {self.getPrecio()} | Plataforma: {self.getPlataforma()}"
+        return f"COD: {self.get_id()} |Nombre: {self.get_nombre()} | Precio: {self.get_precio()} | Plataforma: {self.get_plataforma()}"

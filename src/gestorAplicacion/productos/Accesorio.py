@@ -10,14 +10,14 @@ class Accesorio(Producto):
         return f"Nombre: {self._nombre} | Precio: {self._precio} | Marca: {self._marca} | Consola: {self._consola}"
 
     # ~~~~~ Getters y Setters ~~~~~
-    def getMarca(self):
+    def get_marca(self):
         return self._marca
-    def setMarca(self, marca):
+    def set_marca(self, marca):
         self._marca = marca
-    def getConsola(self):
+    def get_consola(self):
         return self._consola
-    def setConsola(self, consola):
+    def set_consola(self, consola):
         self._consola = consola
 
     def __repr__(self):
-        return f"COD: {self.getId()} |Nombre: {self.getNombre()} | Precio: {self.getPrecio()} | Consola: {self.getConsola()}"
+        return f"COD: {self.get_id()} |Nombre: {self.get_nombre()} | Precio: {self.get_precio()} | Consola: {self.get_consola()}"

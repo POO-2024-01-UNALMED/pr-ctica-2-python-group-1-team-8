@@ -667,7 +667,7 @@ class FieldFrameProducto(tk.Frame):
 
         # Crear combobox con listado de productos segun la categoria ingresada
         def identificar_categoria_nombres(cat:str):
-            return list(map(lambda producto: producto.getNombre(), self.tienda_actual.get_productos_categoria_inventario(cat)))
+            return list(map(lambda producto: producto.get_nombre(), self.tienda_actual.get_productos_categoria_inventario(cat)))
 
         self.listado_productos = []
         self.combobox_producto = ttk.Combobox(self.subframe1)
@@ -690,7 +690,7 @@ class FieldFrameProducto(tk.Frame):
             self.producto_actual = self.listado_productos[self.combobox_producto.current()]
             # Espacio del FieldFrame
             criterios = ['ID', 'Nombre', 'Precio', 'Cantidad', 'Fecha de lanzamiento']
-            valores = [str(self.producto_actual.getId()), self.producto_actual.getNombre(), str(self.producto_actual.getPrecio()), str(self.producto_actual.getCantidad()), str(self.producto_actual.getFechaLanzamiento())]
+            valores = [str(self.producto_actual.get_id()), self.producto_actual.get_nombre(), str(self.producto_actual.get_precio()), str(self.producto_actual.get_cantidad()), str(self.producto_actual.get_fecha_lanzamiento())]
             cri_habilitados = [False, False, False, False, False]
 
             def al_aceptar_callback(resultado):
@@ -701,10 +701,10 @@ class FieldFrameProducto(tk.Frame):
                     # identificar producto en el carrito si ya esta
                     producto_en_carrito = None
                     for producto in self.carrito:
-                        if producto.getId() == producto_en_field.getId():  # Si el producto es reconocido
+                        if producto.get_id() == producto_en_field.get_id():  # Si el producto es reconocido
                             producto_en_carrito = producto
                             # Si la cantidad es insuficiente
-                            if producto_en_field.getCantidad() - producto_en_carrito.getCantidad() == 0:
+                            if producto_en_field.get_cantidad() - producto_en_carrito.get_cantidad() == 0:
                                 raise ExceptionCantidadInvalida()
                             break
 
@@ -714,16 +714,16 @@ class FieldFrameProducto(tk.Frame):
                     else:
                         # Agregar clon del producto al carrito
                         # la idea de usar un clon es para que el carrito maneje un atributo cantidad independiente
-                        if producto_en_field.getCantidad() == 0: # Si la cantidad es insuficiente
+                        if producto_en_field.get_cantidad() == 0: # Si la cantidad es insuficiente
                             raise ExceptionCantidadInvalida()
                         producto_clonado = copy.deepcopy(producto_en_field)
-                        producto_clonado.setCantidad(1)
+                        producto_clonado.set_cantidad(1)
                         self.carrito.append(producto_clonado)
 
                     # mostrar nuevo total del carrito en la entry correspondiente
                     self.entry_total_carrito.config(state='normal')
                     self.entry_total_carrito.delete(0, tk.END)
-                    nuevo_total = str(sum(map(lambda prod: prod.getPrecio() * prod.getCantidad(), self.carrito)))
+                    nuevo_total = str(sum(map(lambda prod: prod.get_precio() * prod.get_cantidad(), self.carrito)))
                     self.entry_total_carrito.insert(0, nuevo_total)
                     self.entry_total_carrito.config(state='disabled')
                 except ExceptionCantidadInvalida:
@@ -787,31 +787,31 @@ class FieldFrameProducto(tk.Frame):
                 precio_final_individual = 0
                 valor_temp = 0
 
-                if prod.getDescuento() > 0: # En caso de que el producto tenga descuento
-                    if prod.getPuntosRequeridos() == 0: # En caso de que el producto no requiera puntos
-                        valor_temp = prod.getPrecio() * prod.getCantidad()
-                        precio_final_individual = valor_temp - (valor_temp * prod.getDescuento() / 100) # calcular descuento
+                if prod.get_descuento() > 0: # En caso de que el producto tenga descuento
+                    if prod.get_puntos_requeridos() == 0: # En caso de que el producto no requiera puntos
+                        valor_temp = prod.get_precio() * prod.get_cantidad()
+                        precio_final_individual = valor_temp - (valor_temp * prod.get_descuento() / 100) # calcular descuento
                         total_final += precio_final_individual
 
-                    elif prod.getPuntosRequeridos() > 0 and (cliente.get_puntos_fidelidad() - puntos_usados) >= prod.getPuntosRequeridos():
-                        valor_temp = prod.getPrecio() * prod.getCantidad()
-                        precio_final_individual = valor_temp - (valor_temp * prod.getDescuento() / 100)
+                    elif prod.get_puntos_requeridos() > 0 and (cliente.get_puntos_fidelidad() - puntos_usados) >= prod.get_puntos_requeridos():
+                        valor_temp = prod.get_precio() * prod.get_cantidad()
+                        precio_final_individual = valor_temp - (valor_temp * prod.get_descuento() / 100)
                         total_final += precio_final_individual
 
-                        puntos_usados += prod.getPuntosRequeridos()
+                        puntos_usados += prod.get_puntos_requeridos()
                     else: # En caso de que el cliente no tenga suficientes puntos
-                        total_final += prod.getPrecio() * prod.getCantidad()
+                        total_final += prod.get_precio() * prod.get_cantidad()
 
                 else: # En caso de que el producto no tenga descuento
-                    total_final += prod.getPrecio() * prod.getCantidad()
+                    total_final += prod.get_precio() * prod.get_cantidad()
 
             return total_final, puntos_usados
 
         def confirmacion_pago(carrito, total, puntos, empleado):
             # Reflejar productos del carrito en el inventario del local
             for prod in carrito:
-                prod_actual = self.tienda_actual.buscar_producto_id(prod.getId())
-                prod_actual.setCantidad(prod_actual.getCantidad() - prod.getCantidad())
+                prod_actual = self.tienda_actual.buscar_producto_id(prod.get_id())
+                prod_actual.set_cantidad(prod_actual.get_cantidad() - prod.get_cantidad())
 
             # Actualizar puntos de fidelidad del cliente
             # Puntos gastados
@@ -825,7 +825,7 @@ class FieldFrameProducto(tk.Frame):
             messagebox.showinfo('Compra realizada', f'Compra realizada con exito\nTotal: {total}\nPuntos usados: {puntos}\nPuntos obtenidos: {puntos_obtenidos}\nEmpleado: {empleado.get_nombre()}')
 
             # Hallar total sin descuentos
-            total_sin_descuentos = sum(map(lambda prod: prod.getPrecio() * prod.getCantidad(), carrito))
+            total_sin_descuentos = sum(map(lambda prod: prod.get_precio() * prod.get_cantidad(), carrito))
 
             from src.gestorAplicacion.informacionVenta.Transaccion import Transaccion
             Transaccion(self.cliente_actual, empleado, self.tienda_actual, self.carrito, total_sin_descuentos, total)
@@ -859,7 +859,7 @@ class FieldFrameProducto(tk.Frame):
             except ExceptionNoEncontrado:
                 pass
 
-        subtotal = sum(map(lambda prod: prod.getPrecio() * prod.getCantidad(), self.carrito))
+        subtotal = sum(map(lambda prod: prod.get_precio() * prod.get_cantidad(), self.carrito))
 
         # Subframe para poder organizar subtotal y empleado y sus entries
         subframe_subtotal_empleado = tk.Frame(subframe, bg=FONDO, bd=0)
@@ -979,7 +979,7 @@ class FieldFramePrestamo(FieldFrameProducto):
 
         # Crear combobox con listado de productos segun la categoria ingresada
         def identificar_categoria_nombres(cat:str):
-            return list(map(lambda producto: producto.getNombre(), self.tienda_actual.get_productos_categoria_inventario(cat, 'prestamo')))
+            return list(map(lambda producto: producto.get_nombre(), self.tienda_actual.get_productos_categoria_inventario(cat, 'prestamo')))
 
         self.listado_productos = []
         self.combobox_producto = ttk.Combobox(self.subframe1)
@@ -1002,7 +1002,7 @@ class FieldFramePrestamo(FieldFrameProducto):
             self.producto_actual = self.listado_productos[self.combobox_producto.current()]
             # Espacio del FieldFrame
             criterios = ['ID', 'Nombre', 'Costo/dia', 'Cantidad', 'Fecha de lanzamiento']
-            valores = [str(self.producto_actual.getId()), self.producto_actual.getNombre(), str(self.producto_actual.getPrecio()), str(self.producto_actual.getCantidad()), str(self.producto_actual.getFechaLanzamiento())]
+            valores = [str(self.producto_actual.get_id()), self.producto_actual.get_nombre(), str(self.producto_actual.get_precio()), str(self.producto_actual.get_cantidad()), str(self.producto_actual.get_fecha_lanzamiento())]
             cri_habilitados = [False, False, False, False, False]
 
             def al_aceptar_callback(resultado):
@@ -1013,10 +1013,10 @@ class FieldFramePrestamo(FieldFrameProducto):
                     # identificar producto en el carrito si ya esta
                     producto_en_carrito = None
                     for producto in self.carrito:
-                        if producto.getId() == producto_en_field.getId():  # Si el producto es reconocido
+                        if producto.get_id() == producto_en_field.get_id():  # Si el producto es reconocido
                             producto_en_carrito = producto
                             # Si la cantidad es insuficiente
-                            if producto_en_field.getCantidad() - producto_en_carrito.getCantidad() == 0:
+                            if producto_en_field.get_cantidad() - producto_en_carrito.get_cantidad() == 0:
                                 raise ExceptionCantidadInvalida()
                             break
 
@@ -1026,16 +1026,16 @@ class FieldFramePrestamo(FieldFrameProducto):
                     else:
                         # Agregar clon del producto al carrito
                         # la idea de usar un clon es para que el carrito maneje un atributo cantidad independiente
-                        if producto_en_field.getCantidad() == 0: # Si la cantidad es insuficiente
+                        if producto_en_field.get_cantidad() == 0: # Si la cantidad es insuficiente
                             raise ExceptionCantidadInvalida()
                         producto_clonado = copy.deepcopy(producto_en_field)
-                        producto_clonado.setCantidad(1)
+                        producto_clonado.set_cantidad(1)
                         self.carrito.append(producto_clonado)
 
                     # mostrar nuevo total del carrito en la entry correspondiente
                     self.entry_total_carrito.config(state='normal')
                     self.entry_total_carrito.delete(0, tk.END)
-                    nuevo_total = str(sum(map(lambda prod: prod.getPrecio() * prod.getCantidad(), self.carrito)))
+                    nuevo_total = str(sum(map(lambda prod: prod.get_precio() * prod.get_cantidad(), self.carrito)))
                     self.entry_total_carrito.insert(0, nuevo_total)
                     self.entry_total_carrito.config(state='disabled')
                 except ExceptionCantidadInvalida:
@@ -1067,8 +1067,8 @@ class FieldFramePrestamo(FieldFrameProducto):
         def confirmacion_pago(valor_total, dias):
             # Reflejar productos del carrito en el inventario del local
             for prod in self.carrito:
-                prod_actual = self.tienda_actual.buscar_producto_id(prod.getId(), 'prestamo')
-                prod_actual.setCantidad(prod_actual.getCantidad() - prod.getCantidad())
+                prod_actual = self.tienda_actual.buscar_producto_id(prod.get_id(), 'prestamo')
+                prod_actual.set_cantidad(prod_actual.get_cantidad() - prod.get_cantidad())
 
             # Crear prestamo
             fecha_fin = Fecha(int(self.fecha_actual.get_total_dias() + dias))
@@ -1087,7 +1087,7 @@ class FieldFramePrestamo(FieldFrameProducto):
                 if combobox_plazo.get() == '':
                     raise ExceptionCampoVacio([combobox_plazo], 'Plazo')
 
-                valor_total = sum(map(lambda prod: (prod.getPrecio() * prod.getCantidad()), self.carrito))
+                valor_total = sum(map(lambda prod: (prod.get_precio() * prod.get_cantidad()), self.carrito))
                 dias = 0
                 total_dias = int(combobox_plazo.get())
 
@@ -1119,7 +1119,7 @@ class FieldFramePrestamo(FieldFrameProducto):
             except ExceptionCampos: #TODO AQUI PUEDE HABER LIGADURA
                 pass
 
-        subtotal = sum(map(lambda prod: prod.getPrecio() * prod.getCantidad(), self.carrito))
+        subtotal = sum(map(lambda prod: prod.get_precio() * prod.get_cantidad(), self.carrito))
 
         # Subframe para poder organizar subtotal y empleado y sus entries
         subframe_subtotal_empleado = tk.Frame(subframe, bg=FONDO, bd=0)
@@ -1320,7 +1320,7 @@ class FieldFramePrestamo(FieldFrameProducto):
                 total_pagar = 0
                 if prestamo_seleccionado.get_estado() == 'Vencido':
                     for producto in prestamo_seleccionado.get_productos():
-                        total_pagar += producto.getPrecio() * abs(total_dias) * 1.1
+                        total_pagar += producto.get_precio() * abs(total_dias) * 1.1
                 entry_total_a_pagar = tk.Entry(subframe2)
                 entry_total_a_pagar.insert(0, str(total_pagar))
                 entry_total_a_pagar.config(state='disabled')
@@ -1337,8 +1337,8 @@ class FieldFramePrestamo(FieldFrameProducto):
 
                     # Actualizar cantidad de productos en el inventario
                     for producto in prestamo_seleccionado.get_productos():
-                        producto_actual = self.tienda_actual.buscar_producto_id(producto.getId(), 'prestamo')
-                        producto_actual.setCantidad(producto_actual.getCantidad() + producto.getCantidad())
+                        producto_actual = self.tienda_actual.buscar_producto_id(producto.get_id(), 'prestamo')
+                        producto_actual.set_cantidad(producto_actual.get_cantidad() + producto.get_cantidad())
 
                     messagebox.showinfo('Devolucion realizada', f'Devolucion realizada con exito')
                     self.limpiar_frame(self.framemain)
@@ -1499,7 +1499,7 @@ class FieldFrameAdministrar(tk.Frame):
 
     def cambiarinfo(self,producto:Producto):
         self.limpiar_frame(self.subframe2)
-        self.subframe2 = FieldFrame(self.subframe2, 'Cambiar', ['ID','Nuevo ID', 'Nombre','Nuevo Nombre' ,'Precio','Nuevo Precio' , 'Fecha de lanzamiento','Nueva Fecha'], 'Valor', [f'{producto.getId()}','',f'{producto.getNombre()}','',f'{producto.getPrecio()}','',f'{producto.getFechaLanzamiento()}',''], [False,True,False,True,False,True,False,True])
+        self.subframe2 = FieldFrame(self.subframe2, 'Cambiar', ['ID','Nuevo ID', 'Nombre','Nuevo Nombre' ,'Precio','Nuevo Precio' , 'Fecha de lanzamiento','Nueva Fecha'], 'Valor', [f'{producto.get_id()}', '', f'{producto.get_nombre()}', '', f'{producto.get_precio()}', '', f'{producto.get_fecha_lanzamiento()}', ''], [False, True, False, True, False, True, False, True])
         self.subframe2.grid(row=1,column=0,sticky='nswe')
     def categoria(self):
         #Crear un combobox para elegir categoria y su boton de acción
@@ -1543,7 +1543,7 @@ class FieldFrameAdministrar(tk.Frame):
         # Crear las nuevas etiquetas
         for i in lista:
             frame.rowconfigure(q + 1, weight=1, uniform='aa')
-            etiqueta = tk.Label(frame, text=f"COD: {i.getId()} | Nombre: {i.getNombre()} | Ventas: {i.calcular_ventas()} | Precio: {i.getPrecio()}", font=('Arial', 11), bg=FONDO)
+            etiqueta = tk.Label(frame, text=f"COD: {i.get_id()} | Nombre: {i.get_nombre()} | Ventas: {i.calcular_ventas()} | Precio: {i.get_precio()}", font=('Arial', 11), bg=FONDO)
             etiqueta.grid(row=p + 1, column=0, pady=2, sticky='nswe')
             p+=1
             q+=1
@@ -1704,7 +1704,7 @@ class FieldFrameSubasta(tk.Frame):
 
             # Crear combobox con listado de productos segun la categoria ingresada
             def identificar_categoria_nombres(cat: str):
-                return list(map(lambda producto: producto.getNombre(),
+                return list(map(lambda producto: producto.get_nombre(),
                                 self.tienda_actual.get_productos_categoria_inventario(cat, 'usado')))
 
             self.listado_productos = []
@@ -1731,9 +1731,9 @@ class FieldFrameSubasta(tk.Frame):
                 self.producto_actual = self.listado_productos[self.combobox_producto.current()]
                 # Espacio del FieldFrame
                 criterios = ['ID', 'Nombre', 'Valor inicial', 'Cantidad', 'Fecha de lanzamiento']
-                valores = [str(self.producto_actual.getId()), self.producto_actual.getNombre(),
-                           str(self.producto_actual.getPrecio()), str(self.producto_actual.getCantidad()),
-                           str(self.producto_actual.getFechaLanzamiento())]
+                valores = [str(self.producto_actual.get_id()), self.producto_actual.get_nombre(),
+                           str(self.producto_actual.get_precio()), str(self.producto_actual.get_cantidad()),
+                           str(self.producto_actual.get_fecha_lanzamiento())]
                 cri_habilitados = [False, False, False, False, False]
 
                 def al_aceptar_callback(resultado):
@@ -1744,10 +1744,10 @@ class FieldFrameSubasta(tk.Frame):
                         # identificar producto en el carrito si ya esta
                         producto_en_carrito = None
                         for producto in self.carrito:
-                            if producto.getId() == producto_en_field.getId():  # Si el producto es reconocido
+                            if producto.get_id() == producto_en_field.get_id():  # Si el producto es reconocido
                                 producto_en_carrito = producto
                                 # Si la cantidad es insuficiente
-                                if producto_en_field.getCantidad() - producto_en_carrito.getCantidad() == 0:
+                                if producto_en_field.get_cantidad() - producto_en_carrito.get_cantidad() == 0:
                                     raise ExceptionCantidadInvalida()
                                 break
 
@@ -1756,16 +1756,16 @@ class FieldFrameSubasta(tk.Frame):
                         else:
                             # Agregar clon del producto al carrito
                             # la idea de usar un clon es para que el carrito maneje un atributo cantidad independiente
-                            if producto_en_field.getCantidad() == 0:  # Si la cantidad es insuficiente
+                            if producto_en_field.get_cantidad() == 0:  # Si la cantidad es insuficiente
                                 raise ExceptionCantidadInvalida()
                             producto_clonado = copy.deepcopy(producto_en_field)
-                            producto_clonado.setCantidad(1)
+                            producto_clonado.set_cantidad(1)
                             self.carrito.append(producto_clonado)
 
                         # mostrar nuevo total del carrito en la entry correspondiente
                         self.entry_total_carrito.config(state='normal')
                         self.entry_total_carrito.delete(0, tk.END)
-                        nuevo_total = str(sum(map(lambda prod: prod.getCantidad(), self.carrito)))
+                        nuevo_total = str(sum(map(lambda prod: prod.get_cantidad(), self.carrito)))
                         self.entry_total_carrito.insert(0, nuevo_total)
                         self.entry_total_carrito.config(state='disabled')
                     except ExceptionCantidadInvalida:
@@ -1830,7 +1830,7 @@ class FieldFrameSubasta(tk.Frame):
         # valor sin modificaciones
         tk.Label(subframe_tipo_s, text='Valor base', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=1, column=0, padx=15, pady=15, sticky='e')
         entry_valor_base = tk.Entry(subframe_tipo_s)
-        entry_valor_base.insert(0, str(sum(map(lambda prod: prod.getPrecio() * prod.getCantidad(), self.carrito))))
+        entry_valor_base.insert(0, str(sum(map(lambda prod: prod.get_precio() * prod.get_cantidad(), self.carrito))))
         entry_valor_base.config(state='disabled')
         entry_valor_base.grid(row=1, column=1, padx=15, pady=15, sticky='w')
 
@@ -1892,8 +1892,8 @@ class FieldFrameSubasta(tk.Frame):
                         # Reflejar en inventario que los productos han sido puestos en subasta
 
                         for prod_carro in self.carrito:
-                            prod_invent = self.tienda_actual.buscar_producto_id(prod_carro.getId(), 'usado')
-                            prod_invent.setCantidad(prod_invent.getCantidad() - prod_carro.getCantidad())
+                            prod_invent = self.tienda_actual.buscar_producto_id(prod_carro.get_id(), 'usado')
+                            prod_invent.set_cantidad(prod_invent.get_cantidad() - prod_carro.get_cantidad())
 
                         messagebox.showinfo('Subasta creada', 'Subasta creada con exito. Finaliza en ' + str(fecha_fin))
                         self.seleccion_accion()
