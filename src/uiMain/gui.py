@@ -918,7 +918,7 @@ class FieldFrameProducto(tk.Frame):
 
                     self.cliente_actual = cliente_encontrado
 
-                    messagebox.showinfo('Cliente encontrado', f'Cliente {cliente_encontrado.get_nombre()} identificado con exito\n') #TODO recomendaciones
+                    messagebox.showinfo('Cliente encontrado', f'Cliente {cliente_encontrado.get_nombre()} identificado con exito\n')
 
                     mainframe_cliente.destroy()
                     self.identificar_producto()
@@ -1124,7 +1124,7 @@ class FieldFramePrestamo(FieldFrameProducto):
                 (tk.Button(subframe, text='Completar compra', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0, command=lambda: confirmacion_pago(valor_total, dias))
                             .grid(row=2, column=0, padx=15, pady=5))
 
-            except ExceptionCampos: #TODO AQUI PUEDE HABER LIGADURA
+            except ExceptionCampos:
                 pass
 
         subtotal = sum(map(lambda prod: prod.get_precio() * prod.get_cantidad(), self.carrito))
@@ -2259,7 +2259,7 @@ class FieldFrameSubasta(tk.Frame):
 
                         # Registrar oferta
                         subasta.agregar_oferta(oferta, cliente_encontrado)
-                        messagebox.showinfo('Oferta realizada', 'Oferta realizada con exito a nombre de ' + str(cliente_encontrado.get_nombre())) #TODO posible ligadura dinamica aqui
+                        messagebox.showinfo('Oferta realizada', 'Oferta realizada con exito a nombre de ' + str(cliente_encontrado.get_nombre()))
                         self.seleccion_accion()
 
                     except ExceptionNoEncontrado:
