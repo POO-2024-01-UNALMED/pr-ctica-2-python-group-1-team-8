@@ -249,9 +249,9 @@ class VentanaPrincipal:
             self.__class__.num_imagen_integrante = 0
 
         # Hoja de vida TODO: Quitar texto placeholder
-        hv_villa = """villavillavillavillavillavillavillavillavillavillavilla"""
-        hv_seba = """sebasebasebasebasebasebasebasebasebasebasebasebaseba"""
-        hv_andres = """Santiago Garces. 19 años. Estudiante de Ingenieria de Sistemas e informatica. Tiene conocimientos basicos en programacion orientada a objetos con Java, Python y Rust asi como muchos errores en sus programas (tambien tiene 6 loros)."""
+        hv_villa = """David Villa Alzate. Señor de señores y rey de reyes. 19 años. Estudiante de Ingenieria de Sistemas e informatica. Solo bacaneria. """
+        hv_seba = """Sebastian Cepeda Jaimes, 18 años. Estudiante de Ingenieria de Sistemas e informatica. Platinado el Forager y Celeste. Le gustan los animales y no sabe programar interfaces. """
+        hv_andres = """Santiago Garces. 19 años. Estudiante de Ingenieria de Sistemas e informatica. Tiene conocimientos basicos en programacion orientada a objetos con Java, Python y Rust. Tiene tantos loros como errores en sus programas (muchos)."""
         hojas_vida = [hv_villa, hv_seba, hv_andres]
 
         self.text.config(state=tk.NORMAL)
