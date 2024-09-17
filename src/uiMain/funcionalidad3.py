@@ -53,7 +53,7 @@ def revisarProductos(local:Tienda):
             orden = elegirOrden()
             lista = Producto.ordenar(orden, lista)
             for i in lista:
-                print( f"Codigo: {i.getId}| Nombre: {i.getNombre()}\nPrecio: {i.getPrecio()}\nVentas: {i.calcular_ventas()}\nPrioridad: {i.getPrioridad()}")
+                print( f"Codigo: {i.get_id}| Nombre: {i.get_nombre()}\nPrecio: {i.get_precio()}\nVentas: {i.calcular_ventas()}\nPrioridad: {i.getPrioridad()}")
         case 2:
             revisarTodosProductos(local)
         case 3:
@@ -100,7 +100,7 @@ def revisarTodosProductos(local:Tienda):
         lista.append(i)
     lista = Producto.ordenar(orden, lista)
     for i in lista:
-        print(f"Nombre: {i.getNombre()}\nPrecio: {i.getPrecio()}\nVentas: {i.calcular_ventas()}\n")
+        print(f"Nombre: {i.get_nombre()}\nPrecio: {i.get_precio()}\nVentas: {i.calcular_ventas()}\n")
 
 #Metodo para modificar la informacion de un producto
 def modificarProducto(local:Tienda):
@@ -114,7 +114,7 @@ def modificarProducto(local:Tienda):
         if codigo == 0:
             return
         for i in lista:
-            if codigo == i.getId():
+            if codigo == i.get_id():
                 producto = i
         if producto is None:
             print("El código ingresado no existe")
@@ -125,14 +125,14 @@ def modificarProducto(local:Tienda):
             match opcion:
                 case 1:
                     nombre = input("Ingrese el nuevo nombre: ")
-                    producto.setNombre(nombre)
+                    producto.set_nombre(nombre)
                     return
                 case 2:
                     while True:
                         precio = input("Ingrese el nuevo precio: ")
                         try:
                             precio = eval(precio)
-                            producto.setPrecio(precio)
+                            producto.set_precio(precio)
                             return
                         except ValueError:
                             print("Valor ingresado no valido")
@@ -142,24 +142,24 @@ def modificarProducto(local:Tienda):
                     if opcion is None:
                         return
                     if opcion == 1:
-                        producto.setPrestable(True)
+                        producto.set_prestable(True)
                         return
                     else:
-                        producto.setPrestable(False)
+                        producto.set_prestable(False)
                         return
         elif isinstance(producto,Juego):
             opcion = opcionMultiple("Nombre\nPrecio\nPrestable\nCondicion\nDescuento\nPuntos Requeridos\nGenero\nPlataforma\nSalir")
             match opcion:
                 case 1:
                     nombre = input("Ingrese el nuevo nombre: ")
-                    producto.setNombre(nombre)
+                    producto.set_nombre(nombre)
                     return
                 case 2:
                     while True:
                         precio = input("Ingrese el nuevo precio: ")
                         try:
                             precio = eval(precio)
-                            producto.setPrecio(precio)
+                            producto.set_precio(precio)
                             return
                         except ValueError:
                             print("Valor ingresado no valido")
@@ -169,23 +169,23 @@ def modificarProducto(local:Tienda):
                     if opcion is None:
                         return
                     if opcion == 1:
-                        producto.setPrestable(True)
+                        producto.set_prestable(True)
                         return
                     else:
-                        producto.setPrestable(False)
+                        producto.set_prestable(False)
         elif isinstance(producto,Consola):
             opcion = opcionMultiple("Nombre\nPrecio\nPrestable\nCondicion\nDescuento\nPuntos Requeridos\nMarca\nSalir")
             match opcion:
                 case 1:
                     nombre = input("Ingrese el nuevo nombre: ")
-                    producto.setNombre(nombre)
+                    producto.set_nombre(nombre)
                     return
                 case 2:
                     while True:
                         precio = input("Ingrese el nuevo precio: ")
                         try:
                             precio = eval(precio)
-                            producto.setPrecio(precio)
+                            producto.set_precio(precio)
                             return
                         except ValueError:
                             print("Valor ingresado no valido")
@@ -195,10 +195,10 @@ def modificarProducto(local:Tienda):
                     if opcion is None:
                         return
                     if opcion == 1:
-                        producto.setPrestable(True)
+                        producto.set_prestable(True)
                         return
                     else:
-                        producto.setPrestable(False)
+                        producto.set_prestable(False)
                 case 4:
                     pass
                 case 5:
@@ -214,11 +214,11 @@ def modificarProducto(local:Tienda):
 #Metodo para calcular la prioridad de los productos
 def calcularPrioridad(local:Tienda):
     for i in local.get_inventario():
-        if (i.getCantidadInicial() - i.getCantidad()) > i.getCantidadInicial*0.8:
+        if (i.get_cantidad_inicial() - i.get_cantidad()) > i.get_cantidad_inicial*0.8:
             i.setPrioridad("Prioridad muy alta")
-        elif (i.getCantidadInicial() - i.getCantidad()) > i.getCantidadInicial*0.51:
+        elif (i.get_cantidad_inicial() - i.get_cantidad()) > i.get_cantidad_inicial*0.51:
             i.setPrioridad("Prioridad alta")
-        elif (i.getCantidadInicial() - i.getCantidad()) > i.getCantidadInicial*0.21:
+        elif (i.get_cantidad_inicial() - i.get_cantidad()) > i.get_cantidad_inicial*0.21:
             i.setPrioridad("Prioridad media")
         else:
             i.setPrioridad("Prioridad baja")
@@ -247,7 +247,7 @@ def revisarPrioridad(local:Tienda):
                 return
             lista = Producto.ordenar("prioridad", lista)
             for i in lista:
-                print(f"Codigo: {i.getId()} | Nombre: {i.getNombre()} | Prioridad: {i.getPrioridad()}")
+                print(f"Codigo: {i.get_id()} | Nombre: {i.get_nombre()} | Prioridad: {i.getPrioridad()}")
         case 2:
             print("Desea ver los productos agrupados por")
             opcion = opcionMultiple("Prioridad muy alta\nPrioridad alta\nPrioridad media\nPrioridad baja\nTodos\nRegresar")
@@ -255,23 +255,23 @@ def revisarPrioridad(local:Tienda):
                 case 1:
                     for i in local.get_inventario():
                         if i.getPrioridad() == "Prioridad muy alta":
-                            print(f"Codigo: {i.getId()} | Nombre: {i.getNombre()} | Prioridad: {i.getPrioridad()}")
+                            print(f"Codigo: {i.get_id()} | Nombre: {i.get_nombre()} | Prioridad: {i.getPrioridad()}")
                 case 2:
                     for i in local.get_inventario():
                         if i.getPrioridad() == "Prioridad alta":
-                            print(f"Codigo: {i.getId()} | Nombre: {i.getNombre()} | Prioridad: {i.getPrioridad()}")
+                            print(f"Codigo: {i.get_id()} | Nombre: {i.get_nombre()} | Prioridad: {i.getPrioridad()}")
                 case 3:
                     for i in local.get_inventario():
                         if i.getPrioridad() == "Prioridad media":
-                            print(f"Codigo: {i.getId()} | Nombre: {i.getNombre()} | Prioridad: {i.getPrioridad()}")
+                            print(f"Codigo: {i.get_id()} | Nombre: {i.get_nombre()} | Prioridad: {i.getPrioridad()}")
                 case 4:
                     for i in local.get_inventario():
                         if i.getPrioridad() == "Prioridad baja":
-                            print(f"Codigo: {i.getId()} | Nombre: {i.getNombre()} | Prioridad: {i.getPrioridad()}")
+                            print(f"Codigo: {i.get_id()} | Nombre: {i.get_nombre()} | Prioridad: {i.getPrioridad()}")
                 case 5:
                     lista = Producto.ordenar("prioridad", local.get_inventario())
                     for i in lista:
-                        print(f"Codigo: {i.getId()} | Nombre: {i.getNombre()} | Prioridad: {i.getPrioridad()}")
+                        print(f"Codigo: {i.get_id()} | Nombre: {i.get_nombre()} | Prioridad: {i.getPrioridad()}")
 
                 case 6:
                     return
@@ -354,9 +354,9 @@ def reabastecerManualAux(local:Tienda,p:list[Juego],fechaActual:Fecha):
         plataformas = []
         for i in p:
             if len(plataformas) == 0:
-                plataformas.append(i.getPlataforma())
-            elif i.getPlataforma() not in plataformas:
-                plataformas.append(i.getPlataforma())
+                plataformas.append(i.get_plataforma())
+            elif i.get_plataforma() not in plataformas:
+                plataformas.append(i.get_plataforma())
         for palabra in plataformas:
             print(f"•{palabra}")
         plataforma = input("Ingrese la plataforma: ")
@@ -366,14 +366,14 @@ def reabastecerManualAux(local:Tienda,p:list[Juego],fechaActual:Fecha):
 
         while True:
             for i in p:
-                if i.getPlataforma() == plataforma:
-                    print(f" COD: {i.getId}| Nombre: {i.getNombre()} | Plataforma: {i.getPlataforma()}")
+                if i.get_plataforma() == plataforma:
+                    print(f" COD: {i.get_id}| Nombre: {i.get_nombre()} | Plataforma: {i.get_plataforma()}")
             opcion = input("Ingrese el codigo del producto que desea reabastecer(Ingrese 0 para salir)")
             if opcion == 0:
                 return
             producto = None
             for i in p:
-                if i.getId() == opcion:
+                if i.get_id() == opcion:
                     producto = i
                     break
             if producto is None:
@@ -382,8 +382,8 @@ def reabastecerManualAux(local:Tienda,p:list[Juego],fechaActual:Fecha):
             Nohay = False
             for t in Tienda.get_locales():
                 for i in t.get_inventario() and t!=local:
-                    if i.getNombre == producto.getNombre() and t!=local:
-                        cant = i.getCantidad() - i.getCantidadInicial()*0.4
+                    if i.get_nombre == producto.get_nombre() and t!=local:
+                        cant = i.get_cantidad() - i.get_cantidad_inicial() * 0.4
                         if cant < 0:
                             cant = 0
                         print(f"•Local {t.get_nombre()} | Cantidad disponible: {cant}")
@@ -406,20 +406,20 @@ def reabastecerManualAux(local:Tienda,p:list[Juego],fechaActual:Fecha):
                 break
             cant = 0
             for i in localOrigen.get_inventario():
-                if i.getNombre() == producto.getNombre():
-                    cant = i.getCantidad() - i.getCantidadInicial()*0.4
+                if i.get_nombre() == producto.get_nombre():
+                    cant = i.get_cantidad() - i.get_cantidad_inicial() * 0.4
                     if cant < 0:
                         cant = 0
             if cant == 0:
                 print("El local no tiene suficiente cantidad de este producto")
                 continue
             while True:
-                print(f"•{producto.getNombre()} | Cantidad disponible para el reabastecimiento: {cant}")
+                print(f"•{producto.get_nombre()} | Cantidad disponible para el reabastecimiento: {cant}")
                 try:
                     cantidad = input("Ingrese la cantidad a reabastecer: ")
                     cantidad = eval(cantidad)
-                    if cantidad > producto.getCantidadInicial()*0.4:
-                        print("La cantidad ingresada es mayor a la cantidad disponible"+f"\nCantidad disponible: {int(producto.getCantidadInicial()*0.4)}")
+                    if cantidad > producto.get_cantidad_inicial()*0.4:
+                        print("La cantidad ingresada es mayor a la cantidad disponible" +f"\nCantidad disponible: {int(producto.get_cantidad_inicial() * 0.4)}")
                         input("Presione enter para continuar")
                         continue
                 except ValueError:

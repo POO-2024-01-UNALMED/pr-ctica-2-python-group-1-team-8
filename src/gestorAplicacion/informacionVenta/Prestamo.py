@@ -1,10 +1,9 @@
-class Prestamo:
-    ultimo_id = 0
+from src.gestorAplicacion.mixins import Identificable, MarcaTiempo
 
-    def __init__(self, fecha_inicio, fecha_fin, cliente, productos, valor_total, estado):
-        self._id = Prestamo.ultimo_id
-        Prestamo.ultimo_id += 1
-        self._fecha_inicio = fecha_inicio
+
+class Prestamo(Identificable, MarcaTiempo):
+    def __init__(self, fecha_fin, cliente, productos, valor_total, estado):
+        super().__init__()
         self._fecha_fin = fecha_fin
         self._cliente = cliente
         self._produtos = productos

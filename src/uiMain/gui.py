@@ -1,7 +1,8 @@
+# En esta clase ocurre toda la creacion de ventanas y escenas necesarias para llevar a cabo las funcionalidades del programa
+
 import copy
 import tkinter as tk
 import tkinter.messagebox as messagebox
-from operator import indexOf
 from tkinter import ttk, Frame
 
 from PIL import Image, ImageTk
@@ -12,45 +13,28 @@ from src.gestorAplicacion.manejoLocal.Tienda import Tienda
 from src.gestorAplicacion.personas.Cliente import Cliente
 from src.gestorAplicacion.productos.Producto import Producto
 
-import sys
 import os
 import pickle
 
 from src.uiMain.funcionalidad4 import gestionarMeta, verRendimiento, ampliarMeta, compararRendimiento
 
-# TODO hacer que la serializacion funcione para ejecutable con pyinstaller
-# try:
-#     path_locales = os.path.realpath('src\\temp\\locales.txt')
-#     with open(path_locales, 'rb') as file:
-#         Tienda.set_locales(pickle.load(file))
-#
-#     path_clientes = os.path.realpath('src\\temp\\clientes.txt')
-#     with open(path_clientes, 'rb') as file:
-#         Cliente.clientes = pickle.load(file)
-#
-# except:
-#     deserializarLocales = open("../temp/locales.txt", "rb")
-#     locales = pickle.load(deserializarLocales)
-#     deserializarClientes = open("../temp/clientes.txt", "rb")
-#     Cliente.clientes = pickle.load(deserializarClientes)
-
-deserializarLocales = open("../baseDatos/temp/locales.txt", "rb")
-Tienda.set_locales(pickle.load(deserializarLocales))
-deserializarClientes = open("../baseDatos/temp/clientes.txt", "rb")
-Cliente.clientes = pickle.load(deserializarClientes)
+from src.baseDatos.deserializador import Deserializador
+Deserializador.deserializar_locales()
+Deserializador.deserializar_clientes()
+Deserializador.deserializar_fecha()
 
 locales = Tienda.get_locales()
 
 class VentanaPrincipal:
     # Atributos de clase
 
-    ultima_fecha = Fecha(1, 1, 2021)
+    ultima_fecha = Fecha.ultima_fecha_acceso
 
     # estos atributos son con el fin de permitir la funcion de metodos en la clase
     num_imagen_local = 0
     num_imagen_integrante = 0
     saludo = 'Hola, bienvenido a Villajuegos. Aqui podras encontrar los mejores juegos para ti y tus amigos.'
-    descripcion = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cr'
+    descripcion = 'Villajuegos es un programa que permite gestionar transacciones tales como compras, prestamos y subastas asi como gestionar su inventario y empleados y sin dejar de lado la posibilidad de analizar su rendimiento'
 
     # Obtener la carpeta actual
     current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -101,7 +85,7 @@ class VentanaPrincipal:
         self.root = tk.Tk()
         self.root.title("Inicio")
 
-        self.root.geometry("540x540")
+        self.root.geometry("640x640")
         self.root.configure(bg=FONDO)
 
         # Configuracion de las filas y columnas
@@ -184,13 +168,21 @@ class VentanaPrincipal:
         menubar = tk.Menu(self.root)
         iniciomenu = tk.Menu(menubar, tearoff=0)
         iniciomenu.add_command(label="Descripcion", command=lambda: self.alternar_saludo())
-        iniciomenu.add_command(label="Salir", command=self.root.destroy)
+        iniciomenu.add_command(label="Salir", command=self.salir_y_serializar)
         menubar.add_cascade(label="Inicio", menu=iniciomenu)
 
         self.root.config(menu=menubar)
 
         self.root.bind("<Configure>", self.resizer)
         self.root.mainloop()
+
+    def salir_y_serializar(self):
+        # Serializar locales y clientes
+        from src.baseDatos.serializador import Serializador
+        Serializador.serializar_todo(Tienda.get_locales(), Cliente.clientes, self.__class__.ultima_fecha)
+
+        self.root.destroy()
+
 
     def resizer(self, event):
         # CANVAS 1 (izquierda)
@@ -260,7 +252,7 @@ class VentanaPrincipal:
         # Hoja de vida TODO: Quitar texto placeholder
         hv_villa = """villavillavillavillavillavillavillavillavillavillavilla"""
         hv_seba = """sebasebasebasebasebasebasebasebasebasebasebasebaseba"""
-        hv_andres = """aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"""
+        hv_andres = """Santiago Garces. 19 años. Estudiante de Ingenieria de Sistemas e informatica. Tiene conocimientos basicos en programacion orientada a objetos con Java, Python y Rust asi como muchos errores en sus programas (tambien tiene 6 loros)."""
         hojas_vida = [hv_villa, hv_seba, hv_andres]
 
         self.text.config(state=tk.NORMAL)
@@ -297,12 +289,13 @@ class VentanaPrincipal:
         emergente.configure(bg=FONDO)
         # columnas y filas
         emergente.columnconfigure((0,1), weight=1, uniform='f')
-        emergente.rowconfigure((0,1,2), weight=1, uniform='g')
-
+        emergente.rowconfigure((0,1,2,3), weight=1, uniform='g')
 
         # labels
         tk.Label(emergente, text='Local', font=('Arial', 10, 'bold'), bg=FONDO).grid(row=0, column=0, padx=3, pady=2)
         tk.Label(emergente, text='Fecha', font=('Arial', 10, 'bold'), bg=FONDO).grid(row=1, column=0, padx=3, pady=2)
+
+        tk.Label(emergente, text='Ultima fecha de ingreso: ' + str(self.__class__.ultima_fecha), font=('Arial', 10, 'bold'), bg=FONDO).grid(row=2, column=0, columnspan=2, padx=3, pady=2)
 
         # entries
         # local
@@ -344,12 +337,10 @@ class VentanaPrincipal:
 
                 # Destruir esta ventana y llamar la siguiente
                 VentanaSecundaria(self.root, local_actual, fecha_ingreso)
-                emergente.destroy()
-                self.root.destroy()
 
         # botones
-        tk.Button(emergente, text='Aceptar', background=RESALTO, bd=0, command=aceptar).grid(row=2, column=0, padx=3, pady=2)
-        tk.Button(emergente, text='Cancelar', background=POWER, bd=0).grid(row=2, column=1, padx=3, pady=2)
+        tk.Button(emergente, text='Aceptar', background=RESALTO, bd=0, command=aceptar).grid(row=3, column=0, padx=3, pady=2)
+        tk.Button(emergente, text='Cancelar', background=POWER, bd=0).grid(row=3, column=1, padx=3, pady=2)
 
         emergente.mainloop()
 
@@ -359,8 +350,8 @@ class VentanaSecundaria:
         if type(ventana_activa) == tk.Tk: ventana_activa.destroy()
 
         self.root = tk.Tk()
-        self.root.title("Villaware")
-        self.root.geometry("700x600")
+        self.root.title("Villajuegos")
+        self.root.geometry("900x700")
         self.root.configure(bg=FONDO)
 
         # Columnas
@@ -368,44 +359,135 @@ class VentanaSecundaria:
         # Filas
         self.root.rowconfigure(0, weight=1, uniform='b')
 
-        # prueba_fieldframe = FieldFrame(self.root, "Criterios", ["nombre", "precio", "cantidad", "plataforma", "genero", "descripcion", "fecha_lanzamiento", "desarrolladora", "distribuidora"], "Valores")
-        # prueba_fieldframe.grid(row=0,column=0,sticky='nswe', padx=40,pady=40)
+        self.master_frame = tk.Frame(self.root, bg=FONDO)
+        self.master_frame.grid(row=0, column=0, sticky='nswe')
+        self.master_frame.columnconfigure(0, weight=1, uniform='a')
+        self.master_frame.rowconfigure(0, weight=2, uniform='b')
+        self.master_frame.rowconfigure(1, weight=11, uniform='b')
 
         def llamar_compra():
-            prueba_subfieldframe = FieldFrameProducto(self.root, local)
-            prueba_subfieldframe.grid(row=0, column=0, sticky='nswe', padx=40, pady=40)
+            self.limpiar_frame(self.master_frame)
+
+            titulo_func = 'Registrar compra'
+            descripcion_func = 'Esta funcionalidad permite registrar una compra en el local seleccionado de un conjunto de productos almacenados en un carrito.'
+
+            subframe_descripcion = tk.Frame(self.master_frame, bg=FONDO)
+            subframe_descripcion.grid(row=0, column=0, sticky='nswe', padx=20, ipady=20)
+            subframe_descripcion.rowconfigure(0, weight=1, uniform='a')
+            subframe_descripcion.rowconfigure(1, weight = 2, uniform='a')
+            subframe_descripcion.columnconfigure(0, weight=1, uniform='a')
+
+            tk.Label(subframe_descripcion, text=titulo_func, font=('Arial', 12, 'bold'), bg=FONDO).grid(row=0, column=0, padx=5, pady=5)
+            descrp_func_widget = tk.Text(subframe_descripcion, bg=FONDO_2, font=('Arial', 9), wrap='word', bd=0)
+            descrp_func_widget.insert(tk.END, descripcion_func)
+            descrp_func_widget.grid(row=1, column=0, padx=5, pady=5)
+
+            subframe_func = tk.Frame(self.master_frame, bg=FONDO, highlightbackground=DETALLES)
+            subframe_func.grid(row=1, column=0, sticky='nswe')
+            subframe_func.columnconfigure(0, weight=1, uniform='a')
+            subframe_func.rowconfigure(0, weight=1, uniform='b')
+            prueba_subfieldframe = FieldFrameProducto(subframe_func, local)
+            prueba_subfieldframe.grid(row=1, column=0, sticky='nswe', padx=40, pady=40)
 
         def llamar_prestamo():
-            prueba_subfieldframe = FieldFramePrestamo(self.root, local, fecha)
+            self.limpiar_frame(self.master_frame)
+
+            titulo_func = 'Registrar prestamo'
+            descripcion_func = 'Desde aqui puedes gestionar todo lo relacionado a prestamos, desde su creacion hasta su devolucion y cobro de multas'
+
+            subframe_descripcion = tk.Frame(self.master_frame, bg=FONDO)
+            subframe_descripcion.grid(row=0, column=0, sticky='nswe', padx=20, ipady=20)
+            subframe_descripcion.rowconfigure(0, weight=1, uniform='a')
+            subframe_descripcion.rowconfigure(1, weight = 2, uniform='a')
+            subframe_descripcion.columnconfigure(0, weight=1, uniform='a')
+
+            tk.Label(subframe_descripcion, text=titulo_func, font=('Arial', 12, 'bold'), bg=FONDO).grid(row=0, column=0, padx=5, pady=5)
+            descrp_func_widget = tk.Text(subframe_descripcion, bg=FONDO_2, font=('Arial', 9), wrap='word', bd=0)
+            descrp_func_widget.insert(tk.END, descripcion_func)
+            descrp_func_widget.grid(row=1, column=0, padx=5, pady=5)
+
+            subframe_func = tk.Frame(self.master_frame, bg=FONDO, highlightbackground=DETALLES)
+            subframe_func.grid(row=1, column=0, sticky='nswe')
+            subframe_func.columnconfigure(0, weight=1, uniform='a')
+            subframe_func.rowconfigure(0, weight=1, uniform='b')
+
+            prueba_subfieldframe = FieldFramePrestamo(subframe_func, local, fecha)
             prueba_subfieldframe.grid(row=0, column=0, sticky='nswe', padx=40, pady=40)
 
         def llamar_administrar():
-            prueba_subfieldframe = FieldFrameAdministrar(self.root, local)
+            self.limpiar_frame(self.master_frame)
+
+            titulo_func = 'Administrar inventario '
+            descripcion_func = 'Esta funcionalidad da la posibilidad de revisar el inventario de la tienda elegida, analizar sus estadisticas de venta o bien ordenar reabastecimientos entre locales.'
+
+            subframe_descripcion = tk.Frame(self.master_frame, bg=FONDO)
+            subframe_descripcion.grid(row=0, column=0, sticky='nswe', padx=20, ipady=20)
+            subframe_descripcion.rowconfigure(0, weight=1, uniform='a')
+            subframe_descripcion.rowconfigure(1, weight = 2, uniform='a')
+            subframe_descripcion.columnconfigure(0, weight=1, uniform='a')
+
+            tk.Label(subframe_descripcion, text=titulo_func, font=('Arial', 12, 'bold'), bg=FONDO).grid(row=0, column=0, padx=5, pady=5)
+            descrp_func_widget = tk.Text(subframe_descripcion, bg=FONDO_2, font=('Arial', 9), wrap='word', bd=0)
+            descrp_func_widget.insert(tk.END, descripcion_func)
+            descrp_func_widget.grid(row=1, column=0, padx=5, pady=5)
+
+            subframe_func = tk.Frame(self.master_frame, bg=FONDO, highlightbackground=DETALLES)
+            subframe_func.grid(row=1, column=0, sticky='nswe')
+            subframe_func.columnconfigure(0, weight=1, uniform='a')
+            subframe_func.rowconfigure(0, weight=1, uniform='b')
+
+            prueba_subfieldframe = FieldFrameAdministrar(subframe_func, local)
             prueba_subfieldframe.grid(row=0, column=0, sticky='nswe', padx=40, pady=40)
 
         def llamar_subasta():
-            pantalla_subasta = FieldFrameSubasta(self.root, local, fecha)
+            self.limpiar_frame(self.master_frame)
+
+            titulo_func = 'Subastar'
+            descripcion_func = 'Con esta funcionalidad es posible llevar a cabo subastas asi como su respectivo sistema de ofertado y designacion de ganadores.'
+
+            subframe_descripcion = tk.Frame(self.master_frame, bg=FONDO)
+            subframe_descripcion.grid(row=0, column=0, sticky='nswe', padx=20, ipady=20)
+            subframe_descripcion.rowconfigure(0, weight=1, uniform='a')
+            subframe_descripcion.rowconfigure(1, weight = 2, uniform='a')
+            subframe_descripcion.columnconfigure(0, weight=1, uniform='a')
+
+            tk.Label(subframe_descripcion, text=titulo_func, font=('Arial', 12, 'bold'), bg=FONDO).grid(row=0, column=0, padx=5, pady=5)
+            descrp_func_widget = tk.Text(subframe_descripcion, bg=FONDO_2, font=('Arial', 9), wrap='word', bd=0)
+            descrp_func_widget.insert(tk.END, descripcion_func)
+            descrp_func_widget.grid(row=1, column=0, padx=5, pady=5)
+
+            subframe_func = tk.Frame(self.master_frame, bg=FONDO, highlightbackground=DETALLES)
+            subframe_func.grid(row=1, column=0, sticky='nswe')
+            subframe_func.columnconfigure(0, weight=1, uniform='a')
+            subframe_func.rowconfigure(0, weight=1, uniform='b')
+
+            pantalla_subasta = FieldFrameSubasta(subframe_func, local, fecha)
             pantalla_subasta.grid(row=0, column=0, sticky='nswe', padx=40, pady=40)
 
         def llamar_empleado():
-            prueba_subfieldframe = FieldFrameEmpleado(self.root, local, fecha)
-            prueba_subfieldframe.grid(row=0, column=0, sticky='nswe', padx=40, pady=40)
+            self.limpiar_frame(self.master_frame)
 
-        def revisar_producto():
-            self.subframe2 = tk.Frame(self.framemain,bg=FONDO,bd=0)
-            self.subframe2.grid(row=1,column=0)
-            (FieldFrame(self.subframe2,'Dato',['ID','Nombre','Precio','Cantidad','Fecha de lanzamiento'],'Valor',['1','Juego1','10000','10','01/01/2021'])
-             .grid(row=0,column=0,padx=15,pady=15))
-        def modificar_producto():
-            self.subframe2 = tk.Frame(self.framemain,bg=FONDO,bd=0)
-            self.subframe2.grid(row=1,column=0)
-            (FieldFrame(self.subframe2,'Dato',['ID','Nombre','Precio','Cantidad','Fecha de lanzamiento'],'Valor',['1','Juego1','10000','10','01/01/2021'])
-             .grid(row=0,column=0,padx=15,pady=15))
-        def revisar_prioridad():
-            self.subframe2 = tk.Frame(self.framemain,bg=FONDO,bd=0)
-            self.subframe2.grid(row=1,column=0)
-            (FieldFrame(self.subframe2,'Dato',['ID','Nombre','Precio','Cantidad','Fecha de lanzamiento'],'Valor',['1','Juego1','10000','10','01/01/2021'])
-             .grid(row=0,column=0,padx=15,pady=15))
+            titulo_func = 'Gestionar empleado'
+            descripcion_func = 'Mediante esta funcionalidad es posible analizar el rendimiento de los empleados del local y asignarles incentivos segun su rendimiento.'
+
+            subframe_descripcion = tk.Frame(self.master_frame, bg=FONDO)
+            subframe_descripcion.grid(row=0, column=0, sticky='nswe', padx=20, ipady=20)
+            subframe_descripcion.rowconfigure(0, weight=1, uniform='a')
+            subframe_descripcion.rowconfigure(1, weight = 2, uniform='a')
+            subframe_descripcion.columnconfigure(0, weight=1, uniform='a')
+
+            tk.Label(subframe_descripcion, text=titulo_func, font=('Arial', 12, 'bold'), bg=FONDO).grid(row=0, column=0, padx=5, pady=5)
+            descrp_func_widget = tk.Text(subframe_descripcion, bg=FONDO_2, font=('Arial', 9), wrap='word', bd=0)
+            descrp_func_widget.insert(tk.END, descripcion_func)
+            descrp_func_widget.grid(row=1, column=0, padx=5, pady=5)
+
+            subframe_func = tk.Frame(self.master_frame, bg=FONDO, highlightbackground=DETALLES)
+            subframe_func.grid(row=1, column=0, sticky='nswe')
+            subframe_func.columnconfigure(0, weight=1, uniform='a')
+            subframe_func.rowconfigure(0, weight=1, uniform='b')
+
+            prueba_subfieldframe = FieldFrameEmpleado(subframe_func, local, fecha)
+            prueba_subfieldframe.grid(row=0, column=0, sticky='nswe', padx=40, pady=40)
 
         # Menubar
         menubar = tk.Menu(self.root)
@@ -436,13 +518,19 @@ class VentanaSecundaria:
 
         self.root.mainloop()
 
+    @staticmethod
+    def limpiar_frame(frame):
+        for widget in frame.winfo_children():
+            widget.destroy()
+
 class FieldFrame(tk.Frame):
-    def __init__(self, ventana, titulo_criterios, criterios, titulo_valores, valores=None, habilitados=None, aceptar_callback=None):
+    def __init__(self, ventana, titulo_criterios, criterios, titulo_valores, valores=None, habilitados=None, aceptar_callback=None, tipos_esperados=None):
         super().__init__(ventana, bg=FONDO, highlightbackground=DETALLES, highlightthickness=2)
 
         self.aceptar_callback = aceptar_callback
         self.criterios = criterios
         self.valores = criterios if valores is None else valores
+        self.tipos_esperados = tipos_esperados
 
         numeros_criterios = []
         for i in range(1, len(criterios) + 1): numeros_criterios.append(i)
@@ -501,17 +589,32 @@ class FieldFrame(tk.Frame):
 
     def aceptar(self):
         try:
-            # Buscar si hay algun campo vacio
             lista_values = []
+            # Buscar si hay algun campo vacio o de tipo invalido
             for cri in self.criterios:
-                if self.getValue(cri) == '': # Revisar si el campo esta vacio
+                valor = self.getValue(cri)
+                if valor == '': # Revisar si el campo esta vacio
                     raise ExceptionCampoVacio(self.entries_val, self.criterios)
-                else:
-                    lista_values.append(self.getValue(cri))
+
+                if self.tipos_esperados is not None:
+                    if self.tipos_esperados[self.criterios.index(cri)] == 'str': # Si el tipo esperado es str
+                        if valor.isdigit():
+                            raise ExceptionTipoInvalido(self.entries_val, self.criterios, self.tipos_esperados)
+
+                    if self.tipos_esperados[self.criterios.index(cri)] == 'int': # Si el tipo esperado es int
+                        if not valor.isdigit():
+                            raise ExceptionTipoInvalido(self.entries_val, self.criterios, self.tipos_esperados)
+
+                lista_values.append(self.getValue(cri))
+
             return lista_values
 
-        # TODO mas manejo de exepciones, como comprobacion de tipos
         except ExceptionCampoVacio:
+            # volver a colorear los campos invalidos una vez que se cierre la ventana emergente
+            for entry in self.entries_val:
+                entry.config(bg='white')
+
+        except ExceptionTipoInvalido:
             # volver a colorear los campos invalidos una vez que se cierre la ventana emergente
             for entry in self.entries_val:
                 entry.config(bg='white')
@@ -563,11 +666,11 @@ class FieldFrameProducto(tk.Frame):
 
         categoria_default = tk.StringVar(value='Elige una categoria')
         self.combobox_categoria = ttk.Combobox(self.subframe1, values=categorias, textvariable=categoria_default)
-        self.combobox_categoria.grid(row=0, column=1, padx=15, pady=15)
+        self.combobox_categoria.grid(row=0, column=1, padx=15, pady=9)
 
         # Crear combobox con listado de productos segun la categoria ingresada
         def identificar_categoria_nombres(cat:str):
-            return list(map(lambda producto: producto.getNombre(), self.tienda_actual.get_productos_categoria_inventario(cat)))
+            return list(map(lambda producto: producto.get_nombre(), self.tienda_actual.get_productos_categoria_inventario(cat)))
 
         self.listado_productos = []
         self.combobox_producto = ttk.Combobox(self.subframe1)
@@ -578,11 +681,11 @@ class FieldFrameProducto(tk.Frame):
             self.listado_productos = self.tienda_actual.get_productos_categoria_inventario(self.combobox_categoria.get())
 
             self.combobox_producto.config(values=listado_nombres, textvariable=listado_default)
-            self.combobox_producto.grid(row=1, column=1, padx=15, pady=15)
+            self.combobox_producto.grid(row=1, column=1, padx=15, pady=9)
 
         # Boton para crear combobox listado
-        self.boton_listado = tk.Button(self.subframe1, text='Buscar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=lambda: crear_listado(self.subframe1))
-        self.boton_listado.grid(row=0, column=2, padx=15, pady=15, sticky='w')
+        self.boton_listado = tk.Button(self.subframe1, text='Buscar', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0, command=lambda: crear_listado(self.subframe1))
+        self.boton_listado.grid(row=0, column=2, padx=15, pady=9, sticky='w')
 
         # Insertar producto seleccionado
         self.producto_actual = None
@@ -590,7 +693,7 @@ class FieldFrameProducto(tk.Frame):
             self.producto_actual = self.listado_productos[self.combobox_producto.current()]
             # Espacio del FieldFrame
             criterios = ['ID', 'Nombre', 'Precio', 'Cantidad', 'Fecha de lanzamiento']
-            valores = [str(self.producto_actual.getId()), self.producto_actual.getNombre(), str(self.producto_actual.getPrecio()), str(self.producto_actual.getCantidad()), str(self.producto_actual.getFechaLanzamiento())]
+            valores = [str(self.producto_actual.get_id()), self.producto_actual.get_nombre(), str(self.producto_actual.get_precio()), str(self.producto_actual.get_cantidad()), str(self.producto_actual.get_fecha_lanzamiento())]
             cri_habilitados = [False, False, False, False, False]
 
             def al_aceptar_callback(resultado):
@@ -601,10 +704,10 @@ class FieldFrameProducto(tk.Frame):
                     # identificar producto en el carrito si ya esta
                     producto_en_carrito = None
                     for producto in self.carrito:
-                        if producto.getId() == producto_en_field.getId():  # Si el producto es reconocido
+                        if producto.get_id() == producto_en_field.get_id():  # Si el producto es reconocido
                             producto_en_carrito = producto
                             # Si la cantidad es insuficiente
-                            if producto_en_field.getCantidad() - producto_en_carrito.getCantidad() == 0:
+                            if producto_en_field.get_cantidad() - producto_en_carrito.get_cantidad() == 0:
                                 raise ExceptionCantidadInvalida()
                             break
 
@@ -614,16 +717,16 @@ class FieldFrameProducto(tk.Frame):
                     else:
                         # Agregar clon del producto al carrito
                         # la idea de usar un clon es para que el carrito maneje un atributo cantidad independiente
-                        if producto_en_field.getCantidad() == 0: # Si la cantidad es insuficiente
+                        if producto_en_field.get_cantidad() == 0: # Si la cantidad es insuficiente
                             raise ExceptionCantidadInvalida()
                         producto_clonado = copy.deepcopy(producto_en_field)
-                        producto_clonado.setCantidad(1)
+                        producto_clonado.set_cantidad(1)
                         self.carrito.append(producto_clonado)
 
                     # mostrar nuevo total del carrito en la entry correspondiente
                     self.entry_total_carrito.config(state='normal')
                     self.entry_total_carrito.delete(0, tk.END)
-                    nuevo_total = str(sum(map(lambda prod: prod.getPrecio() * prod.getCantidad(), self.carrito)))
+                    nuevo_total = str(sum(map(lambda prod: prod.get_precio() * prod.get_cantidad(), self.carrito)))
                     self.entry_total_carrito.insert(0, nuevo_total)
                     self.entry_total_carrito.config(state='disabled')
                 except ExceptionCantidadInvalida:
@@ -632,11 +735,11 @@ class FieldFrameProducto(tk.Frame):
             self.subframe2 = tk.Frame(self.framemain, bg=FONDO, bd=0)
             self.subframe2.grid(row=1, column=0)
             (FieldFrame(self.subframe2, 'Dato', criterios, 'Valor', valores, cri_habilitados, aceptar_callback=al_aceptar_callback)
-                        .grid(row=0, column=0, padx=15, pady=15))
+                        .grid(row=0, column=0, padx=15, pady=9))
 
         # Boton para insertar producto seleccionado
-        self.boton_producto = tk.Button(self.subframe1, text='Insertar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=lambda: insertar_producto())
-        self.boton_producto.grid(row=1, column=2, padx=15, pady=15, sticky='w')
+        self.boton_producto = tk.Button(self.subframe1, text='Insertar', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0, command=lambda: insertar_producto())
+        self.boton_producto.grid(row=1, column=2, padx=15, pady=9, sticky='w')
 
         self.total_carrito()
 
@@ -647,15 +750,19 @@ class FieldFrameProducto(tk.Frame):
         subframe3.columnconfigure((0,1), weight=1, uniform='a')
         subframe3.rowconfigure((0, 1), weight=1, uniform='b')
 
-        tk.Label(subframe3, text='Total', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, padx=15, pady=15, sticky='e')
+        tk.Label(subframe3, text='Total', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, padx=15, pady=9, sticky='e')
         self.entry_total_carrito = tk.Entry(subframe3, state='disabled')
-        self.entry_total_carrito.grid(row=0, column=1, padx=15, pady=15, sticky='w')
+        self.entry_total_carrito.grid(row=0, column=1, padx=15, pady=9, sticky='w')
 
         def limpiar_carrito():
             self.carrito = []
+            self.entry_total_carrito.config(state='normal')
+            self.entry_total_carrito.delete(0, tk.END)
+            self.entry_total_carrito.insert(0, '0')
+            self.entry_total_carrito.config(state='disabled')
 
-        tk.Button(subframe3, text='Comprar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=self.pantalla_pago).grid(row=1, column=0, padx=15, pady=15, sticky='e')
-        tk.Button(subframe3, text='Limpiar carrito', font=('Arial', 7, 'bold'), bg=POWER, bd=0, command=limpiar_carrito).grid(row=1, column=1, padx=15, pady=15, sticky='w')
+        tk.Button(subframe3, text='Comprar', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0, command=self.pantalla_pago).grid(row=1, column=0, padx=15, pady=9, sticky='e')
+        tk.Button(subframe3, text='Limpiar carrito', font=('Arial', 9, 'bold'), bg=POWER, bd=0, command=limpiar_carrito).grid(row=1, column=1, padx=15, pady=9, sticky='w')
 
     # metodo que limpia por completo el interior de el frame que reciba
     @staticmethod
@@ -683,37 +790,49 @@ class FieldFrameProducto(tk.Frame):
                 precio_final_individual = 0
                 valor_temp = 0
 
-                if prod.getDescuento() > 0: # En caso de que el producto tenga descuento
-                    if prod.getPuntosRequeridos() == 0: # En caso de que el producto no requiera puntos
-                        valor_temp = prod.getPrecio() * prod.getCantidad()
-                        precio_final_individual = valor_temp - (valor_temp * prod.getDescuento() / 100) # calcular descuento
+                if prod.get_descuento() > 0: # En caso de que el producto tenga descuento
+                    if prod.get_puntos_requeridos() == 0: # En caso de que el producto no requiera puntos
+                        valor_temp = prod.get_precio() * prod.get_cantidad()
+                        precio_final_individual = valor_temp - (valor_temp * prod.get_descuento() / 100) # calcular descuento
                         total_final += precio_final_individual
 
-                    elif prod.getPuntosRequeridos() > 0 and (cliente.get_puntos_fidelidad() - puntos_usados) >= prod.getPuntosRequeridos():
-                        valor_temp = prod.getPrecio() * prod.getCantidad()
-                        precio_final_individual = valor_temp - (valor_temp * prod.getDescuento() / 100)
+                    elif prod.get_puntos_requeridos() > 0 and (cliente.get_puntos_fidelidad() - puntos_usados) >= prod.get_puntos_requeridos():
+                        valor_temp = prod.get_precio() * prod.get_cantidad()
+                        precio_final_individual = valor_temp - (valor_temp * prod.get_descuento() / 100)
                         total_final += precio_final_individual
 
-                        puntos_usados += prod.getPuntosRequeridos()
+                        puntos_usados += prod.get_puntos_requeridos()
                     else: # En caso de que el cliente no tenga suficientes puntos
-                        total_final += prod.getPrecio() * prod.getCantidad()
+                        total_final += prod.get_precio() * prod.get_cantidad()
 
                 else: # En caso de que el producto no tenga descuento
-                    total_final += prod.getPrecio() * prod.getCantidad()
+                    total_final += prod.get_precio() * prod.get_cantidad()
 
             return total_final, puntos_usados
 
         def confirmacion_pago(carrito, total, puntos, empleado):
             # Reflejar productos del carrito en el inventario del local
             for prod in carrito:
-                prod_actual = self.tienda_actual.buscar_producto_id(prod.getId())
-                prod_actual.setCantidad(prod_actual.getCantidad() - prod.getCantidad())
+                prod_actual = self.tienda_actual.buscar_producto_id(prod.get_id())
+                prod_actual.set_cantidad(prod_actual.get_cantidad() - prod.get_cantidad())
 
             # Actualizar puntos de fidelidad del cliente
+            # Puntos gastados
             self.cliente_actual.set_puntos_fidelidad(self.cliente_actual.get_puntos_fidelidad() - puntos)
 
+            # Puntos obtenidos
+            puntos_obtenidos = int(total * 0.15)
+            self.cliente_actual.set_puntos_fidelidad(self.cliente_actual.get_puntos_fidelidad() + puntos_obtenidos)
+
             # Limpiar carrito
-            messagebox.showinfo('Compra realizada', f'Compra realizada con exito\nTotal: {total}\nPuntos usados: {puntos}\nEmpleado: {empleado.get_nombre()}')
+            messagebox.showinfo('Compra realizada', f'Compra realizada con exito\nTotal: {total}\nPuntos usados: {puntos}\nPuntos obtenidos: {puntos_obtenidos}\nEmpleado: {empleado.get_nombre()}')
+
+            # Hallar total sin descuentos
+            total_sin_descuentos = sum(map(lambda prod: prod.get_precio() * prod.get_cantidad(), carrito))
+
+            from src.gestorAplicacion.informacionVenta.Transaccion import Transaccion
+            Transaccion(self.cliente_actual, empleado, self.tienda_actual, self.carrito, total_sin_descuentos, total)
+
             self.limpiar_frame(self.framemain)
             self.framemain.destroy()
             self.destroy()
@@ -737,13 +856,13 @@ class FieldFrameProducto(tk.Frame):
                 total_entry.config(state='disabled')
 
                 # Boton para completar la compra
-                (tk.Button(subframe, text='Completar compra', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=lambda: confirmacion_pago(self.carrito, pago_total, puntos_usados, empleado_encontrado))
+                (tk.Button(subframe, text='Completar compra', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0, command=lambda: confirmacion_pago(self.carrito, pago_total, puntos_usados, empleado_encontrado))
                             .grid(row=2, column=0, padx=15, pady=5))
 
             except ExceptionNoEncontrado:
                 pass
 
-        subtotal = sum(map(lambda prod: prod.getPrecio() * prod.getCantidad(), self.carrito))
+        subtotal = sum(map(lambda prod: prod.get_precio() * prod.get_cantidad(), self.carrito))
 
         # Subframe para poder organizar subtotal y empleado y sus entries
         subframe_subtotal_empleado = tk.Frame(subframe, bg=FONDO, bd=0)
@@ -752,23 +871,23 @@ class FieldFrameProducto(tk.Frame):
         subframe_subtotal_empleado.rowconfigure((0, 1, 2), weight=1, uniform='b')
 
         # Subtotal
-        tk.Label(subframe_subtotal_empleado, text='Subtotal', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, padx=15, pady=15, sticky='e')
+        tk.Label(subframe_subtotal_empleado, text='Subtotal', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, padx=15, pady=9, sticky='e')
         entry_subtotal = tk.Entry(subframe_subtotal_empleado)
         entry_subtotal.insert(0, str(subtotal))
         entry_subtotal.config(state='disabled')
-        entry_subtotal.grid(row=0, column=1, padx=15, pady=15, sticky='w')
+        entry_subtotal.grid(row=0, column=1, padx=15, pady=9, sticky='w')
 
         # Empleado
-        tk.Label(subframe_subtotal_empleado, text='Empleado', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=1, column=0, padx=15, pady=15, sticky='e')
+        tk.Label(subframe_subtotal_empleado, text='Empleado', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=1, column=0, padx=15, pady=9, sticky='e')
 
         values_empleados = []
         for empleado in self.tienda_actual.get_empleados():
             values_empleados.append(str(empleado.get_cedula()) + ' - ' + empleado.get_nombre())
         combobox_empleado = ttk.Combobox(subframe_subtotal_empleado, values=values_empleados)
-        combobox_empleado.grid(row=1, column=1, padx=15, pady=15, sticky='w')
+        combobox_empleado.grid(row=1, column=1, padx=15, pady=9, sticky='w')
 
         # Boton para confirmar empleado
-        tk.Button(subframe_subtotal_empleado, text='Confirmar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=al_confirmar_personal).grid(row=2, column=0, columnspan=2, padx=15, pady=15)
+        tk.Button(subframe_subtotal_empleado, text='Confirmar', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0, command=al_confirmar_personal).grid(row=2, column=0, columnspan=2, padx=15, pady=9)
 
     # metodo que genera temporalmente un frame para la creacion de un cliente
     def identificar_cliente(self, frame_c):
@@ -803,7 +922,7 @@ class FieldFrameProducto(tk.Frame):
 
             # fieldframe para identificacion
             criterios_cliente = ['Identificacion']
-            FieldFrame(mainframe_cliente, 'Dato', criterios_cliente, 'Valor', None, None, aceptar_callback=al_cliente_existente_callback).grid(row=0, column=0, rowspan=2, columnspan=2)
+            FieldFrame(mainframe_cliente, 'Dato', criterios_cliente, 'Valor', None, None, aceptar_callback=al_cliente_existente_callback, tipos_esperados=['int']).grid(row=0, column=0, rowspan=2, columnspan=2)
 
         def crear_cliente():
             self.limpiar_frame(mainframe_cliente)
@@ -825,12 +944,12 @@ class FieldFrameProducto(tk.Frame):
 
             # fieldframe para creacion
             criterios_cliente = ['Identificacion', 'Nombre', 'Correo', 'Telefono']
-            FieldFrame(mainframe_cliente, 'Dato', criterios_cliente, 'Valor', None, None, aceptar_callback=al_crear_cliente_callback).grid(row=0, column=0, rowspan=2, columnspan=2)
+            FieldFrame(mainframe_cliente, 'Dato', criterios_cliente, 'Valor', None, None, aceptar_callback=al_crear_cliente_callback, tipos_esperados=['int', 'str', 'str', 'str']).grid(row=0, column=0, rowspan=2, columnspan=2)
 
-        tk.Label(mainframe_cliente, text='¿El cliente esta registrado o es nuevo?', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, columnspan=2, padx=15, pady=15, ipadx=30)
+        tk.Label(mainframe_cliente, text='¿El cliente esta registrado o es nuevo?', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, columnspan=2, padx=15, pady=9, ipadx=30)
         # Botones
-        tk.Button(mainframe_cliente, text='Registrado', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=cliente_existente).grid(row=1, column=0, padx=15, pady=15, sticky='e')
-        tk.Button(mainframe_cliente, text='Nuevo', font=('Arial', 7, 'bold'), bg=POWER, bd=0, command=crear_cliente).grid(row=1, column=1, padx=15, pady=15, sticky='w')
+        tk.Button(mainframe_cliente, text='Registrado', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0, command=cliente_existente).grid(row=1, column=0, padx=15, pady=9, sticky='e')
+        tk.Button(mainframe_cliente, text='Nuevo', font=('Arial', 9, 'bold'), bg=POWER, bd=0, command=crear_cliente).grid(row=1, column=1, padx=15, pady=9, sticky='w')
 
 # Prestamo
 class FieldFramePrestamo(FieldFrameProducto):
@@ -863,7 +982,7 @@ class FieldFramePrestamo(FieldFrameProducto):
 
         # Crear combobox con listado de productos segun la categoria ingresada
         def identificar_categoria_nombres(cat:str):
-            return list(map(lambda producto: producto.getNombre(), self.tienda_actual.get_productos_categoria_inventario(cat, 'prestamo')))
+            return list(map(lambda producto: producto.get_nombre(), self.tienda_actual.get_productos_categoria_inventario(cat, 'prestamo')))
 
         self.listado_productos = []
         self.combobox_producto = ttk.Combobox(self.subframe1)
@@ -877,7 +996,7 @@ class FieldFramePrestamo(FieldFrameProducto):
             self.combobox_producto.grid(row=1, column=1, padx=15, pady=15)
 
         # Boton para crear combobox listado
-        self.boton_listado = tk.Button(self.subframe1, text='Buscar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=lambda: crear_listado(self.subframe1))
+        self.boton_listado = tk.Button(self.subframe1, text='Buscar', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0, command=lambda: crear_listado(self.subframe1))
         self.boton_listado.grid(row=0, column=2, padx=15, pady=15, sticky='w')
 
         # Insertar producto seleccionado
@@ -886,7 +1005,7 @@ class FieldFramePrestamo(FieldFrameProducto):
             self.producto_actual = self.listado_productos[self.combobox_producto.current()]
             # Espacio del FieldFrame
             criterios = ['ID', 'Nombre', 'Costo/dia', 'Cantidad', 'Fecha de lanzamiento']
-            valores = [str(self.producto_actual.getId()), self.producto_actual.getNombre(), str(self.producto_actual.getPrecio()), str(self.producto_actual.getCantidad()), str(self.producto_actual.getFechaLanzamiento())]
+            valores = [str(self.producto_actual.get_id()), self.producto_actual.get_nombre(), str(self.producto_actual.get_precio()), str(self.producto_actual.get_cantidad()), str(self.producto_actual.get_fecha_lanzamiento())]
             cri_habilitados = [False, False, False, False, False]
 
             def al_aceptar_callback(resultado):
@@ -897,10 +1016,10 @@ class FieldFramePrestamo(FieldFrameProducto):
                     # identificar producto en el carrito si ya esta
                     producto_en_carrito = None
                     for producto in self.carrito:
-                        if producto.getId() == producto_en_field.getId():  # Si el producto es reconocido
+                        if producto.get_id() == producto_en_field.get_id():  # Si el producto es reconocido
                             producto_en_carrito = producto
                             # Si la cantidad es insuficiente
-                            if producto_en_field.getCantidad() - producto_en_carrito.getCantidad() == 0:
+                            if producto_en_field.get_cantidad() - producto_en_carrito.get_cantidad() == 0:
                                 raise ExceptionCantidadInvalida()
                             break
 
@@ -910,16 +1029,16 @@ class FieldFramePrestamo(FieldFrameProducto):
                     else:
                         # Agregar clon del producto al carrito
                         # la idea de usar un clon es para que el carrito maneje un atributo cantidad independiente
-                        if producto_en_field.getCantidad() == 0: # Si la cantidad es insuficiente
+                        if producto_en_field.get_cantidad() == 0: # Si la cantidad es insuficiente
                             raise ExceptionCantidadInvalida()
                         producto_clonado = copy.deepcopy(producto_en_field)
-                        producto_clonado.setCantidad(1)
+                        producto_clonado.set_cantidad(1)
                         self.carrito.append(producto_clonado)
 
                     # mostrar nuevo total del carrito en la entry correspondiente
                     self.entry_total_carrito.config(state='normal')
                     self.entry_total_carrito.delete(0, tk.END)
-                    nuevo_total = str(sum(map(lambda prod: prod.getPrecio() * prod.getCantidad(), self.carrito)))
+                    nuevo_total = str(sum(map(lambda prod: prod.get_precio() * prod.get_cantidad(), self.carrito)))
                     self.entry_total_carrito.insert(0, nuevo_total)
                     self.entry_total_carrito.config(state='disabled')
                 except ExceptionCantidadInvalida:
@@ -931,7 +1050,7 @@ class FieldFramePrestamo(FieldFrameProducto):
                         .grid(row=0, column=0, padx=15, pady=15))
 
         # Boton para insertar producto seleccionado
-        self.boton_producto = tk.Button(self.subframe1, text='Insertar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=lambda: insertar_producto())
+        self.boton_producto = tk.Button(self.subframe1, text='Insertar', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0, command=lambda: insertar_producto())
         self.boton_producto.grid(row=1, column=2, padx=15, pady=15, sticky='w')
 
         self.total_carrito()
@@ -951,14 +1070,14 @@ class FieldFramePrestamo(FieldFrameProducto):
         def confirmacion_pago(valor_total, dias):
             # Reflejar productos del carrito en el inventario del local
             for prod in self.carrito:
-                prod_actual = self.tienda_actual.buscar_producto_id(prod.getId(), 'prestamo')
-                prod_actual.setCantidad(prod_actual.getCantidad() - prod.getCantidad())
+                prod_actual = self.tienda_actual.buscar_producto_id(prod.get_id(), 'prestamo')
+                prod_actual.set_cantidad(prod_actual.get_cantidad() - prod.get_cantidad())
 
             # Crear prestamo
             fecha_fin = Fecha(int(self.fecha_actual.get_total_dias() + dias))
 
             from src.gestorAplicacion.informacionVenta.Prestamo import Prestamo
-            Prestamo(self.fecha_actual, fecha_fin, self.cliente_actual, self.carrito, valor_total, 'Activo')
+            Prestamo(fecha_fin, self.cliente_actual, self.carrito, valor_total, 'Activo')
 
             # Limpiar
             messagebox.showinfo('Prestamo realizado', f'Prestamo realizado con exito\nTotal: {valor_total}\nDias de plazo: {dias}\nCliente: ' + self.cliente_actual.get_nombre())
@@ -971,7 +1090,7 @@ class FieldFramePrestamo(FieldFrameProducto):
                 if combobox_plazo.get() == '':
                     raise ExceptionCampoVacio([combobox_plazo], 'Plazo')
 
-                valor_total = sum(map(lambda prod: (prod.getPrecio() * prod.getCantidad()), self.carrito))
+                valor_total = sum(map(lambda prod: (prod.get_precio() * prod.get_cantidad()), self.carrito))
                 dias = 0
                 total_dias = int(combobox_plazo.get())
 
@@ -997,13 +1116,13 @@ class FieldFramePrestamo(FieldFrameProducto):
                 total_entry.config(state='disabled')
 
                 # Boton para completar la compra
-                (tk.Button(subframe, text='Completar compra', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=lambda: confirmacion_pago(valor_total, dias))
+                (tk.Button(subframe, text='Completar compra', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0, command=lambda: confirmacion_pago(valor_total, dias))
                             .grid(row=2, column=0, padx=15, pady=5))
 
             except ExceptionCampos: #TODO AQUI PUEDE HABER LIGADURA
                 pass
 
-        subtotal = sum(map(lambda prod: prod.getPrecio() * prod.getCantidad(), self.carrito))
+        subtotal = sum(map(lambda prod: prod.get_precio() * prod.get_cantidad(), self.carrito))
 
         # Subframe para poder organizar subtotal y empleado y sus entries
         subframe_subtotal_empleado = tk.Frame(subframe, bg=FONDO, bd=0)
@@ -1026,7 +1145,7 @@ class FieldFramePrestamo(FieldFrameProducto):
         combobox_plazo.grid(row=1, column=1, padx=15, pady=15, sticky='w')
 
         # Boton para confirmar prestamo
-        tk.Button(subframe_subtotal_empleado, text='Confirmar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=al_confirmar_prest).grid(row=2, column=0, columnspan=2, padx=15, pady=15)
+        tk.Button(subframe_subtotal_empleado, text='Confirmar', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0, command=al_confirmar_prest).grid(row=2, column=0, columnspan=2, padx=15, pady=15)
 
     # genera temporalmente un frame para la creacion de un cliente
     def identificar_cliente(self, frame_c):
@@ -1052,13 +1171,16 @@ class FieldFramePrestamo(FieldFrameProducto):
 
                     self.cliente_actual = cliente_encontrado
 
-                    messagebox.showinfo('Cliente encontrado', f'Cliente {cliente_encontrado.get_nombre()} identificado con exito\n') #TODO recomendaciones
+                    messagebox.showinfo('Cliente encontrado', f'Cliente {cliente_encontrado.get_nombre()} identificado con exito\n')
 
                     # Comprobacion de prestamos vencidos
                     self.hay_vencidos = False
                     for prestamo in self.cliente_actual.get_prestamos():
-                        if prestamo.get_fecha_fin().get_total_dias() < self.fecha_actual.get_total_dias():
+                        if prestamo.get_fecha_fin().get_total_dias() < self.fecha_actual.get_total_dias() and prestamo.get_estado() == 'Activo':
                             prestamo.set_estado('Vencido')
+                            self.hay_vencidos = True
+
+                        elif prestamo.get_estado() == 'Vencido':
                             self.hay_vencidos = True
 
                     # Elegir entre devolver o realizar prestamo
@@ -1091,12 +1213,12 @@ class FieldFramePrestamo(FieldFrameProducto):
 
             # fieldframe para creacion
             criterios_cliente = ['Identificacion', 'Nombre', 'Correo', 'Telefono']
-            FieldFrame(mainframe_cliente, 'Dato', criterios_cliente, 'Valor', None, None, aceptar_callback=al_crear_cliente_callback).grid(row=0, column=0, rowspan=2, columnspan=2)
+            FieldFrame(mainframe_cliente, 'Dato', criterios_cliente, 'Valor', None, None, aceptar_callback=al_crear_cliente_callback, tipos_esperados=['int', 'str', 'str', 'int']).grid(row=0, column=0, rowspan=2, columnspan=2)
 
         tk.Label(mainframe_cliente, text='¿El cliente esta registrado o es nuevo?', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, columnspan=2, padx=15, pady=15, ipadx=30)
         # Botones
-        tk.Button(mainframe_cliente, text='Registrado', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=cliente_existente).grid(row=1, column=0, padx=15, pady=15, sticky='e')
-        tk.Button(mainframe_cliente, text='Nuevo', font=('Arial', 7, 'bold'), bg=POWER, bd=0, command=crear_cliente).grid(row=1, column=1, padx=15, pady=15, sticky='w')
+        tk.Button(mainframe_cliente, text='Registrado', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0, command=cliente_existente).grid(row=1, column=0, padx=15, pady=15, sticky='e')
+        tk.Button(mainframe_cliente, text='Nuevo', font=('Arial', 9, 'bold'), bg=POWER, bd=0, command=crear_cliente).grid(row=1, column=1, padx=15, pady=15, sticky='w')
 
     # pantalla para escoger entre prestar o devolver una vez ya este seleccionado el cliente
     def elegir_prestar_devolver(self):
@@ -1111,18 +1233,27 @@ class FieldFramePrestamo(FieldFrameProducto):
         subframe1.columnconfigure((0, 1), weight=1, uniform='b')
 
         tk.Label(subframe1, text='¿Desea prestar o devolver un producto?', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, columnspan=2, padx=15, pady=15, ipadx=30)
-        tk.Button(subframe1, text='Prestar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=self.prestar).grid(row=1, column=0, padx=15, pady=15, sticky='e')
-        tk.Button(subframe1, text='Devolver', font=('Arial', 7, 'bold'), bg=POWER, bd=0, command=self.devolver).grid(row=1, column=1, padx=15, pady=15, sticky='w')
+        tk.Button(subframe1, text='Prestar', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0, command=self.prestar).grid(row=1, column=0, padx=15, pady=15, sticky='e')
+        tk.Button(subframe1, text='Devolver', font=('Arial', 9, 'bold'), bg=POWER, bd=0, command=self.devolver).grid(row=1, column=1, padx=15, pady=15, sticky='w')
 
     # metodo que llama a la pantalla para seleccion de productos para el prestamo. No se ejecuta si hay prestamos vencidos para el cliente
     def prestar(self):
+        # Comprobacion de prestamos vencidos
+        self.hay_vencidos = False
+        for prestamo in self.cliente_actual.get_prestamos():
+            if prestamo.get_fecha_fin().get_total_dias() < self.fecha_actual.get_total_dias() and prestamo.get_estado() == 'Activo':
+                prestamo.set_estado('Vencido')
+                self.hay_vencidos = True
+
+            elif prestamo.get_estado() == 'Vencido':
+                self.hay_vencidos = True
+
         if self.hay_vencidos:
             messagebox.showinfo('Prestamo no disponible', 'No se puede realizar prestamo, el cliente tiene prestamos vencidos')
             return
 
         self.limpiar_frame(self.framemain)
         self.identificar_producto()
-        #TODO pantalla de identificacion de productos
 
     # pantalla para seleccion de prestamos activos o vencidos para devolver
     def devolver(self):
@@ -1137,7 +1268,6 @@ class FieldFramePrestamo(FieldFrameProducto):
             return
 
         self.limpiar_frame(self.framemain)
-
         subframe1 = tk.Frame(self.framemain, bg=FONDO, bd=0)
         subframe1.grid(row=0, column=0,sticky='nswe')
         subframe1.columnconfigure((0,1), weight=1, uniform='a')
@@ -1145,12 +1275,16 @@ class FieldFramePrestamo(FieldFrameProducto):
         subframe1.rowconfigure(1, weight=4, uniform='b')
         #filas: seleccionar prestamo - boton confirmar prestamo -> dibujar:  mostrar total dias - mostrar total a pagar - mostrar productos en combobox - boton confirmar
 
+        self.ids_prestamos = []
+
         def actualizar_prestamos_activos():
             values_prestamos = []
+            self.ids_prestamos = []
             for prestamo in self.cliente_actual.get_prestamos():
                 if prestamo.get_estado() == 'Activo' or prestamo.get_estado() == 'Vencido':
                     values_prestamos.append('ID: ' + str(prestamo.get_id()) + ' | Fecha fin: ' + str(
                         prestamo.get_fecha_fin()) + ' | ' + prestamo.get_estado())
+                    self.ids_prestamos.append(prestamo.get_id())
 
             return values_prestamos
 
@@ -1160,7 +1294,7 @@ class FieldFramePrestamo(FieldFrameProducto):
                 if self.combobox_prestamo_selec.get() == 'Elige un prestamo' or self.combobox_prestamo_selec.get() == '':
                     raise ExceptionCampoVacio([self.combobox_prestamo_selec], ['Prestamo'])
 
-                id_prestamo = int(self.combobox_prestamo_selec.get().split(' | ')[0])
+                id_prestamo = self.ids_prestamos[self.combobox_prestamo_selec.current()]
                 prestamo_seleccionado = None
                 for prestamo in self.cliente_actual.get_prestamos():
                     if prestamo.get_id() == id_prestamo:
@@ -1189,7 +1323,7 @@ class FieldFramePrestamo(FieldFrameProducto):
                 total_pagar = 0
                 if prestamo_seleccionado.get_estado() == 'Vencido':
                     for producto in prestamo_seleccionado.get_productos():
-                        total_pagar += producto.getPrecio() * abs(total_dias) * 1.1
+                        total_pagar += producto.get_precio() * abs(total_dias) * 1.1
                 entry_total_a_pagar = tk.Entry(subframe2)
                 entry_total_a_pagar.insert(0, str(total_pagar))
                 entry_total_a_pagar.config(state='disabled')
@@ -1206,15 +1340,15 @@ class FieldFramePrestamo(FieldFrameProducto):
 
                     # Actualizar cantidad de productos en el inventario
                     for producto in prestamo_seleccionado.get_productos():
-                        producto_actual = self.tienda_actual.buscar_producto_id(producto.getId(), 'prestamo')
-                        producto_actual.setCantidad(producto_actual.getCantidad() + producto.getCantidad())
+                        producto_actual = self.tienda_actual.buscar_producto_id(producto.get_id(), 'prestamo')
+                        producto_actual.set_cantidad(producto_actual.get_cantidad() + producto.get_cantidad())
 
                     messagebox.showinfo('Devolucion realizada', f'Devolucion realizada con exito')
                     self.limpiar_frame(self.framemain)
                     self.elegir_prestar_devolver()
 
                 # boton para confirmar devolucion
-                tk.Button(subframe2, text='Confirmar devolucion', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=confirmar_devolucion).grid(row=3, column=0, rowspan=2, columnspan=2, padx=15, pady=15)
+                tk.Button(subframe2, text='Confirmar devolucion', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0, command=confirmar_devolucion).grid(row=3, column=0, rowspan=2, columnspan=2, padx=15, pady=15)
 
 
             except ExceptionNoEncontrado:
@@ -1228,116 +1362,208 @@ class FieldFramePrestamo(FieldFrameProducto):
         self.combobox_prestamo_selec = ttk.Combobox(subframe1, values=actualizar_prestamos_activos(), textvariable=valor_defecto)
         self.combobox_prestamo_selec.grid(row=0, column=0, padx=15, pady=15, ipadx=60, sticky='e')
 
-        tk.Button(subframe1, text='Confirmar prestamo', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=confirmar_prestamo_seleccionado).grid(row=0, column=1, padx=15, pady=15, ipadx=60, sticky='w')
-        tk.Button(subframe1, text='Volver', font=('Arial', 7, 'bold'), bg=POWER, bd=0, command=self.elegir_prestar_devolver).grid(row=2, column=0, columnspan=2, padx=15, pady=15, ipadx=60)
+        tk.Button(subframe1, text='Confirmar prestamo', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0, command=confirmar_prestamo_seleccionado).grid(row=0, column=1, padx=15, pady=15, ipadx=60, sticky='w')
+        tk.Button(subframe1, text='Volver', font=('Arial', 9, 'bold'), bg=POWER, bd=0, command=self.elegir_prestar_devolver).grid(row=2, column=0, columnspan=2, padx=15, pady=15, ipadx=60)
 
 # Administrar inventario
 class FieldFrameAdministrar(tk.Frame):
-    tienda_actual:Tienda = None
     etiquetas = []
     def __init__(self,ventana,tienda_actual:Tienda):
         super().__init__(ventana,bg=FONDO)
-
-        tienda_actual = tienda_actual
+        self.tienda_actual = tienda_actual
+        self.ventana = ventana
 
         self.framemain = tk.Frame(ventana,bg=FONDO)
         self.framemain.grid(row=0,column=0,sticky='nswe')
         self.framemain.rowconfigure(0,weight=1,uniform='a')
         self.framemain.columnconfigure(0,weight=1,uniform='b')
 
-        self.subframe1 = tk.Frame(self.framemain,bg=POWER,bd=0)
+        self.subframe1 = tk.Frame(self.framemain,bg=FONDO,bd=0)
         self.subframe1.grid(row=0,column=0,sticky='nswe')
         self.subframe1.rowconfigure((0,5),weight=3,uniform='aa')
         self.subframe1.rowconfigure((1,2,3,4),weight=2,uniform='aa')
         self.subframe1.columnconfigure((0,2),weight=2,uniform='bb')
         self.subframe1.columnconfigure(1,weight=1,uniform='bb')
+        self.subframe2 = tk.Frame(self.framemain,bg=FONDO,bd=0)
+        self.subframe3 = tk.Frame(self.framemain,bg=FONDO,bd=0)
+        self.subframe4 = tk.Frame(self.framemain,bg=FONDO,bd=0)
+        self.subframe5 = tk.Frame(self.framemain,bg=FONDO,bd=0)
 
-        #titulos
+        #Metodos
 
-        #Botones
-        tk.Button(self.subframe1,text='Revisar productos',bg=botoncito,bd=0, command=lambda: self.revisar_producto()).grid(row=1,column=1,padx=15,pady=15,sticky='nswe')
-        tk.Button(self.subframe1, text='Modificar producto', bg=botoncito, bd=0, command= lambda: self.modificar_producto()).grid(row=2, column=1, padx=15, pady=15, sticky='nswe')
-        tk.Button(self.subframe1, text='Revisar prioridad', bg=botoncito, bd=0, command=lambda: self.revisar_prioridad()).grid(row=3, column=1, padx=15, pady=15, sticky='nswe')
-        tk.Button(self.subframe1, text='Regresar', bg=botoncito, bd=0).grid(row=4, column=1, padx=15, pady=15, sticky='nswe')
+        def revisar_producto():
+            self.subframe1 = tk.Frame(self.framemain,bg=FONDO,bd=0)
+            self.subframe1.grid(row=0,column=0,sticky='nswe')
+            self.limpiar_frame(self.subframe1)
 
-           #Metodos
+            self.framemain.rowconfigure((0,1,2), weight=1, uniform='a')
+            self.framemain.rowconfigure(3, weight=10, uniform='a')
+            self.framemain.rowconfigure(4, weight=2, uniform='a')
 
-    def revisar_producto(self):
-        self.limpiar_frame(self.subframe1)
-        self.framemain.rowconfigure((0, 2), weight=1, uniform='a')
-        self.framemain.rowconfigure(1, weight=5, uniform='a')
-        #parte de arriba
-        self.subframe1 = tk.Frame(self.framemain, bg=FONDO, bd=0)
+            #parte de arriba
+            self.subframe1 = tk.Frame(self.framemain, bg=FONDO, bd=0)
+            self.subframe1.grid(row=0, column=0, sticky='nswe')
+            self.subframe1.rowconfigure((0,1), weight=1, uniform='aa')
+            self.subframe1.columnconfigure((0,1,2), weight=1, uniform='bb')
+            self.subframe2 = tk.Frame(self.framemain, bg=FONDO, bd=0)
+            self.subframe2.grid(row=1, column=0, sticky='nswe')
+            self.subframe3 = tk.Frame(self.framemain, bg=FONDO, bd=0)
+            self.subframe3.grid(row=2, column=0, sticky='nswe')
+            self.subframe4 = tk.Frame(self.framemain, bg=FONDO, bd=0)
+            self.subframe4.grid(row=3, column=0, sticky='nswe')
+            self.subframe5 = tk.Frame(self.framemain, bg=FONDO, bd=0)
+            self.subframe5.grid(row=4, column=0, sticky='nswe')
+
+            tk.Label(self.subframe1, text='Revisar', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, padx=15, pady=0, sticky='e')
+
+            revisar_default = tk.StringVar(value=' ---- ')
+            combobox_eleccion = ttk.Combobox(self.subframe1, values=['Todos', 'Tipo'], textvariable=revisar_default)
+            combobox_eleccion.grid(row=0, column=1, padx=5, pady=0, sticky='we')
+            def llamareleccion(elec):
+                if elec == 'Todos':
+                    self.limpiar_frame(self.subframe2)
+                    self.limpiar_frame(self.subframe3)
+                    self.limpiar_frame(self.subframe4)
+                    self.limpiar_frame(self.subframe5)
+                    self.ordenar(["nombre","ventas","precio"],2)
+
+                elif elec == 'Tipo':
+                    self.limpiar_frame(self.subframe2)
+                    self.limpiar_frame(self.subframe3)
+                    self.limpiar_frame(self.subframe4)
+                    self.categoria()
+
+            tk.Button(self.subframe1, text='Buscar', bg=RESALTO, bd=0, command=lambda: llamareleccion(combobox_eleccion.get())).grid(row=0, column=2, padx=15, pady=0, sticky='w')
+            tk.Button(self.subframe5, text='Regresar', bg=RESALTO, bd=0, command=lambda: self.regreso()).grid(row=0, column=3, padx=15, pady=0, sticky='w')
+
+        def modificar_producto():
+            self.limpiar_frame(self)
+            self.limpiar_frame(self.subframe1)
+            self.framemain.rowconfigure(0, weight=1, uniform='a')
+            self.framemain.rowconfigure((2,3),weight=1,uniform='a')
+            self.framemain.rowconfigure(1, weight=10,uniform='a')
+            self.subframe1 = tk.Frame(self.framemain,bg=FONDO,bd=0)
+            self.subframe2.grid(row=1,column=0,sticky='nswe')
+            self.subframe2.columnconfigure(0,weight=1,uniform='a')
+            self.subframe3.grid(row=2,column=0,sticky='nswe')
+            self.subframe3.columnconfigure((0,1,2),weight=1,uniform='a')
+            tk.Label(self.subframe3, text='Ingrese el código', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0,column=0, padx=15,pady=0,sticky='e')
+            codigo = tk.Entry(self.subframe3)
+            codigo.grid(row=0, column=1, padx=15, pady=0, sticky='we')
+            def comprobarCodigo(valor):
+                try:
+                    cod = eval(valor)
+                    producto = self.tienda_actual.buscar_producto_id(cod)
+                    if producto is None:
+                        raise ExceptionNoEncontrado('Producto')
+                    self.cambiarinfo(producto)
+                except ExceptionNoEncontrado:
+                    pass
+            tk.Button(self.subframe3, text='Buscar', bg=RESALTO, bd=0, command=lambda: comprobarCodigo(codigo.get())).grid(row=0,column=2,padx=15,pady=0,sticky='w')
+
+            self.categoria1()
+
+        def revisar_prioridad():
+            self.limpiar_frame(self.subframe1)
+
+        # Botones
+        tk.Button(self.subframe1, text='Revisar productos', bg=botoncito, bd=0,
+                  command=lambda: revisar_producto()).grid(row=1, column=1, padx=15, pady=15, sticky='nswe')
+        tk.Button(self.subframe1, text='Modificar producto', bg=botoncito, bd=0,
+                  command=lambda: modificar_producto()).grid(row=2, column=1, padx=15, pady=15, sticky='nswe')
+        tk.Button(self.subframe1, text='Revisar prioridad', bg=botoncito, bd=0,
+                  command=lambda: revisar_prioridad()).grid(row=3, column=1, padx=15, pady=15, sticky='nswe')
+        tk.Button(self.subframe1, text='Regresar', bg=botoncito, bd=0).grid(row=4, column=1, padx=15, pady=15,
+                                                                            sticky='nswe')
+    def regreso(self):
+        self.limpiar_frame(self.framemain)
+        self.framemain.destroy()
+        self.destroy()
+        FieldFrameAdministrar(self.ventana,self.tienda_actual)
+
+    def categoria1(self):
+        # Crear un combobox para elegir categoria y su boton de acción
         self.subframe1.grid(row=0, column=0, sticky='nswe')
-        self.subframe1.rowconfigure((0,1), weight=1, uniform='aa')
-        self.subframe1.columnconfigure((0,1,2), weight=1, uniform='bb')
-        tk.Label(self.subframe1, text='Revisar', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, padx=15, pady=0, sticky='e')
+        self.subframe1.columnconfigure((0, 1, 2), weight=1, uniform='aa')
+        tk.Label(self.subframe1, text='Categoria', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, padx=15,
+                                                                                              pady=0, sticky='e')
+        categoriaDefault = tk.StringVar(value='-------')
+        combobox_categoria = ttk.Combobox(self.subframe1, values=['Consola', 'Juego', 'Accesorio'],
+                                          textvariable=categoriaDefault)
+        combobox_categoria.grid(row=0, column=1, padx=5, pady=0, sticky='we')
+        self.subframe2.grid(row=1, column=0, sticky='nswe')
+        def cosas():
+            self.subframe2.destroy()
+            self.subframe2 = tk.Frame(self.framemain, bg=FONDO, bd=0)
+            self.subframe2.grid(row=1, column=0, sticky='nswe')
+            self.subframe2.rowconfigure(0, weight=1, uniform='aa')
+            self.crear_etiquetas(self.subframe2,self.tienda_actual.get_productos_categoria_inventario(combobox_categoria.get()))
+        tk.Button(self.subframe1, text='Buscar', bg=RESALTO, bd=0,command=lambda: cosas()).grid(row=0,column=2,padx=15,pady=0,sticky='w')
 
-        revisar_default = tk.StringVar(value=' ------- ')
-        self.combobox_eleccion = ttk.Combobox(self.subframe1, values=['Todos', 'Tipo'], textvariable=revisar_default)
-        self.combobox_eleccion.grid(row=0, column=1, padx=5, pady=0, sticky='we')
-        tk.Button(self.subframe1, text='Buscar', bg=RESALTO, bd=0, command=lambda: self.categoria(self.combobox_eleccion.get()) if self.combobox_eleccion.get() == 'Tipo' else self.eleccion(self.combobox_eleccion.get())).grid(row=0, column=2, padx=15, pady=0, sticky='w')
-    @staticmethod
-    def categoria(frame:Frame,cat):
+    def cambiarinfo(self,producto:Producto):
+        self.limpiar_frame(self.subframe2)
+        self.subframe2 = FieldFrame(self.subframe2, 'Cambiar', ['ID','Nuevo ID', 'Nombre','Nuevo Nombre' ,'Precio','Nuevo Precio' , 'Fecha de lanzamiento','Nueva Fecha'], 'Valor', [f'{producto.get_id()}', '', f'{producto.get_nombre()}', '', f'{producto.get_precio()}', '', f'{producto.get_fecha_lanzamiento()}', ''], [False, True, False, True, False, True, False, True])
+        self.subframe2.grid(row=1,column=0,sticky='nswe')
+    def categoria(self):
         #Crear un combobox para elegir categoria y su boton de acción
-        for widget in frame.grid_slaves(row=1):
-            widget.destroy()
-        tk.Label(frame, text='Categoria', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=1, column=0, padx=15, pady=0, sticky='e')
-        categoriaDefault = tk.StringVar(value='INgrese una categoria')
-        combobox_categoria = ttk.Combobox(frame, values=['Consola', 'Juego', 'Accesorio'], textvariable=categoriaDefault)
+        self.subframe2.grid(row=1, column=0, sticky='nswe')
+        self.subframe2.columnconfigure((0,1,2), weight=1, uniform='aa')
+        tk.Label( self.subframe2,text='Categoria', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=1, column=0, padx=15, pady=0, sticky='e')
+        categoriaDefault = tk.StringVar(value='-------')
+        combobox_categoria = ttk.Combobox(self.subframe2, values=['Consola', 'Juego', 'Accesorio'], textvariable=categoriaDefault)
         combobox_categoria.grid(row=1, column=1, padx=5, pady=0, sticky='we')
-        tk.Button(frame, text='Buscar', bg=RESALTO, bd=0,command= FieldFrameAdministrar.ordenar(frame,FieldFrameAdministrar.tienda_actual.get_productos_categoria(combobox_categoria.get()),2)).grid(row=1, column=2, padx=15, pady=0, sticky='w')
+        tk.Button(self.subframe2, text='Buscar', bg=RESALTO, bd=0,command=lambda: self.ordenar(["nombre","ventas","precio"],2,combobox_categoria.get())).grid(row=1, column=2, padx=15, pady=0, sticky='w')
 
-    @staticmethod
-    def ordenar(frame:Frame,lista:list[str],fila):
+    def ordenar(self,lista:list[str],fila,cat=None):
+        if cat not in ['Consola','Juego','Accesorio']:
+            cat = None
+        self.subframe3.grid(row=2, column=0, sticky='nswe')
+        self.subframe3.columnconfigure((0,1,2), weight=1, uniform='aa')
         #crear un combobox para elegir como ordenar y su boton de accion
-        tk.Label(frame,text='Ordenar',font=('Arial', 11, 'bold'),bg=FONDO).grid(row=fila, column=0, padx=15, pady=0, sticky='e')
+        tk.Label(self.subframe3,text='Ordenar',font=('Arial', 11, 'bold'),bg=FONDO).grid(row=fila, column=0, padx=15, pady=0, sticky='e')
         ordenarDefecto = tk.StringVar(value=' -------- ')
-        combobox_ordenar = ttk.Combobox(frame,values=lista,textvariable=ordenarDefecto)
+        #crear combobox
+        combobox_ordenar = ttk.Combobox(self.subframe3,values=lista,textvariable=ordenarDefecto)
         combobox_ordenar.grid(row=fila,column= 1,padx=5,pady=0, sticky='we')
-        tk.Button(frame,text='Buscar',bg=RESALTO,bd=0)
-
+        if cat is not None:
+            listaObjetos = self.tienda_actual.get_productos_categoria_inventario(cat)
+        else:
+            listaObjetos = self.tienda_actual.get_inventario()
+        def miniordenar(orden,lista1):
+            Producto.ordenar(orden, lista1)
+            self.eleccion(lista1)
+        #Boton para buscar
+        tk.Button(self.subframe3,text='Buscar',bg=RESALTO,bd=0,command=lambda:miniordenar(combobox_ordenar.get(),listaObjetos)).grid(row=fila,column=2,padx=15,pady=0,sticky='w')
 
     @staticmethod
-    def crear_etiquetas(frame:FieldFrame,etiquetas,lista:list[Producto]):
+    def crear_etiquetas(frame:Frame,lista:list[Producto]):
         # Obtener el número ingresado por el usuario
         # Limpiar etiquetas anteriores
-        for label in etiquetas:
+        for label in frame.grid_slaves(column=0):
             label.destroy()
-        p = 0
+        p = -1
+        q = -1
         # Crear las nuevas etiquetas
         for i in lista:
-            etiqueta = tk.Label(frame, text=f"COD: {i.getId()} | Nombre: {i.getNombre()} | Cantidad: {i.getCantidad()} | Precio: {i.getPrecio()}")
-            etiqueta.grid(row=p + 1, column=0, pady=2)
-            etiquetas.append(etiqueta)
+            frame.rowconfigure(q + 1, weight=1, uniform='aa')
+            etiqueta = tk.Label(frame, text=f"COD: {i.get_id()} | Nombre: {i.get_nombre()} | Ventas: {i.calcular_ventas()} | Precio: {i.get_precio()}", font=('Arial', 11), bg=FONDO)
+            etiqueta.grid(row=p + 1, column=0, pady=2, sticky='nswe')
             p+=1
+            q+=1
 
-    def eleccion(self,opcion):
-        for widget in self.subframe1.grid_slaves(row=1):
-            widget.destroy()
-        subframe2 = tk.Frame(self.framemain, bg=FONDO, bd=0)
-        self.limpiar_frame(subframe2)
-        if opcion == 'Todos':
-            subframe2.grid(row=1,column=0,sticky='nswe',)
-            subframe2.rowconfigure(0, weight=1, uniform='aa')
-            subframe2.columnconfigure(0, weight=1, uniform='bb')
+    def eleccion(self,lista:list[Producto],cat=None):
+        self.limpiar_frame(self.subframe4)
+        if cat is None:
+            self.subframe4.grid(row=3,column=0,sticky='nswe')
+            self.subframe4.rowconfigure(0, weight=1, uniform='aa')
+            self.subframe4.columnconfigure(0, weight=1, uniform='bb')
+            self.crear_etiquetas(self.subframe4, lista)
 
-        elif opcion == 'Tipo':
-
-            subframe2.grid(row=1,sticky='nswe',column=0)
-            subframe2.rowconfigure(0, weight=1, uniform='aa')
-            subframe2.columnconfigure(0, weight=1, uniform='bb')
-
-    def modificar_producto(self):
-        subframe2 = tk.Frame(self.subframe1, bg=botoncito, bd=0)
-        self.limpiar_frame(self)
-        self.limpiar_frame(self.subframe1)
-
-    def revisar_prioridad(self):
-        self.limpiar_frame(self.subframe1)
-
-    def regresar(self):
-        self.limpiar_frame(self.framemain)
+        else:
+            self.subframe4.grid(row=1,sticky='nswe',column=0)
+            self.subframe4.rowconfigure(0, weight=1, uniform='aa')
+            self.subframe4.columnconfigure(0, weight=1, uniform='bb')
+            self.crear_etiquetas(self.subframe4, lista)
 
     @staticmethod
     def limpiar_frame(frame):
@@ -1660,6 +1886,9 @@ class FieldFrameSubasta(tk.Frame):
     # pantalla para seleccionar entre subastar, ofertar o terminar una subasta
     def seleccion_accion(self):
         self.reiniciar_frame()
+        self.carrito = []
+
+        self.comprobar_subastas_finalizadas()
 
         self.subframe_selec = tk.Frame(self.framemain, bg=FONDO)
         self.subframe_selec.grid(row=0, column=0, sticky='nswe')
@@ -1667,13 +1896,13 @@ class FieldFrameSubasta(tk.Frame):
         self.subframe_selec.rowconfigure((0,1,2), weight=1, uniform='b')
 
         # subastar
-        tk.Button(self.subframe_selec, text='Subastar', font=('Arial', 10, 'bold'), bg=RESALTO, bd=0, command=self.subastar).grid(row=0, column=0, padx=15, pady=15, sticky='s')
+        tk.Button(self.subframe_selec, text='Subastar', font=('Arial', 15, 'bold'), bg=RESALTO, bd=0, command=self.subastar).grid(row=0, column=0, padx=15, pady=15, sticky='s')
 
         # ofertar
-        tk.Button(self.subframe_selec, text='Ofertar', font=('Arial', 10, 'bold'), bg=POWER, bd=0, command=self.ofertar).grid(row=1, column=0, padx=15, pady=15)
+        tk.Button(self.subframe_selec, text='Ofertar', font=('Arial', 15, 'bold'), bg=POWER, bd=0, command=self.ofertar).grid(row=1, column=0, padx=15, pady=15)
 
         # terminar subasta
-        tk.Button(self.subframe_selec, text='Terminar subasta', font=('Arial', 10, 'bold'), bg=RESALTO, bd=0, command=self.terminar_subasta).grid(row=2, column=0, padx=15, pady=15, sticky='n')
+        tk.Button(self.subframe_selec, text='Actualizar subasta descendente', font=('Arial', 15, 'bold'), bg=RESALTO, bd=0, command=self.actualizar_subasta).grid(row=2, column=0, padx=15, pady=15, sticky='n')
 
     def subastar(self):
         self.reiniciar_frame()
@@ -1705,7 +1934,7 @@ class FieldFrameSubasta(tk.Frame):
 
             # Crear combobox con listado de productos segun la categoria ingresada
             def identificar_categoria_nombres(cat: str):
-                return list(map(lambda producto: producto.getNombre(),
+                return list(map(lambda producto: producto.get_nombre(),
                                 self.tienda_actual.get_productos_categoria_inventario(cat, 'usado')))
 
             self.listado_productos = []
@@ -1721,7 +1950,7 @@ class FieldFrameSubasta(tk.Frame):
                 self.combobox_producto.grid(row=1, column=1, padx=15, pady=15)
 
             # Boton para crear combobox listado
-            self.boton_listado = tk.Button(self.subframe1, text='Buscar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0,
+            self.boton_listado = tk.Button(self.subframe1, text='Buscar', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0,
                                            command=lambda: crear_listado(self.subframe1))
             self.boton_listado.grid(row=0, column=2, padx=15, pady=15, sticky='w')
 
@@ -1732,9 +1961,9 @@ class FieldFrameSubasta(tk.Frame):
                 self.producto_actual = self.listado_productos[self.combobox_producto.current()]
                 # Espacio del FieldFrame
                 criterios = ['ID', 'Nombre', 'Valor inicial', 'Cantidad', 'Fecha de lanzamiento']
-                valores = [str(self.producto_actual.getId()), self.producto_actual.getNombre(),
-                           str(self.producto_actual.getPrecio()), str(self.producto_actual.getCantidad()),
-                           str(self.producto_actual.getFechaLanzamiento())]
+                valores = [str(self.producto_actual.get_id()), self.producto_actual.get_nombre(),
+                           str(self.producto_actual.get_precio()), str(self.producto_actual.get_cantidad()),
+                           str(self.producto_actual.get_fecha_lanzamiento())]
                 cri_habilitados = [False, False, False, False, False]
 
                 def al_aceptar_callback(resultado):
@@ -1745,10 +1974,10 @@ class FieldFrameSubasta(tk.Frame):
                         # identificar producto en el carrito si ya esta
                         producto_en_carrito = None
                         for producto in self.carrito:
-                            if producto.getId() == producto_en_field.getId():  # Si el producto es reconocido
+                            if producto.get_id() == producto_en_field.get_id():  # Si el producto es reconocido
                                 producto_en_carrito = producto
                                 # Si la cantidad es insuficiente
-                                if producto_en_field.getCantidad() - producto_en_carrito.getCantidad() == 0:
+                                if producto_en_field.get_cantidad() - producto_en_carrito.get_cantidad() == 0:
                                     raise ExceptionCantidadInvalida()
                                 break
 
@@ -1757,16 +1986,16 @@ class FieldFrameSubasta(tk.Frame):
                         else:
                             # Agregar clon del producto al carrito
                             # la idea de usar un clon es para que el carrito maneje un atributo cantidad independiente
-                            if producto_en_field.getCantidad() == 0:  # Si la cantidad es insuficiente
+                            if producto_en_field.get_cantidad() == 0:  # Si la cantidad es insuficiente
                                 raise ExceptionCantidadInvalida()
                             producto_clonado = copy.deepcopy(producto_en_field)
-                            producto_clonado.setCantidad(1)
+                            producto_clonado.set_cantidad(1)
                             self.carrito.append(producto_clonado)
 
                         # mostrar nuevo total del carrito en la entry correspondiente
                         self.entry_total_carrito.config(state='normal')
                         self.entry_total_carrito.delete(0, tk.END)
-                        nuevo_total = str(sum(map(lambda prod: prod.getCantidad(), self.carrito)))
+                        nuevo_total = str(sum(map(lambda prod: prod.get_cantidad(), self.carrito)))
                         self.entry_total_carrito.insert(0, nuevo_total)
                         self.entry_total_carrito.config(state='disabled')
                     except ExceptionCantidadInvalida:
@@ -1779,7 +2008,7 @@ class FieldFrameSubasta(tk.Frame):
                  .grid(row=0, column=0, padx=15, pady=15))
 
             # Boton para insertar producto seleccionado
-            self.boton_producto = tk.Button(self.subframe1, text='Insertar', font=('Arial', 7, 'bold'), bg=RESALTO,
+            self.boton_producto = tk.Button(self.subframe1, text='Insertar', font=('Arial', 9, 'bold'), bg=RESALTO,
                                             bd=0, command=lambda: insertar_producto())
             self.boton_producto.grid(row=1, column=2, padx=15, pady=15, sticky='w')
 
@@ -1810,9 +2039,9 @@ class FieldFrameSubasta(tk.Frame):
             frame_ident_producto.destroy()
             self.pantalla_tipo_subasta()
 
-        tk.Button(subframe3, text='Comprar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0,
-                  command=self.pantalla_tipo_subasta).grid(row=1, column=0, padx=15, pady=15, sticky='e')
-        tk.Button(subframe3, text='Limpiar carrito', font=('Arial', 7, 'bold'), bg=POWER, bd=0, command=commando_llamar_pantalla_tipo_sub).grid(row=1, column=1,padx=15, pady=15,sticky='w')
+        tk.Button(subframe3, text='Comprar', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0,
+                  command=commando_llamar_pantalla_tipo_sub).grid(row=1, column=0, padx=15, pady=15, sticky='e')
+        tk.Button(subframe3, text='Limpiar carrito', font=('Arial', 9, 'bold'), bg=POWER, bd=0, command=limpiar_carrito).grid(row=1, column=1,padx=15, pady=15,sticky='w')
 
     def pantalla_tipo_subasta(self):
         self.reiniciar_frame()
@@ -1831,7 +2060,7 @@ class FieldFrameSubasta(tk.Frame):
         # valor sin modificaciones
         tk.Label(subframe_tipo_s, text='Valor base', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=1, column=0, padx=15, pady=15, sticky='e')
         entry_valor_base = tk.Entry(subframe_tipo_s)
-        entry_valor_base.insert(0, str(sum(map(lambda prod: prod.getPrecio() * prod.getCantidad(), self.carrito))))
+        entry_valor_base.insert(0, str(sum(map(lambda prod: prod.get_precio() * prod.get_cantidad(), self.carrito))))
         entry_valor_base.config(state='disabled')
         entry_valor_base.grid(row=1, column=1, padx=15, pady=15, sticky='w')
 
@@ -1888,7 +2117,13 @@ class FieldFrameSubasta(tk.Frame):
                     else:
                         # Crear subasta
                         from src.gestorAplicacion.informacionVenta.Subasta import Subasta
-                        Subasta(self.fecha_actual, fecha_fin, self.carrito, int(entry_oferta_inicial.get()), self.tienda_actual, combobox_tipo_subasta.get())
+                        Subasta(fecha_fin, self.carrito, int(entry_oferta_inicial.get()), self.tienda_actual, combobox_tipo_subasta.get())
+
+                        # Reflejar en inventario que los productos han sido puestos en subasta
+
+                        for prod_carro in self.carrito:
+                            prod_invent = self.tienda_actual.buscar_producto_id(prod_carro.get_id(), 'usado')
+                            prod_invent.set_cantidad(prod_invent.get_cantidad() - prod_carro.get_cantidad())
 
                         messagebox.showinfo('Subasta creada', 'Subasta creada con exito. Finaliza en ' + str(fecha_fin))
                         self.seleccion_accion()
@@ -1900,11 +2135,253 @@ class FieldFrameSubasta(tk.Frame):
 
         tk.Button(subframe_tipo_s, text='Obtener oferta inicial recomendada', font=('Arial', 11, 'bold'), bg=RESALTO, bd=0, command=al_obtener_oferta_inicial).grid(row=3, column=0, columnspan=2, padx=15, ipadx=30, pady=15)
 
-    def ofertar(self):
-        pass
 
-    def terminar_subasta(self):
-        pass
+    def ofertar(self):
+        self.reiniciar_frame()
+
+        #ASCENDENTE seleccion subasta - boton confirmacion - ingreso cliente - ultima oferta - cantidad a ofertar - boton para ofertar
+        #DESCENDENTE seleccion subasta - boton confirmacion - ingreso cliente - oferta actual (disabled) - boton para ofertar
+        #ANONIMA seleccion subasta - boton confirmacion - ingreso cliente - cantidad a ofertar - boton para ofertar
+        subframe_oferta = tk.Frame(self.framemain, bg=FONDO, bd=0)
+        subframe_oferta.grid(row=0, column=0, sticky='nswe')
+        subframe_oferta.columnconfigure((0, 1), weight=1, uniform='a')
+        subframe_oferta.rowconfigure((0, 1), weight=1, uniform='b')
+        subframe_oferta.rowconfigure(2, weight=5, uniform='b')
+
+        subframe_opciones_oferta = tk.Frame(subframe_oferta, bg=FONDO, bd=0)
+        subframe_opciones_oferta.grid(row=2, column=0, columnspan=2, sticky='nswe')
+        subframe_opciones_oferta.columnconfigure((0, 1), weight=1, uniform='a')
+        subframe_opciones_oferta.rowconfigure((0,1,2,3), weight=1, uniform='b')
+
+        # seleccion subasta
+        tk.Label(subframe_oferta, text='Subasta', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, padx=15, pady=15, sticky='e')
+        values_subastas = []
+        for subasta in self.tienda_actual.get_subastas():
+            if subasta.get_estado() == 'Activa':
+                values_subastas.append('ID: ' + str(subasta.get_id()) + ' | Tipo: ' + subasta.get_tipo() +  ' | Finaliza en: ' + subasta.get_fecha_fin().__str__())
+
+        combobox_selec_subasta = ttk.Combobox(subframe_oferta, values=values_subastas, state='readonly')
+        combobox_selec_subasta.grid(row=0, column=1, padx=15, pady=15, ipadx=60, sticky='w')
+
+        # boton confirmacion
+        def confirmar_subasta():
+            self.limpiar_frame(subframe_opciones_oferta)
+            # opciones subasta ascendente
+            def subasta_ascendente(subasta):
+                def aceptar_oferta_callback(resultado):
+                    try:
+                        # Chequear cedula del cliente
+                        cliente_encontrado = Cliente.buscar_cliente(int(resultado[0]))
+                        if cliente_encontrado is None:
+                            raise ExceptionNoEncontrado('Cliente')
+
+                        self.cliente_actual = cliente_encontrado
+
+                        # Chequear cantidad a ofertar
+                        oferta = int(resultado[2])
+                        if oferta <= subasta.get_oferta_mayor():
+                            raise ExceptionLogica('El monto a ofertar debe ser mayor a la ultima oferta')
+
+                        # Revisar puntos de cliente
+                        puntos_cliente = cliente_encontrado.get_puntos_fidelidad()
+                        if puntos_cliente < oferta:
+                            raise ExceptionLogica('El cliente no tiene suficientes puntos para ofertar')
+
+                        # Registrar oferta
+                        subasta.agregar_oferta(oferta, cliente_encontrado)
+                        messagebox.showinfo('Oferta realizada', 'Oferta realizada con exito a nombre de ' + str(cliente_encontrado.get_nombre()))
+                        self.seleccion_accion()
+
+                    except ExceptionNoEncontrado:
+                        pass
+                    except ExceptionLogica:
+                        pass
+
+                criterios = ['Cedula cliente', 'Ultima oferta', 'Cantidad a ofertar']
+                valores = [None, str(subasta.get_oferta_mayor()), None]
+                ff_opciones_ascendente = FieldFrame(subframe_opciones_oferta, 'Dato', criterios, 'Valor', valores, [True, False, True], aceptar_callback=aceptar_oferta_callback, tipos_esperados=['int', 'int', 'int'])
+                ff_opciones_ascendente.grid(row=0, column=0, rowspan=4, columnspan=2, padx=15, pady=15)
+
+            # opciones subasta descendente
+            def subasta_descendente(subasta):
+                def aceptar_oferta_callback(resultado):
+                    try:
+                        # Chequear cedula del cliente
+                        cliente_encontrado = Cliente.buscar_cliente(int(resultado[0]))
+                        if cliente_encontrado is None:
+                            raise ExceptionNoEncontrado('Cliente')
+
+                        self.cliente_actual = cliente_encontrado
+
+                        # Chequear saldo de puntos de cliente que va a tomar la oferta actual de la subasta
+                        puntos_cliente = cliente_encontrado.get_puntos_fidelidad()
+                        if puntos_cliente < subasta.get_oferta_mayor():
+                            raise ExceptionLogica('El cliente no tiene suficientes puntos para tomar la oferta actual')
+
+                        # Registrar oferta
+                        subasta.agregar_oferta(cliente_encontrado)
+                        messagebox.showinfo('Subasta terminada', 'El cliente ' + str(cliente_encontrado.get_nombre()) + ' ha tomado la oferta actual de esta subasta')
+                        self.seleccion_accion()
+
+                    except ExceptionNoEncontrado:
+                        pass
+                    except ExceptionLogica:
+                        pass
+
+                criterios = ['Cedula cliente', 'Oferta actual']
+                valores = [None, str(subasta.get_oferta_mayor())]
+                ff_opciones_descendente = FieldFrame(subframe_opciones_oferta, 'Dato', criterios, 'Valor', valores, [True, False], aceptar_callback=aceptar_oferta_callback)
+                ff_opciones_descendente.grid(row=0, column=0, rowspan=4, columnspan=2, padx=15, pady=15)
+
+            # opciones subasta anonima
+            def subasta_anonima(subasta):
+                def aceptar_oferta_callback(resultado):
+                    try:
+                        # Chequear cedula del cliente
+                        cliente_encontrado = Cliente.buscar_cliente(int(resultado[0]))
+                        if cliente_encontrado is None:
+                            raise ExceptionNoEncontrado('Cliente')
+
+                        self.cliente_actual = cliente_encontrado
+
+                        # Chequear cantidad a ofertar
+                        oferta = int(resultado[2])
+
+                        # Revisar puntos de cliente
+                        puntos_cliente = cliente_encontrado.get_puntos_fidelidad()
+                        if puntos_cliente < oferta:
+                            raise ExceptionLogica('El cliente no tiene suficientes puntos para realizar esta oferta')
+
+                        # Registrar oferta
+                        subasta.agregar_oferta(oferta, cliente_encontrado)
+                        messagebox.showinfo('Oferta realizada', 'Oferta realizada con exito a nombre de ' + str(cliente_encontrado.get_nombre())) #TODO posible ligadura dinamica aqui
+                        self.seleccion_accion()
+
+                    except ExceptionNoEncontrado:
+                        pass
+                    except ExceptionLogica:
+                        pass
+
+                criterios = ['Cedula cliente', 'Cantidad a ofertar']
+                ff_opciones_anonima = FieldFrame(subframe_opciones_oferta, 'Dato', criterios, 'Valor', None, None, aceptar_callback=aceptar_oferta_callback, tipos_esperados=['int', 'int'])
+                ff_opciones_anonima.grid(row=0, column=0, rowspan=4, columnspan=2, padx=15, pady=15)
+
+            try:
+                # Buscar campo vacio
+                if combobox_selec_subasta.get() == '':
+                    raise ExceptionCampoVacio([combobox_selec_subasta], ['Subasta'])
+
+                # Identificar tipo de subasta
+                id_subasta_selec = combobox_selec_subasta.get().split(' | ')
+                id_subasta_selec = int(id_subasta_selec[0].split(': ')[1])
+
+                subasta_selec = None
+
+                for subast in self.tienda_actual.get_subastas():
+                    if subast.get_id() == id_subasta_selec:
+                        subasta_selec = subast
+                        break
+
+                if subasta_selec.get_tipo() == 'Ascendente':
+                    subasta_ascendente(subasta_selec)
+                elif subasta_selec.get_tipo() == 'Descendente':
+                    subasta_descendente(subasta_selec)
+                elif subasta_selec.get_tipo() == 'Anonima':
+                    subasta_anonima(subasta_selec)
+
+            except ExceptionCampoVacio:
+                pass
+
+
+        tk.Button(subframe_oferta, text='Confirmar', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0, command=confirmar_subasta).grid(row=1, column=0, columnspan=2, padx=15, pady=15)
+
+
+    def actualizar_subasta(self):
+        self.reiniciar_frame()
+
+        subastas_desc = []
+        for subasta in self.tienda_actual.get_subastas():
+            if subasta.get_estado() == 'Activa' and subasta.get_tipo() == 'Descendente':
+                subastas_desc.append(subasta)
+
+        if len(subastas_desc) == 0:
+            messagebox.showinfo('Subastas descendentes', 'No hay subastas descendentes activas')
+            self.seleccion_accion()
+            return
+
+        subframe_actualizar = tk.Frame(self.framemain, bg=FONDO, bd=0)
+        subframe_actualizar.grid(row=0, column=0, sticky='nswe')
+        subframe_actualizar.columnconfigure((0, 1), weight=1, uniform='a')
+        subframe_actualizar.rowconfigure((0, 1, 2, 3, 4), weight=1, uniform='b')
+
+        # seleccion subasta
+        tk.Label(subframe_actualizar, text='Subasta', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, padx=15, pady=15, sticky='e')
+        values_subastas = []
+        for subasta in subastas_desc:
+            values_subastas.append('ID: ' + str(subasta.get_id()) + ' | Ultimo valor: ' + str(subasta.get_oferta_mayor()) + ' | Finaliza en: ' + subasta.get_fecha_fin().__str__())
+
+        combobox_selec_subasta = ttk.Combobox(subframe_actualizar, values=values_subastas, state='readonly')
+        combobox_selec_subasta.grid(row=0, column=1, padx=15, pady=15, ipadx=50, sticky='w')
+
+        # boton confirmacion
+        def selec_subasta():
+            subasta_selec = None
+            for subasta in subastas_desc:
+                if combobox_selec_subasta.get().split(' | ')[0] == 'ID: ' + str(subasta.get_id()):
+                    subasta_selec = subasta
+                    break
+
+            # entry para nuevo valor
+            tk.Label(subframe_actualizar, text='Nuevo valor', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=2, column=0, padx=15, pady=15, sticky='e')
+            entry_nuevo_valor = tk.Entry(subframe_actualizar)
+            entry_nuevo_valor.grid(row=2, column=1, padx=15, pady=15, sticky='w')
+
+            # boton para confirmar
+            def confirmar_actualizacion():
+                try:
+                    # Buscar campo vacio
+                    if combobox_selec_subasta.get() == '' or entry_nuevo_valor.get() == '':
+                        raise ExceptionCampoVacio([combobox_selec_subasta, entry_nuevo_valor], ['Subasta', 'Nuevo valor'])
+
+                    # Comprobar reduccion de valor
+                    if int(entry_nuevo_valor.get()) >= subasta_selec.get_oferta_mayor():
+                        raise ExceptionLogica('El nuevo valor debe ser menor a la ultima oferta')
+
+                    # Actualizar subasta
+                    subasta_selec.set_oferta_mayor(int(entry_nuevo_valor.get()))
+                    messagebox.showinfo('Subasta actualizada', 'Subasta actualizada con exito. Nuevo valor: ' + entry_nuevo_valor.get())
+
+                    self.seleccion_accion()
+                except ExceptionCampoVacio:
+                    pass
+                except ExceptionLogica:
+                    pass
+
+            tk.Button(subframe_actualizar, text='Confirmar decremento', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0, command=confirmar_actualizacion).grid(row=3, column=0, columnspan=2, padx=15, pady=15)
+
+        tk.Button(subframe_actualizar, text='Seleccionar', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0, command=selec_subasta).grid(row=1, column=0, columnspan=1, padx=15, pady=15, sticky='e')
+        tk.Button(subframe_actualizar, text='Volver', font=('Arial', 9, 'bold'), bg=POWER, bd=0, command=self.seleccion_accion).grid(row=1, column=1, columnspan=1, padx=15, pady=15, sticky='w')
+
+    # metodo que comprueba que hayan subastas finalizadas, avisa mediante messageboxes y actualiza su estado segun corresponda
+    def comprobar_subastas_finalizadas(self):
+        for subasta in self.tienda_actual.get_subastas():
+            if subasta.get_estado() == 'Activa' and int(subasta.get_fecha_fin().get_total_dias()) < int(self.fecha_actual.get_total_dias()):
+                # Si no hubo ofertas mirando la lista de ofertas
+                if subasta.get_ofertas() == []:
+                    messagebox.showinfo('Subasta extendida', subasta.extender_subasta(self.fecha_actual))
+                # Si hubo ofertas
+                else:
+                    if subasta.get_tipo() == 'Ascendente':
+                        ganador = subasta.finalizar_subasta()
+                        messagebox.showinfo('Subasta finalizada', 'La subasta ' + str(subasta.get_id()) + ' ha finalizado.\nEl ganador es ' + ganador.get_nombre() + ' con cedula ' + str(ganador.get_cedula()) + ' por una oferta de ' + str(subasta.get_oferta_mayor()))
+                    elif subasta.get_tipo() == 'Anonima':
+                        ganador = subasta.finalizar_subasta_anonima()
+                        messagebox.showinfo('Subasta finalizada', 'La subasta ' + str(subasta.get_id()) + ' ha finalizado.\nEl ganador es ' + ganador.get_nombre() + ' con cedula ' + str(ganador.get_cedula()) + ' por una oferta de ' + str(subasta.get_oferta_mayor()))
+
+
+
+
+
 
     # metodo que limpia por completo el interior de el frame que reciba
     @staticmethod
@@ -1946,12 +2423,28 @@ class ExceptionCampos(ErrorAplicacion):
     def __init__(self, mensaje):
         super().__init__('Error en los campos:\n' + mensaje)
 
-class ExceptionValorInvalido(ExceptionCampos):
-    def identificar_valor_invalido(self, entries_val, criterios):
-        self.valores_invalidos = []
+class ExceptionTipoInvalido(ExceptionCampos):
+    def __init__(self, entries_val, criterios, tipos_esperados):
+        super().__init__(self.identificar_tipo_invalido(entries_val, criterios, tipos_esperados))
+
+    def identificar_tipo_invalido(self, entries_val, criterios, tipos_esperados):
+        self.campos_invalidos = []
         self.mensaje = ''
 
-        #TODO encontrar una forma de hacer que se compruebe que el tipo de dato ingresado sea el esperado para cada fieldframe
+        for entry in entries_val:
+            if entry == '':  # Revisar si el campo esta vacio
+                raise ExceptionCampoVacio(entries_val, criterios)
+
+            elif tipos_esperados is not None:
+                if tipos_esperados[entries_val.index(entry)] == 'str':  # Si el tipo esperado es str
+                    if entry.get().isdigit():
+                        self.campos_invalidos.append(criterios[entries_val.index(entry)])
+
+                elif tipos_esperados[entries_val.index(entry)] == 'int':  # Si el tipo esperado es int
+                    if not entry.get().isdigit():
+                        self.campos_invalidos.append(criterios[entries_val.index(entry)])
+
+        return('Campos con tipo invalidos: ' + ', '.join(self.campos_invalidos))
 
 class ExceptionCampoVacio(ExceptionCampos):
     def __init__(self, entries_val, criterios):

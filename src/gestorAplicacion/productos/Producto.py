@@ -1,22 +1,23 @@
 from abc import ABC, abstractmethod
-from src.gestorAplicacion.manejoLocal.Fecha import Fecha
-class Producto(ABC):
-    ultimoId = 1
 
+from src.gestorAplicacion.manejoLocal.Fecha import Fecha
+from src.gestorAplicacion.mixins import Identificable
+
+
+class Producto(ABC, Identificable):
     # Constructores
     # Constructor con todos los atributos menos Id
     def __init__(self, nombre:str, precio:float, cantidad:int, cantidadInicial:int, prestable:bool, condicion:int, fechaLanzamiento:Fecha, descuento:float, puntosRequeridos:int):
-        self.id = Producto.ultimoId
-        Producto.ultimoId += 1
+        super().__init__()
         self._nombre = nombre
         self._precio = precio
         self._cantidad = cantidad
-        self._cantidadInicial = cantidadInicial
+        self._cantidad_inicial = cantidadInicial
         self._prestable = prestable
         self._condicion = condicion
-        self._fechaLanzamiento = fechaLanzamiento
+        self._fecha_lanzamiento = fechaLanzamiento
         self._descuento = descuento
-        self._puntosRequeridos = puntosRequeridos
+        self._puntos_requeridos = puntosRequeridos
 
 
     # ~~~~~ Metodos ~~~~~
@@ -24,74 +25,73 @@ class Producto(ABC):
     # Metodo para calcular las ventas en base a la cantidad inicial y la actual
     # (recordemos que la cantidad inicial se reinicia cada mes)
     def calcular_ventas(self):
-        return self._cantidadInicial - self._cantidad
+        return self._cantidad_inicial - self._cantidad
     #Diccionario de prioridad para el orden
 
 
     # TODO metodos para ordenar productos por defecto
     @classmethod
-    def ordenar(cls, parametro:str, lista, ):
+    def ordenar(cls, parametro:str, lista):
         if parametro.lower() == "nombre":
-            sorted(lista,key=lambda x:x.get_nombre())
-            return lista
+            lista.sort(key=lambda x:x.get_nombre())
         elif parametro.lower() == "precio":
-            sorted(lista,key=lambda x:x.get_precio())
-            return lista
+            lista.sort(key=lambda x:x.get_precio(), reverse=True)
         elif parametro.lower() == "ventas":
-            sorted(lista,key=lambda x:x.calcular_ventas())
-            return lista
+            lista.sort(key=lambda x:x.calcular_ventas(),reverse=True)
         elif parametro.lower() == "prioridad":
             prio = {"prioridad muy alta": 1, "prioridad alta": 2, "prioridad media": 3, "prioridad baja": 4}
-            sorted(lista, key=lambda x:prio[x.getPrioridad()])
-            return lista
+            lista.sort(key=lambda x:prio[x.getPrioridad()])
 
 
     # TODO metodo para clonar producto
 
     # Metodo toString...?
-    def __str__(self):
-        return f"ID: {self.id}, Nombre: {self._nombre}, Precio: {self._precio}, Cantidad: {self._cantidad}, Condicion: {self._condicion}, Fecha de Lanzamiento: {self._fechaLanzamiento}"
-
     @abstractmethod
-    def metodo_abstracto(self):
-        pass
+    def __str__(self):
+        return f"ID: {self.id}, Nombre: {self._nombre}, Precio: {self._precio}, Cantidad: {self._cantidad}, Condicion: {self._condicion}, Fecha de Lanzamiento: {self._fecha_lanzamiento}"
+    @abstractmethod
+    def __repr__(self):
+        return f"ID: {self.id}, Nombre: {self._nombre}, Precio: {self._precio}, Cantidad: {self._cantidad}, Condicion: {self._condicion}, Fecha de Lanzamiento: {self._fecha_lanzamiento}"
+
 
 
     # ~~~~~ Getters y Setters ~~~~~
-    def getId(self):
+    def get_id(self):
         return self.id
-    def getNombre(self):
+    def get_nombre(self):
         return self._nombre
-    def setNombre(self, nombre):
+    def set_nombre(self, nombre):
         self._nombre = nombre
-    def getPrecio(self):
+    def get_precio(self):
         return self._precio
-    def setPrecio(self, precio):
+    def set_precio(self, precio):
         self._precio = precio
-    def getCantidad(self):
+    def get_cantidad(self):
         return self._cantidad
-    def setCantidad(self, cantidad):
+    def set_cantidad(self, cantidad):
         self._cantidad = cantidad
-    def getCantidadInicial(self):
-        return self._cantidadInicial
-    def setCantidadInicial(self, cantidadInicial):
-        self._cantidadInicial = cantidadInicial
-    def isPrestable(self):
+    def get_cantidad_inicial(self):
+        return self._cantidad_inicial
+    def set_cantidad_inicial(self, cantidadInicial):
+        self._cantidad_inicial = cantidadInicial
+    def is_prestable(self):
         return self._prestable
-    def setPrestable(self, prestable):
+    def set_prestable(self, prestable):
         self._prestable = prestable
-    def getCondicion(self):
+    def get_condicion(self):
         return self._condicion
-    def setCondicion(self, condicion):
+    def set_condicion(self, condicion):
         self._condicion = condicion
-    def getFechaLanzamiento(self):
-        return self._fechaLanzamiento
+    def get_fecha_lanzamiento(self):
+        return self._fecha_lanzamiento
 
-    def getDescuento(self):
+    def get_descuento(self):
         return self._descuento
-    def setDescuento(self, descuento):
+    def set_descuento(self, descuento):
         self._descuento = descuento
-    def getPuntosRequeridos(self):
-        return self._puntosRequeridos
-    def setPuntosRequeridos(self, puntosRequeridos):
-        self._puntosRequeridos = puntosRequeridos
+    def get_puntos_requeridos(self):
+        return self._puntos_requeridos
+    def set_puntos_requeridos(self, puntosRequeridos):
+        self._puntos_requeridos = puntosRequeridos
+
+

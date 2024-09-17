@@ -1,3 +1,5 @@
+from multimethod import multimethod
+
 from src.gestorAplicacion.informacionVenta.Transaccion import Transaccion
 from src.gestorAplicacion.productos.Juego import Juego
 from src.gestorAplicacion.personas.Empleado import Empleado
@@ -16,56 +18,56 @@ class Tienda:
         self._inventarioUsado = []
         self._reabastecimientos = []
         self._empleados = []
-        Tienda.agregarTienda(self)
+        Tienda.agregar_tienda(self)
 
 
 
     # Metodos
     # Agregar producto al inventario correspondiente
-    def agregarProducto(self, producto):
-        if producto.isPrestable():
-            producto.setPrecio(producto.getPrecio() * 0.01)
+    def agregar_producto(self, producto):
+        if producto.is_prestable():
+            producto.set_precio(producto.get_precio() * 0.01)
             self._inventarioPrestamo.append(producto)
-        elif producto.getCondicion() < 5:
+        elif producto.get_condicion() < 5:
             self._inventarioUsado.append(producto)
         else:
             self._inventario.append(producto)
     @classmethod
-    def agregarTienda(cls, tienda):
+    def agregar_tienda(cls, tienda):
         if isinstance(tienda, Tienda):
             cls._locales.append(tienda)
 
     # Reduce en uno la cantidad de un producto en un inventario dado segun codigo
     @staticmethod
-    def retirarUnoDeInventario(producto, inventario):
+    def retirar_uno_de_inventario(producto, inventario):
         for p in inventario:
             if p.getCodigo() == producto.getCodigo():
-                p.setCantidad(p.getCantidad() - 1)
+                p.set_cantidad(p.get_cantidad() - 1)
 
     # Establece la prioridad de los productos en el inventario
-    def actualizarPrioridad(self):
+    def actualizar_prioridad(self):
         for i in self._inventario:
             if i.getPrioridad() is None:
-                if i.getCantidadInicial() - i.getCantidad() > i.getCantidadInicial() * 0.8:
+                if i.get_cantidad_inicial() - i.get_cantidad() > i.get_cantidad_inicial() * 0.8:
                     i.setPrioridad("Prioridad muy alta")
-                elif i.getCantidadInicial() - i.getCantidad() >= i.getCantidadInicial() * 0.51:
+                elif i.get_cantidad_inicial() - i.get_cantidad() >= i.get_cantidad_inicial() * 0.51:
                     i.setPrioridad("Prioridad alta")
-                elif i.getCantidadInicial() - i.getCantidad() >= i.getCantidadInicial() * 0.21:
+                elif i.get_cantidad_inicial() - i.get_cantidad() >= i.get_cantidad_inicial() * 0.21:
                     i.setPrioridad("Prioridad media")
                 else:
                     i.setPrioridad("Prioridad baja")
 
-    def agregarEmpleado(self, empleado):
+    def agregar_empleado(self, empleado):
         self._empleados.append(empleado)
 
-    def agregarTransaccion(self, transaccion):
+    def agregar_transaccion(self, transaccion):
         self._caja.append(transaccion)
-        self.agregarFondos(transaccion.getValorFinal())
+        self.agregar_fondos(transaccion.getValorFinal())
 
-    def agregarFondos(self, fondos):
+    def agregar_fondos(self, fondos):
         self._fondos += fondos
 
-    def agregarSubasta(self, subasta):
+    def agregar_subasta(self, subasta):
         self._subastas.append(subasta)
 
     def reabastecer_producto(self, producto_recibido):
@@ -100,11 +102,25 @@ class Tienda:
         if orden is not None:
             self._reabastecimientos.append(orden)
 
-    def get_productos_categoria_inventario(self, categoria, tipo_inventario=None):
+    # Metodo para obtener los productos de una categoria en el inventario de la tienda
+    @multimethod
+    def get_productos_categoria_inventario(self, categoria:str):
+        invent = self._inventario
+
+        if categoria == "Consola":
+            from src.gestorAplicacion.productos.Consola import Consola
+            return [p for p in invent if isinstance(p, Consola)]
+        elif categoria == "Juego":
+            return [p for p in invent if isinstance(p, Juego)]
+        elif categoria == "Accesorio":
+            from src.gestorAplicacion.productos.Accesorio import Accesorio
+            return [p for p in invent if isinstance(p, Accesorio)]
+
+    # Metodo para obtener los productos de una categoria en un inventario especifico
+    @multimethod
+    def get_productos_categoria_inventario(self, categoria:str, tipo_inventario:str):
         invent = []
         match tipo_inventario:
-            case None:
-                invent = self._inventario
             case "prestamo":
                 invent = self._inventarioPrestamo
             case "usado":
@@ -119,12 +135,10 @@ class Tienda:
             from src.gestorAplicacion.productos.Accesorio import Accesorio
             return [p for p in invent if isinstance(p, Accesorio)]
 
-    def buscar_producto_id(self, id, tipo_inventario=None):
-        if tipo_inventario is None:
-            for p in self._inventario:
-                if p.id == id:
-                    return p
-        elif tipo_inventario == "prestamo":
+    # Metodo para buscar un producto por su id en un inventario especifico
+    @multimethod
+    def buscar_producto_id(self, id:int, tipo_inventario:str):
+        if tipo_inventario == "prestamo":
             for p in self._inventarioPrestamo:
                 if p.id == id:
                     return p
@@ -134,12 +148,13 @@ class Tienda:
                     return p
         return None
 
-    def buscar_producto_id(self, id):
+    # Metodo para buscar un producto por su id en el inventario de la tienda
+    @multimethod
+    def buscar_producto_id(self, id:int):
         for p in self._inventario:
             if p.id == id:
                 return p
         return None
-
 
 # Getters y setters
     def get_nombre(self):

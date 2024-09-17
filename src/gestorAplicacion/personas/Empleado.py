@@ -13,7 +13,7 @@ class Empleado(Persona):
         self._metas_alcanzadas = []
         self._metas_caducadas = []
         self._transacciones = []
-        tienda.agregarEmpleado(self)
+        tienda.agregar_empleado(self)
 
     # Metodos
     def ingresar_meta(self, meta):

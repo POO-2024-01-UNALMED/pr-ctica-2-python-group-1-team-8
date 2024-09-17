@@ -7,7 +7,7 @@ class Cliente(Persona):
 
     # Constructor
     @multimethod
-    def __init__(self, cedula, nombre, correo, telefono, puntos_fidelidad):
+    def __init__(self, cedula:int, nombre:str, correo:str, telefono:int, puntos_fidelidad:int):
         super().__init__(cedula, nombre, correo, telefono)
         self._puntos_fidelidad = puntos_fidelidad
         self._prestamos = []
