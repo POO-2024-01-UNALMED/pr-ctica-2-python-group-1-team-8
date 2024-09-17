@@ -1584,6 +1584,7 @@ class FieldFrameEmpleado(tk.Frame):
         self.empleado_actual = None
         self.tienda_actual = tienda_actual
         self.fecha_actual = fecha_actual
+        self.salario = None
 
         self.framemain = tk.Frame(ventana, bg=FONDO)
         self.framemain.grid(row=0, column=0, sticky='nswe')
@@ -1689,24 +1690,27 @@ class FieldFrameEmpleado(tk.Frame):
             return list(map(lambda meta: meta.get_codigo(), self.empleado_actual.get_metas_alcanzadas()))
 
         self.listado_metas_alcanzadas = []
+        self.combobox_meta_alcanzada = ttk.Combobox(self.subframe)
 
+        def crear_listado_metas_alcanzadas(frame):
+            listado_default = tk.StringVar(value='Elige una meta alcanzada')
+            listado_nombres = identificar_metas_alcanzadas()
+            self.listado_metas_alcanzadas = self.empleado_actual.get_metas_alcanzadas()
 
-        listado_default = tk.StringVar(value='Elige una meta alcanzada')
-        listado_nombres = identificar_metas_alcanzadas()
-        listado_metas_alcanzadas = self.empleado_actual.get_metas_alcanzadas()
+            self.combobox_meta_alcanzada = ttk.Combobox(self.subframe, values=listado_nombres, textvariable=listado_default)
+            self.combobox_meta_alcanzada.grid(row=0, column=1, padx=15, pady=15)
 
-        combobox_meta_alcanzada = ttk.Combobox(self.subframe, values=listado_nombres, textvariable=listado_default)
-        combobox_meta_alcanzada.grid(row=0, column=1, padx=15, pady=15)
+            if self.listado_metas_alcanzadas == []:
+                self.pantalla_metas_caducadas()
+                messagebox.showinfo('No hay metas alcanzadas', 'No hay metas alcanzadas para este empleado')
+                return
 
-        if listado_metas_alcanzadas == []:
-            messagebox.showinfo('No hay metas alcanzadas', 'No hay metas alcanzadas para este empleado')
-            self.pantalla_metas_caducadas()
-            return
+        crear_listado_metas_alcanzadas(self.subframe)
 
         # Insertar meta seleccionada
         self.meta_alcanzada_actual = None
         def insertar_meta():
-            self.meta_alcanzada_actual = self.listado_metas_alcanzadas[combobox_meta_alcanzada.current()]
+            self.meta_alcanzada_actual = self.listado_metas_alcanzadas[self.combobox_meta_alcanzada.current()]
 
             # Espacio del FieldFrame
             criterios = ['Codigo', 'Fecha', 'Valor a alcanzar', 'Valor bonificacion']
@@ -1750,7 +1754,7 @@ class FieldFrameEmpleado(tk.Frame):
         self.listado_metas_caducadas = []
         self.combobox_meta_caducada = ttk.Combobox(self.subframe)
 
-        def crear_listado_metas(frame):
+        def crear_listado_metas_caducadas(frame):
             listado_default = tk.StringVar(value='Elige una meta caducada')
             listado_nombres = identificar_metas_caducadas()
             self.listado_metas_caducadas = self.empleado_actual.get_metas_caducadas()
@@ -1763,7 +1767,7 @@ class FieldFrameEmpleado(tk.Frame):
                 messagebox.showinfo('No hay metas caducadas', 'No hay metas caducadas para este empleado')
                 return
 
-        crear_listado_metas(self.subframe)
+        crear_listado_metas_caducadas(self.subframe)
 
         # Insertar meta seleccionada
         self.meta_caducada_actual = None
@@ -1796,7 +1800,7 @@ class FieldFrameEmpleado(tk.Frame):
                         .grid(row=0, column=0, padx=15, pady=15))
 
         #Boton para insertar meta seleccionada
-        self.boton_meta_caducada = tk.Button(self.subframe, text='Mostrar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=lambda: insertar_meta_caducada())
+        self.boton_meta_caducada = tk.Button(self.subframe, text='wfwr', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=lambda: insertar_meta_caducada())
         self.boton_meta_caducada.grid(row=0, column=2, padx=15, pady=15, sticky='w')
 
         self.total_metas()
@@ -1808,7 +1812,6 @@ class FieldFrameEmpleado(tk.Frame):
         subframe3.rowconfigure((0, 1), weight=1, uniform='b')
 
         tk.Button(subframe3, text='Continuar a rendimiento', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=self.pantalla_rendimiento).grid(row=0, column=0, padx=15, pady=15, sticky='e')
-
 
     def pantalla_rendimiento(self):
         self.limpiar_frame(self.framemain)
@@ -1835,6 +1838,7 @@ class FieldFrameEmpleado(tk.Frame):
         def insertar_rendimiento():
             self.rendimiento_actual = self.combobox_rendimiento.get()
             rendimiento = verRendimiento(self.empleado_actual, self.fecha_actual, self.combobox_rendimiento.get())
+            print(rendimiento)
 
             # Espacio del FieldFrame
             criterios = ['Rendimiento']
@@ -1866,7 +1870,112 @@ class FieldFrameEmpleado(tk.Frame):
         self.boton_rendimiento.grid(row=0, column=2, padx=15, pady=15, sticky='w')
 
     def pantalla_modificar_salario(self):
-        pass
+        self.limpiar_frame(self.framemain)
+
+        self.framemain.rowconfigure((0, 2), weight=1, uniform='a')
+        self.framemain.rowconfigure(1, weight=4, uniform='a')
+        self.framemain.columnconfigure(0, weight=1, uniform='b')
+
+        self.subframe = tk.Frame(self.framemain, bg=FONDO, bd=0)
+        self.subframe.grid(row=0, column=0, sticky='s')
+        self.subframe.rowconfigure(0, weight=1, uniform='aa')
+        self.subframe.columnconfigure(0, weight=1, uniform='bb')
+
+        #Titulos
+        tk.Label(self.subframe, text='¿Desea modificar el salario?', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, padx=15, pady=15, sticky='e')
+        tk.Label(self.subframe, text='¿Qué tipo de salario?', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=1, column=0, padx=15, pady=15, sticky='e')
+
+        #Comboboxes
+        decision = ['Si', 'No']
+
+        categoria_default = tk.StringVar(value='Elige una opcion')
+        self.combobox_decision = ttk.Combobox(self.subframe, values=decision, textvariable=categoria_default)
+        self.combobox_decision.grid(row=0, column=1, padx=15, pady=15)
+
+        def identificar_salarios():
+            if self.combobox_decision.get() == 'Si':
+                return ['Salario fijo', 'Salario porcentual']
+            else:
+                self.pantalla_modificar_dias_laborales()
+
+        self.listado_salarios = []
+        self.combobox_salario = ttk.Combobox(self.subframe)
+
+        def crear_listado_salarios(frame):
+            listado_default = tk.StringVar(value='Elige un salario')
+            listado_nombres = identificar_salarios()
+            if self.combobox_salario.get() == 'Salario fijo':
+                self.salario = self.empleado_actual.get_salario()
+            else:
+                self.salario = self.empleado_actual.get_salario_porcentual()
+
+            self.combobox_salario.config(values=listado_nombres, textvariable=listado_default)
+            self.combobox_salario.grid(row=1, column=1, padx=15, pady=15)
+
+        #Boton para crear combobox de salarios
+        self.boton_salarios = tk.Button(self.subframe, text='Insertar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=lambda:crear_listado_salarios(self.subframe))
+        self.boton_salarios.grid(row=0, column=2, padx=15, pady=15, sticky='w')
+
+        def insertar_salario():
+            self.decision_actual = self.combobox_rendimiento.get()
+            if self.decision_actual == 'Si':
+                FieldFrame(self.subframe, 'Salario', ['Salario', 'Nuevo salario'], 'Valor', [str(self.empleado_actual.get_salario()), ''], [False, True])
+                criterios = ['Salario', 'Nuevo salario']
+                valores = [str(self.empleado_actual.get_salario()), '']
+                cri_habilitados = [False, True]
+
+                def al_aceptar_callback(resultado):
+                    self.pantalla_modificar_dias_laborales()
+            else:
+                self.pantalla_modificar_dias_laborales()
+
+        #Boton para insertar decision
+        self.boton_decision = tk.Button(self.subframe, text='Insertar', font=('Arial', 7, 'bold'), bg=RESALTO, bd=0, command=lambda: insertar_salario())
+        self.boton_decision.grid(row=1, column=2, padx=15, pady=15, sticky='w')
+
+    def pantalla_modificar_dias_laborales(self):
+        self.limpiar_frame(self.framemain)
+
+        self.framemain.rowconfigure((0, 2), weight=1, uniform='a')
+        self.framemain.rowconfigure(1, weight=4, uniform='a')
+        self.framemain.columnconfigure(0, weight=1, uniform='b')
+
+        self.subframe = tk.Frame(self.framemain, bg=FONDO, bd=0)
+        self.subframe.grid(row=0, column=0, sticky='s')
+        self.subframe.rowconfigure(0, weight=1, uniform='aa')
+        self.subframe.columnconfigure(0, weight=1, uniform='bb')
+
+        #Titulos
+        tk.Label(self.subframe, text='¿Desea modificar los días laborales?', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=0, column=0, padx=15, pady=15, sticky='e')
+        tk.Label(self.subframe, text='¿Qué tipo de días laborales?', font=('Arial', 11, 'bold'), bg=FONDO).grid(row=1, column=0, padx=15, pady=15, sticky='e')
+
+        #Comboboxes
+        decision = ['Si', 'No']
+
+        categoria_default = tk.StringVar(value='Elige una opcion')
+        self.combobox_decision = ttk.Combobox(self.subframe, values=decision, textvariable=categoria_default)
+        self.combobox_decision.grid(row=0, column=1, padx=15, pady=15)
+
+        def identificar_dias():
+            if self.combobox_decision.get() == 'Si':
+                return ['Días laborales', 'Días no laborales']
+            else:
+                self.pantalla_modificar_dias_laborales()
+
+        self.listado_dias = []
+        self.combobox_dias = ttk.Combobox(self.subframe)
+
+        def crear_listado_dias(frame):
+            listado_default = tk.StringVar(value='Elige un día')
+            listado_nombres = identificar_dias()
+            self.listado_dias = self.identificar_dias()
+
+            self.combobox_dias.config(values=listado_nombres, textvariable=listado_default)
+            self.combobox_dias.grid(row=1, column=1, padx=15, pady=15)
+
+
+
+
 
 
 

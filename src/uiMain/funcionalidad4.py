@@ -276,24 +276,20 @@ def compararRendimiento(empleado, fecha_actual, decision):
                 if fecha_actual.get_total_dias - 14 <= t.get_fecha().get_total_dias() and fecha_actual.get_total_dias - 7 >= t.get_fecha().get_total_dias():
                     total_semana += 1
 
-            print(f"El total de ventas en la semana anterior del empleado {empleado.get_nombre()} fueron: {total_semana}")
-            print("Presione enter para continuar.\n")
+            return  f"El total de ventas fueron: {total_semana}"
 
-            if total_semana < total_ventas_semana_actual:
-                calculo = ((total_ventas_semana_actual - total_semana) * 100) / total_semana
-                print(f"El total de ventas en esta semana incremento en un {calculo}%")
-                if calculo > 30:
-                    print("El empleado tuvo un incremento en ventas mayor al 30%. El empleado debería tener una bonificacion remunerada")
-                    print("Presione enter para continuar")
-
-            elif total_semana == total_ventas_semana_actual:
-                print(f"El total de ventas fue igual al de la semana pasada {total_semana} ventas")
-                print("Presione enter para continuar")
-
-            else:
-                calculo = ((total_semana - total_ventas_semana_actual) * 100) / total_semana
-                print(f"El total de ventas en esta semana disminuyo en un {calculo}%")
-                print("Presione enter para continuar")
+            # if total_semana < total_ventas_semana_actual:
+            #     calculo = ((total_ventas_semana_actual - total_semana) * 100) / total_semana
+            #     print(f"El total de ventas en esta semana incremento en un {calculo}%")
+            #     if calculo > 30:
+            #         print("El empleado tuvo un incremento en ventas mayor al 30%. El empleado debería tener una bonificacion remunerada")
+            #
+            # elif total_semana == total_ventas_semana_actual:
+            #     print(f"El total de ventas fue igual al de la semana pasada {total_semana} ventas")
+            #
+            # else:
+            #     calculo = ((total_semana - total_ventas_semana_actual) * 100) / total_semana
+            #     print(f"El total de ventas en esta semana disminuyo en un {calculo}%")
 
         case 'Mensual':
             total_mes = 0
@@ -301,21 +297,20 @@ def compararRendimiento(empleado, fecha_actual, decision):
                 if fecha_actual.get_total_dias - 62 <= t.get_fecha().get_total_dias() and fecha_actual.get_total_dias - 31 >= t.get_fecha().get_total_dias():
                     total_mes += 1
 
-            if total_mes < total_ventas_mes_actual:
-                calculo = ((total_ventas_mes_actual - total_mes) * 100) / total_mes
-                print(f"El total de ventas en este mes incremento en un {calculo}%")
-                if calculo > 30:
-                    print("El empleado tuvo un incremento en ventas mayor al 30%. El empleado debería tener una bonificacion remunerada")
-                    print("Presione enter para continuar")
+            return  f"El total de ventasen el mes anterior fueron: {total_mes}"
 
-            elif total_mes == total_ventas_mes_actual:
-                print(f"El total de ventas fue igual al del mes pasado {total_mes} ventas")
-                print("Presione enter para continuar")
-
-            else:
-                calculo = ((total_mes - total_ventas_mes_actual) * 100) / total_mes
-                print(f"El total de ventas en este mes disminuyo en un {calculo}%")
-                print("Presione enter para continuar")
+            # if total_mes < total_ventas_mes_actual:
+            #     calculo = ((total_ventas_mes_actual - total_mes) * 100) / total_mes
+            #     print(f"El total de ventas en este mes incremento en un {calculo}%")
+            #     if calculo > 30:
+            #         print("El empleado tuvo un incremento en ventas mayor al 30%. El empleado debería tener una bonificacion remunerada")
+            #
+            # elif total_mes == total_ventas_mes_actual:
+            #     print(f"El total de ventas fue igual al del mes pasado {total_mes} ventas")
+            #
+            # else:
+            #     calculo = ((total_mes - total_ventas_mes_actual) * 100) / total_mes
+            #     print(f"El total de ventas en este mes disminuyo en un {calculo}%")
 
         case 'Anual':
             total_year = 0
@@ -323,21 +318,20 @@ def compararRendimiento(empleado, fecha_actual, decision):
                 if fecha_actual.get_total_dias - 730 <= t.get_fecha().get_total_dias() and fecha_actual.get_total_dias - 365 >= t.get_fecha().get_total_dias():
                     total_year += 1
 
-            if total_year < total_ventas_year_actual:
-                calculo = ((total_ventas_year_actual - total_year) * 100) / total_year
-                print(f"El total de ventas en este año incremento en un {calculo}%")
-                if calculo > 30:
-                    print("El empleado tuvo un incremento en ventas mayor al 30%. El empleado debería tener una bonificacion remunerada")
-                    print("Presione enter para continuar")
+            return  f"El total de ventas fueron: {total_year}"
 
-            elif total_year == total_ventas_year_actual:
-                print(f"El total de ventas fue igual al del año pasado {total_year} ventas")
-                print("Presione enter para continuar")
-
-            else:
-                calculo = ((total_year - total_ventas_year_actual) * 100) / total_year
-                print(f"El total de ventas en este año disminuyo en un {calculo}%")
-                print("Presione enter para continuar")
+            # if total_year < total_ventas_year_actual:
+            #     calculo = ((total_ventas_year_actual - total_year) * 100) / total_year
+            #     print(f"El total de ventas en este año incremento en un {calculo}%")
+            #     if calculo > 30:
+            #         print("El empleado tuvo un incremento en ventas mayor al 30%. El empleado debería tener una bonificacion remunerada")
+            #
+            # elif total_year == total_ventas_year_actual:
+            #     print(f"El total de ventas fue igual al del año pasado {total_year} ventas")
+            #
+            # else:
+            #     calculo = ((total_year - total_ventas_year_actual) * 100) / total_year
+            #     print(f"El total de ventas en este año disminuyo en un {calculo}%")
 
         case _:
             print("Ingrese una opcion valida. Presione enter para volver a intentar")
@@ -382,6 +376,7 @@ def modificarSalario(empleado):
                 print("Ingrese una opcion valida. Presione enter para volver a intentar")
                 input()
                 return
+
 def modifcarDiasLaborales(empleado):
     while True:
         try:
