@@ -1,11 +1,9 @@
-from src.gestorAplicacion.mixins import Identificable
+from src.gestorAplicacion.mixins import Identificable, MarcaTiempo
 
 
-class Subasta(Identificable):
-
-    def __init__(self, fecha_inicio, fecha_fin, productos, oferta_mayor, local, tipo):
+class Subasta(Identificable, MarcaTiempo):
+    def __init__(self, fecha_fin, productos, oferta_mayor, local, tipo):
         super().__init__()
-        self._fecha_inicio = fecha_inicio
         self._fecha_fin = fecha_fin
         self._productos = productos
         self._ofertas = []

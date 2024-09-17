@@ -1,7 +1,7 @@
-from src.gestorAplicacion.mixins import Identificable
+from src.gestorAplicacion.mixins import Identificable, MarcaTiempo
 
 
-class Transaccion(Identificable):
+class Transaccion(Identificable, MarcaTiempo):
     def __init__(self, cliente, empleado, local, productos, valor_sin_descuento, valor_final):
         super().__init__()
         self._cliente = cliente

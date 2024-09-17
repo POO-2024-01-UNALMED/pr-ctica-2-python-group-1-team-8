@@ -130,19 +130,19 @@ if __name__ == "__main__":
     fecha12 =   Fecha(7,6,2024)
 
 
-    Transaccion(fecha1, cliente1, empleado1, tienda1, [], 10000,10000)
-    Transaccion(fecha2, cliente1, empleado1, tienda1, [], 10000,10000)
-    Transaccion(fecha3, cliente1, empleado1, tienda1, [], 10000,10000)
-    Transaccion(fecha4, cliente1, empleado1, tienda1, [], 10000,10000)
-    Transaccion(fecha5, cliente1, empleado1, tienda1, [], 10000,10000)
-    Transaccion(fecha6, cliente1, empleado1, tienda1, [], 10000,10000)
-    Transaccion(fecha7, cliente1, empleado1, tienda1, [], 10000,10000)
-
-    Transaccion(fecha8, cliente1, empleado1, tienda1,  [], 10000,10000)
-    Transaccion(fecha9, cliente1, empleado1, tienda1,  [], 10000,10000)
-    Transaccion(fecha10, cliente1, empleado1, tienda1,  [], 10000,10000)
-    Transaccion(fecha11, cliente1, empleado1, tienda1,  [], 10000,10000)
-    Transaccion(fecha12, cliente1, empleado1, tienda1,  [], 10000,10000)
+    # Transaccion(fecha1, cliente1, empleado1, tienda1, [], 10000,10000)
+    # Transaccion(fecha2, cliente1, empleado1, tienda1, [], 10000,10000)
+    # Transaccion(fecha3, cliente1, empleado1, tienda1, [], 10000,10000)
+    # Transaccion(fecha4, cliente1, empleado1, tienda1, [], 10000,10000)
+    # Transaccion(fecha5, cliente1, empleado1, tienda1, [], 10000,10000)
+    # Transaccion(fecha6, cliente1, empleado1, tienda1, [], 10000,10000)
+    # Transaccion(fecha7, cliente1, empleado1, tienda1, [], 10000,10000)
+    #
+    # Transaccion(fecha8, cliente1, empleado1, tienda1,  [], 10000,10000)
+    # Transaccion(fecha9, cliente1, empleado1, tienda1,  [], 10000,10000)
+    # Transaccion(fecha10, cliente1, empleado1, tienda1,  [], 10000,10000)
+    # Transaccion(fecha11, cliente1, empleado1, tienda1,  [], 10000,10000)
+    # Transaccion(fecha12, cliente1, empleado1, tienda1,  [], 10000,10000)
 
 
     tienda2 =  Tienda("Robledo", 1420)
@@ -281,7 +281,7 @@ if __name__ == "__main__":
     cliente14 = Cliente(133, "Lucia", "lucia@mail.com", 311216, 1600)
     cliente15 = Cliente(134, "Andres", "andres@mail.com", 311217, 1800)
     cliente16 = Cliente(135, "Monica", "monica@mail.com", 311218, 2000)
-    cliente17 =  Cliente(136, "Ricardo", "ricardo@mail.com", 311219, 2200)
+    cliente17 = Cliente(136, "Ricardo", "ricardo@mail.com", 311219, 2200)
 
     Serializador.serializar_todo(Tienda.get_locales(), Cliente.clientes, Fecha(1, 1, 2021))
 

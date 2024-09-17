@@ -1,10 +1,9 @@
-from src.gestorAplicacion.mixins import Identificable
+from src.gestorAplicacion.mixins import Identificable, MarcaTiempo
 
 
-class Prestamo(Identificable):
-    def __init__(self, fecha_inicio, fecha_fin, cliente, productos, valor_total, estado):
+class Prestamo(Identificable, MarcaTiempo):
+    def __init__(self, fecha_fin, cliente, productos, valor_total, estado):
         super().__init__()
-        self._fecha_inicio = fecha_inicio
         self._fecha_fin = fecha_fin
         self._cliente = cliente
         self._produtos = productos

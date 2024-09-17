@@ -348,7 +348,7 @@ class VentanaSecundaria:
 
         self.root = tk.Tk()
         self.root.title("Villajuegos")
-        self.root.geometry("700x600")
+        self.root.geometry("900x700")
         self.root.configure(bg=FONDO)
 
         # Columnas
@@ -1090,7 +1090,7 @@ class FieldFramePrestamo(FieldFrameProducto):
             fecha_fin = Fecha(int(self.fecha_actual.get_total_dias() + dias))
 
             from src.gestorAplicacion.informacionVenta.Prestamo import Prestamo
-            Prestamo(self.fecha_actual, fecha_fin, self.cliente_actual, self.carrito, valor_total, 'Activo')
+            Prestamo(fecha_fin, self.cliente_actual, self.carrito, valor_total, 'Activo')
 
             # Limpiar
             messagebox.showinfo('Prestamo realizado', f'Prestamo realizado con exito\nTotal: {valor_total}\nDias de plazo: {dias}\nCliente: ' + self.cliente_actual.get_nombre())
@@ -1842,7 +1842,7 @@ class FieldFrameSubasta(tk.Frame):
                     else:
                         # Crear subasta
                         from src.gestorAplicacion.informacionVenta.Subasta import Subasta
-                        Subasta(self.fecha_actual, fecha_fin, self.carrito, int(entry_oferta_inicial.get()), self.tienda_actual, combobox_tipo_subasta.get())
+                        Subasta(fecha_fin, self.carrito, int(entry_oferta_inicial.get()), self.tienda_actual, combobox_tipo_subasta.get())
 
                         # Reflejar en inventario que los productos han sido puestos en subasta
 
