@@ -6,3 +6,8 @@
 /.idea
 *.xml
 .idea/workspace.xml
+src/baseDatos/__pycache__/__init__.cpython-311.pyc
+src/gestorAplicacion/manejoLocal/__pycache__/Fecha.cpython-311.pyc
+src/gestorAplicacion/productos/__pycache__/Consola.cpython-311.pyc
+src/gestorAplicacion/productos/__pycache__/Producto.cpython-311.pyc
+src/uiMain/__pycache__/gui.cpython-311.pyc
