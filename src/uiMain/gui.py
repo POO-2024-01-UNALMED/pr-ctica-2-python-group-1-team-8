@@ -3,7 +3,6 @@
 import copy
 import tkinter as tk
 import tkinter.messagebox as messagebox
-from random import uniform
 from tkinter import ttk, Frame
 
 from PIL import Image, ImageTk
@@ -486,22 +485,6 @@ class VentanaSecundaria:
 
             prueba_subfieldframe = FieldFrameEmpleado(subframe_func, local)
             prueba_subfieldframe.grid(row=0, column=0, sticky='nswe', padx=40, pady=40)
-
-        def revisar_producto():
-            self.subframe2 = tk.Frame(self.framemain,bg=FONDO,bd=0)
-            self.subframe2.grid(row=1,column=0)
-            (FieldFrame(self.subframe2,'Dato',['ID','Nombre','Precio','Cantidad','Fecha de lanzamiento'],'Valor',['1','Juego1','10000','10','01/01/2021'])
-             .grid(row=0,column=0,padx=15,pady=15))
-        def modificar_producto():
-            self.subframe2 = tk.Frame(self.framemain,bg=FONDO,bd=0)
-            self.subframe2.grid(row=1,column=0)
-            (FieldFrame(self.subframe2,'Dato',['ID','Nombre','Precio','Cantidad','Fecha de lanzamiento'],'Valor',['1','Juego1','10000','10','01/01/2021'])
-             .grid(row=0,column=0,padx=15,pady=15))
-        def revisar_prioridad():
-            self.subframe2 = tk.Frame(self.framemain,bg=FONDO,bd=0)
-            self.subframe2.grid(row=1,column=0)
-            (FieldFrame(self.subframe2,'Dato',['ID','Nombre','Precio','Cantidad','Fecha de lanzamiento'],'Valor',['1','Juego1','10000','10','01/01/2021'])
-             .grid(row=0,column=0,padx=15,pady=15))
 
         # Menubar
         menubar = tk.Menu(self.root)
