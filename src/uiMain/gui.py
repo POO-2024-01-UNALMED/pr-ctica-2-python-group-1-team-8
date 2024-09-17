@@ -3,6 +3,8 @@ import tkinter as tk
 import tkinter.messagebox as messagebox
 from tkinter import ttk, Frame
 
+# TODO interface de IDS
+
 from PIL import Image, ImageTk
 from src.uiMain.colores import *  # Importar colores
 
@@ -285,7 +287,7 @@ class VentanaPrincipal:
         # columnas y filas
         emergente.columnconfigure((0,1), weight=1, uniform='f')
         emergente.rowconfigure((0,1,2), weight=1, uniform='g')
-
+        # TODO que muestre tambien la ultima fecha de ingreso
 
         # labels
         tk.Label(emergente, text='Local', font=('Arial', 10, 'bold'), bg=FONDO).grid(row=0, column=0, padx=3, pady=2)
@@ -344,7 +346,7 @@ class VentanaSecundaria:
         if type(ventana_activa) == tk.Tk: ventana_activa.destroy()
 
         self.root = tk.Tk()
-        self.root.title("Villaware")
+        self.root.title("Villajuegos")
         self.root.geometry("700x600")
         self.root.configure(bg=FONDO)
 
@@ -827,7 +829,10 @@ class FieldFrameProducto(tk.Frame):
                 prod_actual.setCantidad(prod_actual.getCantidad() - prod.getCantidad())
 
             # Actualizar puntos de fidelidad del cliente
+            # Puntos gastados
             self.cliente_actual.set_puntos_fidelidad(self.cliente_actual.get_puntos_fidelidad() - puntos)
+
+            # TODO tambien otorgarle puntos
 
             # Limpiar carrito
             messagebox.showinfo('Compra realizada', f'Compra realizada con exito\nTotal: {total}\nPuntos usados: {puntos}\nEmpleado: {empleado.get_nombre()}')
@@ -1603,13 +1608,13 @@ class FieldFrameSubasta(tk.Frame):
         self.subframe_selec.rowconfigure((0,1,2), weight=1, uniform='b')
 
         # subastar
-        tk.Button(self.subframe_selec, text='Subastar', font=('Arial', 17, 'bold'), bg=RESALTO, bd=0, command=self.subastar).grid(row=0, column=0, padx=15, pady=15, sticky='s')
+        tk.Button(self.subframe_selec, text='Subastar', font=('Arial', 15, 'bold'), bg=RESALTO, bd=0, command=self.subastar).grid(row=0, column=0, padx=15, pady=15, sticky='s')
 
         # ofertar
-        tk.Button(self.subframe_selec, text='Ofertar', font=('Arial', 17, 'bold'), bg=POWER, bd=0, command=self.ofertar).grid(row=1, column=0, padx=15, pady=15)
+        tk.Button(self.subframe_selec, text='Ofertar', font=('Arial', 15, 'bold'), bg=POWER, bd=0, command=self.ofertar).grid(row=1, column=0, padx=15, pady=15)
 
         # terminar subasta
-        tk.Button(self.subframe_selec, text='Terminar subasta', font=('Arial', 17, 'bold'), bg=RESALTO, bd=0, command=self.terminar_subasta).grid(row=2, column=0, padx=15, pady=15, sticky='n')
+        tk.Button(self.subframe_selec, text='Actualizar subasta descendente', font=('Arial', 15, 'bold'), bg=RESALTO, bd=0, command=self.actualizar_subasta).grid(row=2, column=0, padx=15, pady=15, sticky='n')
 
     def subastar(self):
         self.reiniciar_frame()
@@ -1997,8 +2002,26 @@ class FieldFrameSubasta(tk.Frame):
         tk.Button(subframe_oferta, text='Confirmar', font=('Arial', 9, 'bold'), bg=RESALTO, bd=0, command=confirmar_subasta).grid(row=1, column=0, columnspan=2, padx=15, pady=15)
 
 
-    def terminar_subasta(self):
-        pass # TODO
+    def actualizar_subasta(self):
+        self.reiniciar_frame()
+
+        subastas_desc = []
+        for subasta in self.tienda_actual.get_subastas():
+            if subasta.get_estado() == 'Activa' and subasta.get_tipo() == 'Descendente':
+                subastas_desc.append(subasta)
+
+        if len(subastas_desc) == 0:
+            messagebox.showinfo('Subastas descendentes', 'No hay subastas descendentes activas')
+            return
+
+        subframe_actualizar = tk.Frame(self.framemain, bg=FONDO, bd=0)
+        subframe_actualizar.grid(row=0, column=0, sticky='nswe')
+        subframe_actualizar.columnconfigure((0, 1), weight=1, uniform='a')
+        subframe_actualizar.rowconfigure((0, 1, 2, 3, 4), weight=1, uniform='b')
+
+        # TODO combobox para seleccionar subasta - boton para confirmar - entry para nuevo valor - boton para confirmar
+
+        # TODO Ventanas emergente que avisen que una subasta ha acabado
 
     # metodo que limpia por completo el interior de el frame que reciba
     @staticmethod
