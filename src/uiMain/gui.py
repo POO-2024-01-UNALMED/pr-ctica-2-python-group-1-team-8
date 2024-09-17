@@ -1967,8 +1967,6 @@ class FieldFrameEmpleado(tk.Frame):
             self.combobox_dias.config(values=listado_nombres, textvariable=listado_default)
             self.combobox_dias.grid(row=1, column=1, padx=15, pady=15)
 
-        #Boton
-
 
 
 
