@@ -7,7 +7,7 @@ from src.gestorAplicacion.mixins import Identificable
 class Producto(ABC, Identificable):
     # Constructores
     # Constructor con todos los atributos menos Id
-    def __init__(self, nombre:str, precio:float, cantidad:int, cantidadInicial:int, prestable:bool, condicion:int, fechaLanzamiento:Fecha, descuento:float, puntosRequeridos:int):
+    def __init__(self, nombre:str, precio:float, cantidad:int, cantidadInicial:int, prestable:bool, condicion:int, fecha_lanzamiento:Fecha, descuento:float, puntosRequeridos:int):
         super().__init__()
         self._nombre = nombre
         self._precio = precio
@@ -15,7 +15,7 @@ class Producto(ABC, Identificable):
         self._cantidad_inicial = cantidadInicial
         self._prestable = prestable
         self._condicion = condicion
-        self._fecha_lanzamiento = fechaLanzamiento
+        self._fecha_lanzamiento = fecha_lanzamiento
         self._descuento = descuento
         self._puntos_requeridos = puntosRequeridos
 
@@ -57,7 +57,7 @@ class Producto(ABC, Identificable):
 
     # ~~~~~ Getters y Setters ~~~~~
     def get_id(self):
-        return self.id
+        return self._id
     def get_nombre(self):
         return self._nombre
     def set_nombre(self, nombre):
@@ -84,7 +84,6 @@ class Producto(ABC, Identificable):
         self._condicion = condicion
     def get_fecha_lanzamiento(self):
         return self._fecha_lanzamiento
-
     def get_descuento(self):
         return self._descuento
     def set_descuento(self, descuento):

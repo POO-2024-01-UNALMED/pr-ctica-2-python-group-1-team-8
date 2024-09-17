@@ -710,7 +710,7 @@ class FieldFrameProducto(tk.Frame):
 
 
                     if producto_en_carrito is not None:
-                        producto_en_carrito.setCantidad(producto_en_carrito.getCantidad() + 1)
+                        producto_en_carrito.set_cantidad(producto_en_carrito.get_cantidad() + 1)
                     else:
                         # Agregar clon del producto al carrito
                         # la idea de usar un clon es para que el carrito maneje un atributo cantidad independiente
@@ -1022,7 +1022,7 @@ class FieldFramePrestamo(FieldFrameProducto):
 
 
                     if producto_en_carrito is not None:
-                        producto_en_carrito.setCantidad(producto_en_carrito.getCantidad() + 1)
+                        producto_en_carrito.set_cantidad(producto_en_carrito.get_cantidad() + 1)
                     else:
                         # Agregar clon del producto al carrito
                         # la idea de usar un clon es para que el carrito maneje un atributo cantidad independiente
@@ -1752,7 +1752,7 @@ class FieldFrameSubasta(tk.Frame):
                                 break
 
                         if producto_en_carrito is not None:
-                            producto_en_carrito.setCantidad(producto_en_carrito.getCantidad() + 1)
+                            producto_en_carrito.set_cantidad(producto_en_carrito.get_cantidad() + 1)
                         else:
                             # Agregar clon del producto al carrito
                             # la idea de usar un clon es para que el carrito maneje un atributo cantidad independiente
@@ -1989,7 +1989,7 @@ class FieldFrameSubasta(tk.Frame):
                             raise ExceptionLogica('El cliente no tiene suficientes puntos para tomar la oferta actual')
 
                         # Registrar oferta
-                        subasta.agregar_oferta(cliente_encontrado)
+                        subasta.registrar_oferta_ganadora(cliente_encontrado)
                         messagebox.showinfo('Subasta terminada', 'El cliente ' + str(cliente_encontrado.get_nombre()) + ' ha tomado la oferta actual de esta subasta')
                         self.seleccion_accion()
 

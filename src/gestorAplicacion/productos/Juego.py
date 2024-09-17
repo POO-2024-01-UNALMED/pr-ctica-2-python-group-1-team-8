@@ -1,8 +1,8 @@
 from src.gestorAplicacion.productos.Producto import Producto
 
 class Juego(Producto):
-    def __init__(self, nombre, precio, cantidad, cantidadInicial, prestable, condicion, fechaLanzamiento, descuento, puntosRequeridos, genero,plataforma):
-        super().__init__(nombre, precio, cantidad, cantidadInicial, prestable, condicion, fechaLanzamiento, descuento, puntosRequeridos)
+    def __init__(self, nombre, precio, cantidad, cantidadInicial, prestable, condicion, fecha_lanzamiento, descuento, puntosRequeridos, genero, plataforma):
+        super().__init__(nombre, precio, cantidad, cantidadInicial, prestable, condicion, fecha_lanzamiento, descuento, puntosRequeridos)
         self._plataforma = plataforma
         self._genero = genero
 

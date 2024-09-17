@@ -1,7 +1,7 @@
 # Este script solo se corre para volver a serializar todos los objetos de prueba de cero
 
-from gui import VentanaPrincipal
-import pickle
+# from gui import VentanaPrincipal
+# import pickle
 
 from src.baseDatos.serializador import Serializador
 from src.gestorAplicacion.informacionVenta.Transaccion import Transaccion
@@ -290,7 +290,7 @@ if __name__ == "__main__":
     # deserializarClientes = open("../baseDatos/temp/clientes.txt", "rb")
     # cliente = pickle.load(deserializarClientes)
 
-    a = VentanaPrincipal()
+    # a = VentanaPrincipal()
 
     # deserializarLocales.close()
     # deserializarClientes.close()

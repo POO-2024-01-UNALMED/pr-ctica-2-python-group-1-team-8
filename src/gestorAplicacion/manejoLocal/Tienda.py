@@ -140,11 +140,11 @@ class Tienda:
     def buscar_producto_id(self, id:int, tipo_inventario:str):
         if tipo_inventario == "prestamo":
             for p in self._inventarioPrestamo:
-                if p.id == id:
+                if p._id == id:
                     return p
         elif tipo_inventario == "usado":
             for p in self._inventarioUsado:
-                if p.id == id:
+                if p._id == id:
                     return p
         return None
 
@@ -152,7 +152,7 @@ class Tienda:
     @multimethod
     def buscar_producto_id(self, id:int):
         for p in self._inventario:
-            if p.id == id:
+            if p._id == id:
                 return p
         return None
 

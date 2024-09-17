@@ -4,8 +4,8 @@ from src.gestorAplicacion.productos.Juego import Juego
 
 
 class Consola(Producto):
-    def __init__(self, nombre:str, precio:float, cantidad:int,cantidadInicial:int, prestable:bool, condicion:int, fechaLanzamiento:Fecha, descuento:float, puntosRequeridos:int, marca:str):
-        super().__init__(nombre, precio, cantidad,cantidadInicial, prestable, condicion, fechaLanzamiento, descuento, puntosRequeridos)
+    def __init__(self, nombre:str, precio:float, cantidad:int, cantidadInicial:int, prestable:bool, condicion:int, fecha_lanzamiento:Fecha, descuento:float, puntosRequeridos:int, marca:str):
+        super().__init__(nombre, precio, cantidad, cantidadInicial, prestable, condicion, fecha_lanzamiento, descuento, puntosRequeridos)
         self._marca = marca
 
     def __str__(self):

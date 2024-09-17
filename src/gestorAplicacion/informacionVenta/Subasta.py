@@ -52,7 +52,7 @@ class Subasta(Identificable, MarcaTiempo):
         self._estado = "Finalizada"
 
         # Actualizar puntos del ganador
-        cliente.set_puntos(cliente.get_puntos_fidelidad() - self._oferta_mayor)
+        cliente.set_puntos_fidelidad(cliente.get_puntos_fidelidad() - self._oferta_mayor)
 
     # ~~ Finalizar subastas ~~
     # Finalizar subasta ascendente o descendente. Retorna al ganador
@@ -139,9 +139,9 @@ class Subasta(Identificable, MarcaTiempo):
         return self._oferta_mayor
     def get_estado(self):
         return self._estado
-    def get_LOCAL(self):
+    def get_local(self):
         return self._LOCAL
-    def get_TIPO(self):
+    def get_tipo(self):
         return self._TIPO
 
     def set_id(self, id):
